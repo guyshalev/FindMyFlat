@@ -1,0 +1,124 @@
+#tivsales_block {
+	background-color:#D7D6E4;
+	width:780px;
+	height: 100%;
+}
+
+#tivsales_offers {
+	height: 173px;
+	width: 777px;
+	background: url('http://images.yad2.co.il/Pic/yad2new/page/tivsales_offers_bg.jpg') repeat-x;
+	padding:0px;
+	margin:0px;
+}
+
+#tivsales_offers ul {
+	margin:0px;
+	padding:0px;
+	list-style:none outside none;
+}
+
+#tivsales_offers li {
+	height: 173px;
+	float:right;
+	margin:0px;
+	padding:0px;
+	text-align:center;
+	background: url('http://images.yad2.co.il/Pic/yad2new/page/tivsales_offers_mafrid.jpg') no-repeat top left transparent;
+}
+
+#tivsales_offers li.nosep {
+	background: none;
+}
+
+#tiv_mafrid {
+	height:36px;
+	font-weight:bold;
+	color:#C81E24;
+	font-size:16px;
+}
+
+#tivsales_maintable {
+	margin-top:15px;
+	margin-right:2px;
+}
+
+#tivsales_maintable img {
+	margin-right:2px;
+}
+/*
+.search_block_main select {
+	/*height: 21px;*/
+}*/
+
+.nadlan_bottom_links a {
+	color: #1B60A5;
+}
+
+.nadlan_bottom_links a:link {
+	color: #1B60A5;
+}
+
+.nadlan_bottom_links a:visited {
+	color: #1B60A5;
+}
+
+.nadlan_bottom_links a:hover {
+	color: #1B60A5;
+}
+
+.nadlan_bottom_links a:active {
+	color: #1B60A5;
+}
+
+.partners_area {
+	width: 150px;
+}
+
+.SearchMapTab {
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/showOnMapTab.jpg) no-repeat;
+	width: 131px;
+	height: 33px;
+	color: #FF5A00 !important;
+	font-size: 12px;
+	font-family: arial;
+	font-weight: bold;
+	cursor: pointer;
+	text-indent: 34px;
+	line-height: 250%;
+	margin-left: 0px !important;
+}
+.BackToNormalView {
+	text-indent: 30px;
+}
+
+.privateSubCat{
+	float: left; 
+	display: inline-block;
+	text-align: left;
+	color: #000;
+	font-size: 13px;
+	font-weight: normal;
+	vertical-align: top;
+	height: 20px;
+	margin-left: 5px;
+}
+
+.ad_side_box_title {
+    font-size: 16px;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 13px;
+    margin-top: 17px;
+}
+div.ad_side_box {
+    width:180px;
+    margin-top:10px;
+}
+.ad_side_box .ad_side_button {
+    margin-bottom: 14px;
+}
+.ad_side_box .ad_side_button > a > img {
+    border-radius: 6px 6px 0 0;
+}

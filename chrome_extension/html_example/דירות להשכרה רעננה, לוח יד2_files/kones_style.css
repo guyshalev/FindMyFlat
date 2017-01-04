@@ -1,0 +1,163 @@
+/* login.kones.php */
+
+.kones_table_title {
+	 color:white;
+	 font-size:14px;
+	 font-weight:bold;
+}
+
+.kones_map_btn {
+	 background-image:url('http://images.yad2.co.il/Pic/site_images/yad2/imageInsidePage/kones/kimages/kones_map_btnbg.jpg');
+	 width: 141px;
+	 _width: 161px;
+	 height:15px;
+	 padding:7px 10px;
+	 margin-bottom: 3px;
+}
+
+.kones_map_btn_text {
+	 float:right;
+	 color:#576380;
+}
+
+.kones_map_btn_number {
+	float:left;
+	color:#FC751A;
+	font-weight:bold;
+}
+
+.kones_txt_orangetitle {
+	margin-bottom:7px;
+	color:#FF5A00;
+	font-size:20px;
+	font-weight:bold;
+}
+
+.kones_txt_thetext {
+	padding-right:15px;
+	color:#888888;
+	font-size:14px;
+}
+
+.kones_txt_faq {
+	color:#717B99 !important;
+	font-weight:bold;
+	text-decoration: underline !important;
+}
+
+.kones_txt_bigorange {
+	cursor:pointer;
+	color:white;
+	font-size:20px;
+	text-align:center;
+	vertical-align:middle;
+	padding-top:2px;
+	margin-right:-5px;
+	font-weight:bold;
+	width:290px;
+	height:28px;
+	_height: 30px;
+	background-image:url('http://images.yad2.co.il/Pic/site_images/yad2/imageInsidePage/kones/kimages/kones_main_regisbtn.jpg');
+}
+
+div.kones_chosen_title {
+	margin-bottom:7px;
+	float:right;
+	padding-right:11px;
+	font-weight:bold;
+}
+
+div.kones_chosen_title h2 {
+	font-size:20px;
+	color:#FC751A;
+}
+
+.kones_chosen_bottom {
+	height: 39yypx;
+	padding-left:12px;
+	padding-top:13px;
+	background:url('http://images.yad2.co.il/Pic/site_images/yad2/imageInsidePage/kones/kimages/kones_table_bottom_bg.jpg') repeat-x;
+}
+
+td.kones_articles {
+	cursor:pointer;
+	color:#6F6F6F;
+	width:354px;
+	background:url('http://images.yad2.co.il/Pic/site_images/yad2/imageInsidePage/kones/kimages/kones_bottom_bg.jpg') no-repeat;
+	padding:12px 8px;
+	height: 117px;
+}
+
+td.kones_articles img {
+	width:70px;
+	height:53px;
+	float:right;
+	border:1px solid #DDDBE0;
+	margin-left:6px;
+	margin-bottom:0px;
+}
+
+td.kones_articles h3 {
+	font-size:13px;
+	color:black;
+	font-weight:bold;
+	display:inline;
+}
+
+.kones_bottom {
+	color:#595959;
+	font-size:12px;
+	padding-bottom:5px;
+}
+
+.kones_password_inputs {
+	font-weight:bold;
+	color:#939393;
+	font-family:Arial;
+	border:0 none;
+	background:url('http://images.yad2.co.il/Pic/site_images/yad2/imageInsidePage/kones/kimages/kones_login_input.jpg') no-repeat scroll right top transparent;
+	width:148px;
+	padding:0px 8px 0px 8px;
+	height:24px;
+	display:none;
+}
+
+.kones_fix_login_inputs {
+	padding:0px 8px 0px 8px;
+}
+
+div.kones_input {
+	background: url(http://images.yad2.co.il/Pic/site_images/yad2/imageInsidePage/kones/kimages/kones_login_input.jpg) no-repeat;
+	width: 164px;
+	height: 24px;
+	margin-bottom: 5px;
+}
+div.kones_input_big {
+	background: url(http://images.yad2.co.il/Pic/site_images/yad2/imageInsidePage/kones/kimages/kones_login_input_big.jpg) no-repeat;
+	width: 332px;
+	height: 32px;
+	margin-bottom: 5px;
+}
+
+div.kones_input input {
+	color: #939393;
+	font-family: arial;
+	font-weight: bold;
+	font-size: 12px;
+	border: 0px solid black;
+	width: 153px;
+	height: 22px;
+	margin-right: 3px;
+	background: none;
+}
+div.kones_input_big input {
+	color: #939393;
+	font-family: arial;
+	font-weight: bold;
+	font-size: 12px;
+	border: 0px solid black;
+	width: 323px;
+	height: 29px;
+	margin-right: 3px;
+	background: none;
+}

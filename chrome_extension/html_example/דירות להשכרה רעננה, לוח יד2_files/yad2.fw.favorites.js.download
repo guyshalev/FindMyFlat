@@ -1,0 +1,130 @@
+Yad2.Fav = function(CatID, SubCatID) {
+
+    var $class = this;
+
+    var $CatID = CatID;
+    var $SubCatID = SubCatID;
+
+    var $ajaxPath = "/";
+
+    var $marked_style = "ad_favorite_marked";
+
+    $class.setAjaxPath = function(path) {
+        $ajaxPath = path;
+        return $class;
+    }
+
+    $class.add = function(RecordID,note,callbackComplete) {
+        var params = {
+            'CatID' : $CatID,
+            'SubCatID' : $SubCatID,
+            'RecordID' : RecordID
+        }
+
+        if (note != "") {
+            params['note'] = note;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: $ajaxPath + 'ajax/favorites/new/controller.php?action=add',
+            data: params,
+            dataType: 'json',
+            success: function(data) {
+                if (typeof callbackComplete == "function") {
+                    callbackComplete(data);
+                }
+            }
+        });
+
+        return $class;
+    }
+
+    $class.remove = function(RecordID, callbackComplete) {
+        var params = {
+            'CatID' : $CatID,
+            'SubCatID' : $SubCatID,
+            'RecordID' : RecordID
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: $ajaxPath + 'ajax/favorites/new/controller.php?action=delete',
+            data: params,
+            dataType: 'json',
+            success: function(data) {
+                if (typeof callbackComplete == "function") {
+                    callbackComplete(data);
+                }
+            }
+        });
+
+        return $class;
+    }
+
+    $class.toggle = function(trigger,RecordID, completeCallback) {
+        var _trigger = jQuery(trigger);
+
+        if (_trigger.hasClass($marked_style)) {
+            $class.remove(RecordID, function(data) {
+                if (data.error === false) {
+                    $class.unmark(".ad_favorite",RecordID);
+                    if (typeof completeCallback == "function") {
+                        completeCallback(trigger, "remove");
+                    }
+                }
+            });
+        }
+        else {
+            $class.add(RecordID,null,function(data) {
+                if (data.error === false) {
+                    $class.mark(".ad_favorite",RecordID);
+                    if (typeof completeCallback == "function") {
+                        completeCallback(trigger, "add");
+                    }
+                }
+            });
+        }
+        return $class;
+    }
+
+    $class.get = function(RecordID, callbackComplete) {
+        var params = {
+            'CatID' : $CatID,
+            'SubCatID' : $SubCatID,
+            'RecordID' : RecordID
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: $ajaxPath + 'ajax/favorites/new/controller.php?action=get',
+            data: params,
+            dataType: 'json',
+            success: function(data) {
+                if (typeof callbackComplete == "function") {
+                    callbackComplete(data);
+                }
+            }
+        });
+        return $class;
+    }
+
+    $class.mark = function(jElm,RecordID) {
+        try {
+            $(jElm+"[favId='"+$CatID+"_"+$SubCatID+"_"+RecordID+"']").each(function() {
+                $(this).addClass($marked_style);
+            });
+        }catch(e){}
+        return $class;
+    }
+
+    $class.unmark = function(jElm,RecordID) {
+        try {
+            $(jElm+"[favId='"+$CatID+"_"+$SubCatID+"_"+RecordID+"']").each(function() {
+                $(this).removeClass($marked_style);
+            });
+        }catch(e){}
+        return $class;
+    }
+
+}

@@ -1,0 +1,244 @@
+function checkOptions(selector) {
+
+    var selectedOptions = 0;
+    jQuery('#multi-search-options-scrollable-content').children('.'+ selector).children('input').each(function() {
+
+        if (jQuery(this).prop('checked')) {
+            selectedOptions++;
+            jQuery("#isMultiSearch").prop("disabled", false);
+        }
+
+    });
+
+    return selectedOptions;
+
+}
+
+
+function hideOptions (id) {
+    jQuery('#optionsTitle').show();
+    jQuery('#multi-' + id + ', #bottomLine').hide();
+
+    jQuery('#multiWrap').css({
+        'background':'none',
+        'border-radius': '0',
+        'border': 'none',
+        'padding-top': '0'
+    });
+
+    if (checkOptions('option') > 0) {
+        var selected = checkOptions('option');
+        jQuery('#optionsGroup').text('נבחרו ('+selected+')');
+    } else {
+
+        jQuery('#optionsGroup').text('לחץ לבחירה');
+    }
+}
+
+function showOptions (id) {
+
+    var optionsBox = jQuery('#multi-' + id);
+
+    if (optionsBox.is(':visible')) {
+        jQuery('#optionsTitle').show();
+        jQuery('#multi-' + id + ', #bottomLine').hide();
+
+        jQuery('#multiWrap').css({
+            'background':'none',
+            'border-radius': '0',
+            'border': 'none',
+            'padding-top': '0'
+        });
+
+        if (checkOptions('option') > 0) {
+            var selected = checkOptions('option');
+            jQuery('#optionsGroup').text('נבחרו ('+selected+')');
+        } else {
+            jQuery('#optionsGroup').text('לחץ לבחירה');
+        }
+
+
+    } else {
+
+
+
+        jQuery('#multiWrap').css({
+            'background':'#ffffff',
+            'border-radius': '5px 5px  0 0',
+            'border': '1px solid #ff6600',
+            'padding-top': '5px'
+        });
+
+        jQuery('#multi-optionsGroup').css({'z-index': 98});
+        jQuery('#optionsTitle').hide();
+
+        jQuery('#multi-search-HomeTypeID-container, #multi-search-City-container, #multi-search-Area-container').hide();
+        delete Yad2.MultiSearch.openedMultiSearch['Area'];
+        delete Yad2.MultiSearch.openedMultiSearch['City'];
+        delete Yad2.MultiSearch.openedMultiSearch['HomeTypeID'];
+
+
+        //alert(jQuery('#multi-' + id + ', #bottomLine'))
+        jQuery('#multi-' + id + ', #bottomLine').css({'display': 'block'});
+
+    }
+}
+
+jQuery(document).ready(function(){
+
+
+    var $tabAdvance =jQuery('#tab_advance') ;
+    var $villages = jQuery('#villages');
+    if ($tabAdvance.length){
+        if ($tabAdvance.hasClass('active') == false) {
+            jQuery('#village').show();
+        } else  {
+            jQuery('#search_block').css({'height': '151px'});
+        }
+
+        if ($villages.length) {
+            $tabAdvance.on('click', function () {
+                var village = $villages.prop('checked');
+                if (village) {
+                    jQuery('#multivillages').prop('checked', true);
+                    $villages.prop('checked', false);
+                    jQuery('#village').hide();
+                } else {
+                    jQuery('#village').hide();
+                }
+            });
+        }
+    }
+
+
+
+
+    if ($villages.length){
+        jQuery('#tab_normal').on('click', function() {
+            var $multivillages = jQuery('#multivillages');
+            var multivillage = $multivillages.prop('checked');
+
+            if (multivillage) {
+                jQuery('#villages').prop('checked', true);
+                $multivillages.prop('checked', false);
+                jQuery('#village').show();
+            } else {
+                jQuery('#village').show();
+            }
+        });
+        jQuery(document).on('click', "input[data-multi-search-name='Area']", function() {
+
+            var multichecked = 0;
+
+            jQuery("input[data-multi-search-name='Area']").each(function(index,elm) {
+
+                if (jQuery(elm).is(':checked')) {
+
+                    multichecked++;
+                }
+
+            })
+
+            if (multichecked > 0) {
+
+                jQuery('#multivillages').prop('disabled', false);
+            } else {
+                jQuery('#multivillages').prop('disabled', true);
+            }
+
+
+        })
+
+        jQuery(document).on('click', "input[data-multi-search-name='City']", function() {
+            jQuery('#multivillages').prop('disabled', true);
+            jQuery('#multivillages').prop('checked', false);
+        })
+
+        jQuery(document).on('change', '#Area', function() {
+
+            var thisArea = jQuery(this).val();
+
+            if (thisArea && thisArea != 46) {
+                jQuery('#villages').prop('disabled', false);
+            } else {
+
+                jQuery('#villages').prop('disabled', true);
+                jQuery('#villages').prop('checked', false);
+            }
+        });
+    }
+
+
+
+    if (checkOptions('option') > 0) {
+        var selected = checkOptions('option');
+        jQuery('#optionsGroup').text('נבחרו ('+selected+')');
+    } else {
+        jQuery('#optionsGroup').text('לחץ לבחירה');
+    }
+
+
+
+
+
+
+    jQuery(document).on('click', '.multi-search-container', function() {
+
+        if (jQuery('#multi-optionsGroup').is(':visible')) {
+            jQuery('#optionsTitle').show();
+            jQuery('#multi-optionsGroup, #bottomLine').hide();
+
+            jQuery('#multiWrap').css({
+                'background':'none',
+                'border-radius': '0',
+                'border': 'none',
+                'padding-top': '0'
+            });
+
+            if (checkOptions('option') > 0) {
+                var selected = checkOptions('option');
+                jQuery('#optionsGroup').text('נבחרו ('+selected+')');
+            } else {
+                jQuery('#optionsGroup').text('לחץ לבחירה');
+            }
+
+        }
+    });
+
+
+    jQuery(document).on('click', function() {
+
+        var evt = window.event;
+        var current = evt.target || evt.srcElement;
+        var role = current.getAttribute('data-role');
+
+
+
+        if (role != 'multi-group-part' && role != 'multi-group-btn' ) {
+
+
+
+            var optionsbox = jQuery('#multi-optionsGroup').is(':visible');
+
+            if (optionsbox == true) {
+                jQuery('#optionsTitle').show();
+                jQuery('#multi-optionsGroup, #bottomLine').hide();
+
+                jQuery('#multiWrap').css({
+                    'background':'none',
+                    'border-radius': '0',
+                    'border': 'none',
+                    'padding-top': '0'
+                });
+
+                if (checkOptions('option') > 0) {
+                    var selected = checkOptions('option');
+                    jQuery('#optionsGroup').text('נבחרו ('+selected+')');
+                } else {
+                    jQuery('#optionsGroup').text('לחץ לבחירה');
+                }
+            }
+        }
+    });
+
+});

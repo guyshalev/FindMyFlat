@@ -1,0 +1,988 @@
+var DesktopMediaManager = {
+    initializeCmd : [],
+    dfpInitialized : false,
+    locations : [],
+    sendLocations : [],
+    zone : "",
+    parameters : {},
+
+
+    setDefaultParameters : function(){
+            var browserSize = DesktopMediaManager.getBrowserSize();
+            var currentdate = new Date();
+            var hours = currentdate.getHours();
+            var minutes = currentdate.getMinutes();
+
+            DesktopMediaManager.parameters.browserHeight = browserSize['height'];
+            DesktopMediaManager.parameters.browserWidth = browserSize['width'];
+            DesktopMediaManager.parameters.screenHeight = screen.height;
+            DesktopMediaManager.parameters.screenRes = screen.width + "x" + screen.height;
+            DesktopMediaManager.parameters.screenWidth = screen.width;
+            DesktopMediaManager.parameters.time = (hours < 10 ? '0' : '') + hours.toString() + (minutes < 10 ? '0' : '') + minutes.toString();
+            DesktopMediaManager.parameters.url = "";
+            DesktopMediaManager.parameters.weekDay = DesktopMediaManager.getWeekday();
+
+    },
+
+    getWeekday : function(){
+            var d = new Date();
+            var weekday = [];
+            weekday[0]=  "sunday";
+            weekday[1] = "monday";
+            weekday[2] = "tuesday";
+            weekday[3] = "wednesday";
+            weekday[4] = "thursday";
+            weekday[5] = "friday";
+            weekday[6] = "saturday";
+
+            return weekday[d.getDay()];
+    },
+
+requestNewAds : function(instances) {
+        var loadedInstances = {};
+        var instance;
+
+        for (var i in instances) {
+            if (!instances.hasOwnProperty(i)) {
+                continue;
+            }
+
+            instance = instances[i];
+
+            if (typeof instance["divIDs"] === "undefined") {
+                continue;
+            }
+
+            if (typeof instance.slots === "undefined") {
+                instance.slots = {};
+            }
+
+            (function (instance, spaceKey) {
+                window.googletag.cmd.push(function () {
+                    var slotID = instance["slotName"];
+                    var fullMediaZone = "/22346962/" + DesktopMediaManager.zone + '/' + slotID;
+
+                    for (var i = 0; i < instance["divIDs"].length; i++) {
+                        var divID = instance["divIDs"][i];
+
+                        if(instance.hasOwnProperty("isOutOfSlot")){
+                            instance["slots"][divID] = window.googletag.defineOutOfPageSlot(fullMediaZone, divID).addService(window.googletag.pubads());
+                        }
+                        else{
+                            var defineSlotRes = window.googletag.defineSlot(fullMediaZone, instance.slotSize, divID);
+                            if (typeof defineSlotRes === "object" && defineSlotRes != null){
+                                instance.slots[divID] = defineSlotRes.addService(window.googletag.pubads());
+                            }else{
+                                if (typeof console === "object"){
+                                    console.log("%c defineSlot function return null","font-family:helvetica; font-size:50px;color:red; -webkit-text-stroke:1px black;")
+                                }
+                            }
+
+
+                        }
+
+                        loadedInstances[spaceKey] = instance;
+                    }
+                });
+            })(instance, i);
+        }
+
+        for (i in loadedInstances) {
+            if (!loadedInstances.hasOwnProperty(i)) {
+                continue;
+            }
+
+            instance = loadedInstances[i];
+
+            var placementName;
+
+            if(instance.hasOwnProperty("placementName")){
+                placementName = instance["placementName"];
+            }
+            else{
+                placementName = "";
+            }
+
+            DesktopMediaManager.displayInstanceAds(instance, placementName);
+
+            if (DesktopMediaManager.instances.hasOwnProperty(i)) {
+                var desktopInstance = DesktopMediaManager.instances[i];
+
+                for (var j in instance["slots"]) {
+                    if (!instance["slots"].hasOwnProperty(j)) {
+                        continue;
+                    }
+
+                    if(!desktopInstance.hasOwnProperty("slots")){
+                        desktopInstance["slots"] = {};
+                    }
+
+                    desktopInstance["slots"][j] = instance["slots"][j];
+                }
+
+                for (j = 0; j < instance["divIDs"].length; j++) {
+                    var divID = instance["divIDs"][j];
+
+                    if(!desktopInstance.hasOwnProperty("divIDs")){
+                        desktopInstance["divIDs"] = [];
+                    }
+
+                    if (!~jQuery.inArray(divID, desktopInstance["divIDs"])) {
+                        desktopInstance["divIDs"].push(divID);
+                    }
+                }
+            }
+            else{
+                DesktopMediaManager.instances[i] = instance;
+            }
+        }
+    },
+
+    reloadInstances : function(placementNames){
+        for(var i = 0; i < placementNames.length; i++){
+            var placementName = placementNames[i];
+
+            if(!DesktopMediaManager.instances.hasOwnProperty(placementName)){
+                continue;
+            }
+
+            var instance = DesktopMediaManager.instances[placementName];
+
+            if(!instance.hasOwnProperty("slots")){
+                continue;
+            }
+
+            var slots = instance["slots"];
+            var slotsToSend = [];
+
+            for(var j in slots){
+                if(!slots.hasOwnProperty(j)){
+                    continue;
+                }
+
+                slotsToSend.push(slots[j]);
+            }
+
+            (function(slotsToSend){
+                window.googletag.cmd.push(function(){
+                    window.googletag.pubads().refresh(slotsToSend, {changeCorrelator: false});
+                });
+            })(slotsToSend);
+        }
+    },
+
+    buildDomPlacement : function(placementName){
+        var counter = 1;
+        var placementID = placementName + "___ID___" + counter;
+
+        while (document.getElementById(placementID) != null){
+            counter++;
+            placementID = placementName + "___ID___" + counter;
+        }
+
+        DesktopMediaManager.addLocationLog(placementID);
+
+        if(typeof DesktopMediaManager.instances[placementName] === "undefined"){
+            return;
+        }
+
+        var instance = DesktopMediaManager.instances[placementName];
+        var className = instance["slotName"];
+
+        document.write("<div id='" + placementID + "' class='" + className + "'></div>");
+
+        if(typeof instance["divIDs"] === "undefined"){
+            instance["divIDs"] = [];
+        }
+
+        instance["divIDs"].push(placementID);
+    },
+
+    getPlacementNameFromDivID : function(divID){
+        if(typeof divID === "undefined" || !divID.length){
+            return "";
+        }
+
+        if(!~divID.indexOf("___ID___")){
+            return "";
+        }
+
+        return divID.split("___ID___")[0];
+    },
+
+    getInstanceFromDivID : function(divID){
+        var placementName = DesktopMediaManager.getPlacementNameFromDivID(divID);
+
+        return DesktopMediaManager.instances[placementName];
+    },
+
+    setMediaProperties : function(mediaObj){
+        if(typeof mediaObj === "undefined"){
+            return;
+        }
+
+        if(typeof mediaObj.zone !== "undefined"){
+            DesktopMediaManager.zone = mediaObj.zone;
+        }
+
+        if(typeof mediaObj.params !== "undefined"){
+            DesktopMediaManager.parameters = mediaObj.params;
+        }
+
+        if(typeof console.log !== "undefined"){
+            console.log("------DFP------");
+            console.log(mediaObj);
+            console.log("---------------");
+        }
+    },
+
+    getBrowserSize : function(){
+        var myWidth = 0, myHeight = 0;
+
+        if( typeof( window.innerWidth ) == 'number' ) {
+            //Non-IE
+            myWidth = window.innerWidth;
+            myHeight = window.innerHeight;
+        } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+            //IE 6+ in 'standards compliant mode'
+            myWidth = document.documentElement.clientWidth;
+            myHeight = document.documentElement.clientHeight;
+        } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+            //IE 4 compatible
+            myWidth = document.body.clientWidth;
+            myHeight = document.body.clientHeight;
+        }
+
+        return {
+            'width': myWidth,
+            'height': myHeight
+        };
+    },
+
+    initInstances : function(){
+        var newInstances = {};
+        var browserSize = DesktopMediaManager.getBrowserSize();
+
+        for(var slotName in DesktopMediaManager.instances){
+            if(!DesktopMediaManager.instances.hasOwnProperty(slotName)){
+                continue;
+            }
+
+            var instance = DesktopMediaManager.instances[slotName];
+
+            if(instance.hasOwnProperty("maxHitsSession") && instance['maxHitsSession'] < DesktopMediaManager.parameters['sessionHits']){
+                if (instance.hasOwnProperty('force1x1') && instance.force1x1){
+                    DesktopMediaManager.instances[slotName].slotSize = instance.force1x1;
+                    instance.slotSize = instance.force1x1;
+                }else{
+                    continue;
+                }
+            }
+            if(instance.hasOwnProperty("minHitsSession") && instance['minHitsSession'] > DesktopMediaManager.parameters['sessionHits']){
+                if (instance.hasOwnProperty('force1x1') && instance.force1x1){
+                    DesktopMediaManager.instances[slotName].slotSize = instance.force1x1;
+                    instance.slotSize = instance.force1x1;
+                }else{
+                    continue;
+                }
+            }
+            if(instance.hasOwnProperty("maxWidth") && instance['maxWidth'] < browserSize['width']){
+                if (instance.hasOwnProperty('force1x1') && instance.force1x1){
+                    DesktopMediaManager.instances[slotName].slotSize = instance.force1x1;
+                    instance.slotSize = instance.force1x1;
+                }else{
+                    continue;
+                }
+            }
+
+            if(instance.hasOwnProperty("maxHeight") && instance['maxHeight'] < browserSize['height']){
+                if (instance.hasOwnProperty('force1x1') && instance.force1x1){
+                    DesktopMediaManager.instances[slotName].slotSize = instance.force1x1;
+                    instance.slotSize = instance.force1x1;
+                }else{
+                    continue;
+                }
+            }
+
+            if(instance.hasOwnProperty("minWidth") && instance['minWidth'] > browserSize['width']){
+                if (instance.hasOwnProperty('force1x1') && instance.force1x1){
+                    DesktopMediaManager.instances[slotName].slotSize = instance.force1x1;
+                    instance.slotSize = instance.force1x1;
+                }else{
+                    continue;
+                }
+            }
+
+            if(instance.hasOwnProperty("minHeight") && instance['minHeight'] > browserSize['height']){
+                if (instance.hasOwnProperty('force1x1') && instance.force1x1){
+                    DesktopMediaManager.instances[slotName].slotSize = instance.force1x1;
+                    instance.slotSize = instance.force1x1;
+                }else{
+                    continue;
+                }
+            }
+
+            if(slotName == "popunder" && (typeof SpecialSlotsManager === "undefined" || !SpecialSlotsManager.shouldDisplayPopUnder())){
+                continue;
+            }
+
+           /* if (instance.slotSize[0][1] % 10 == 0){
+                instance['slotSize'].push([1,1]);
+            }*/
+
+            newInstances[slotName] = instance;
+        }
+
+        DesktopMediaManager.instances = newInstances;
+    },
+
+    displayInstanceAds : function(instance, placementName){
+        if(typeof instance !== "undefined"){
+            if(DesktopMediaManager.dfpInitialized){
+                if(typeof instance["slots"] !== "undefined" && typeof instance["divIDs"] !== "undefined"){
+                    var divIDs = instance["divIDs"];
+
+                    for(var i = 0; i < divIDs.length; i++){
+                        (function(instance, i){
+                            window.googletag.cmd.push(function(){
+                                var divID = divIDs[i];
+
+                                window.googletag.display(divID);
+
+                                (function(divID){
+                                    window.googletag.pubads().addEventListener('slotRenderEnded', function(e) {
+                                        var slotID = e.slot.getSlotElementId();
+
+                                        if(divID == slotID){
+                                            var $div = jQuery("#" + divID);
+
+                                            if(e.isEmpty){
+                                                $div.hide();
+                                            }
+                                            else if(!instance.hasOwnProperty("dontShowOnLoad") || !instance["dontShowOnLoad"]){
+                                                $div.show();
+                                            }
+                                        }
+                                    });
+                                })(divID);
+                            });
+                        })(instance, i);
+                    }
+                }
+            }
+            else{
+                DesktopMediaManager.initializeCmd.push(placementName);
+            }
+        }
+    },
+
+    initFusionHack : function(){
+        window.Fusion = {};
+        window.Fusion.adComponents = {};
+
+        for(var placementName in DesktopMediaManager.instances){
+            if(!DesktopMediaManager.instances.hasOwnProperty(placementName)){
+                continue;
+            }
+
+            window.Fusion.adComponents[placementName] = [];
+        }
+
+        window.Fusion.space = function(placementName){
+            DesktopMediaManager.buildDomPlacement(placementName);
+
+            var instance = DesktopMediaManager.instances[placementName];
+
+            if(typeof instance === "undefined" || instance.hasOwnProperty("dontLoad")){
+                return;
+            }
+
+            DesktopMediaManager.displayInstanceAds(instance, placementName);
+        };
+    },
+
+    init : function(){
+
+        DesktopMediaManager.setDefaultParameters();
+        DesktopMediaManager.initInstances();
+        DesktopMediaManager.sendLocationLog();
+        DesktopMediaManager.initOldJqueryCompatibility();
+
+
+        DesktopMediaManager.fetchLocations(function(){
+            if (jQuery.inArray("plasma___ID___1",DesktopMediaManager.locations) != -1){
+                DesktopMediaManager.instances.small_top.dontLoad =  true;
+                DesktopMediaManager.instances.top_banner.dontLoad =  true;
+            }
+            window.googletag.cmd.push(function(){
+                for(var i = 0; i < DesktopMediaManager.locations.length; i++){
+                    var divID = DesktopMediaManager.locations[i];
+
+                    var instance = DesktopMediaManager.getInstanceFromDivID(divID);
+
+                    if(typeof instance === "undefined" || instance.hasOwnProperty("dontLoad")){
+                        continue;
+                    }
+
+                    var slotID = instance["slotName"];
+                    var fullMediaZone = "/22346962/" + DesktopMediaManager.zone + '/' + slotID;
+
+                    if(typeof instance.slots === "undefined"){
+                        instance.slots = {};
+                    }
+
+                    try{
+                        //if (DesktopMediaManager.zone.indexOf("pets")!=-1) {
+                            fullMediaZone += divID.match(/inner_2___ID___([2-9])$/)[1];
+                      //  }
+                    }catch (e){}
+
+                    var defineSlotRes = window.googletag.defineSlot(fullMediaZone, instance.slotSize, divID);
+
+                    if (typeof defineSlotRes === "object" && defineSlotRes != null)
+                        instance.slots[divID] = defineSlotRes.addService(window.googletag.pubads());
+
+                  //  instance.slots[divID] = window.googletag.defineSlot(fullMediaZone, instance.slotSize, divID).addService(window.googletag.pubads());
+                }
+
+                for(var paramKey in DesktopMediaManager.parameters) {
+                    if(!DesktopMediaManager.parameters.hasOwnProperty(paramKey)){
+                        continue;
+                    }
+                    if (DesktopMediaManager.parameters[paramKey]!=null) {
+                        window.googletag.pubads().setTargeting(paramKey, DesktopMediaManager.parameters[paramKey].toString());
+                    }
+                }
+
+                window.googletag.pubads().collapseEmptyDivs();
+                window.googletag.pubads().enableSingleRequest();
+                window.googletag.enableServices();
+
+                DesktopMediaManager.dfpInitialized = true;
+
+                for(var j = 0; j < DesktopMediaManager.initializeCmd.length; j++){
+                    window.Fusion.space(DesktopMediaManager.initializeCmd[j]);
+                }
+            });
+        });
+    },
+
+    addLocationLog : function(divID){
+        if (jQuery.inArray(divID, DesktopMediaManager.locations) != -1 || jQuery.inArray(divID, DesktopMediaManager.sendLocations) != -1){
+            return;
+        }
+
+        DesktopMediaManager.sendLocations.push(divID);
+    },
+
+    sendLocationLog : function(){
+        jQuery(document).ready(function(){
+            var url = window.location.href.replace("http://", "").replace("https://", "").split("?")[0];
+
+            jQuery.ajax({
+                'url': 'http://www.yad2.co.il/dfpV3/script/mediaitems/locations.php',
+                'data': {'url': url, 'divIDs': DesktopMediaManager.sendLocations},
+                'dataType': 'jsonp',
+                'type': 'post'
+            });
+        });
+    },
+
+    fetchLocations : function(callback){
+        if(DesktopMediaManager.locations.length || !~window.location.href.indexOf("junkyard.co.il")){
+            if(typeof callback === "function"){
+                callback();
+            }
+
+            return;
+        }
+
+        var url = window.location.href.replace("http://", "").replace("https://", "").split("?")[0];
+
+        jQuery.ajax({
+            'url': 'http://www.yad2.co.il/dfpV3/script/mediaitems/getLocations.php',
+            'data': {'url': url},
+            'dataType': 'jsonp',
+            'type': 'post',
+            'success': function(response){
+                if(typeof response === "object" && typeof response["locations"] === "object"){
+                    DesktopMediaManager.locations = response["locations"];
+                }
+
+                if(typeof callback === "function"){
+                    callback();
+                }
+            },
+            'error': function(){
+                if(typeof callback === "function"){
+                    callback();
+                }
+            }
+        });
+    },
+
+    addEvent : function(object, type, callback) {
+        if (object == null || typeof(object) == 'undefined') {
+            return;
+        }
+
+        if (object.addEventListener){
+            object.addEventListener(type, callback, false);
+        }
+        else if (object.attachEvent){
+            object.attachEvent("on" + type, callback);
+        }
+        else {
+            object["on"+type] = callback;
+        }
+    },
+
+    initOldJqueryCompatibility : function(){
+        if(typeof jQuery.prototype.on === "undefined"){
+            jQuery.prototype.on = function(action, callback){
+                if(action == "click"){
+                    var selectors = this;
+
+                    for(var i = 0; i < selectors.length; i++){
+                        DesktopMediaManager.addEvent(selectors[i], "click", callback);
+                    }
+                }
+            };
+        }
+    }
+};
+
+DesktopMediaManager.instances = {
+    "king_kong": {
+        "slotName": "Desktop_King_Kong",
+        "slotSize": [[977, 330]]
+    },
+    "pic_cube_small_2": {
+        "slotName": "Desktop_Pic_Cube_Small_2",
+        "slotSize": [[90, 80]]
+    },
+    "mega": {
+        "slotName": "Desktop_Mega",
+        "slotSize": [[120, 600],[1,1]],
+        "minWidth": 1246,
+        'force1x1' : [1,1]
+    },
+    "right_mega": {
+        "slotName": "Desktop_Right_Mega",
+        "slotSize": [[120, 600],[1,1]],
+        "minWidth": 1246,
+        'force1x1' : [1,1]
+    },
+
+    "mega_2": {
+        "slotName": "Desktop_Mega_2",
+        "slotSize": [[180, 450]]
+    },
+    "inner_mega": {
+        "slotName": "Desktop_Inner_Mega",
+        "slotSize": [[160, 600],[1,1]],
+        "maxWidth": 1245,
+        'force1x1' : [1,1]
+
+    },
+    "tv": {
+        "slotName": "Desktop_TV",
+        "slotSize": [[300, 251],[300, 250]]
+    },
+    "tv_ad": {
+        "slotName": "Desktop_TV_Ad",
+        "slotSize": [[180, 150]]
+    },
+    "inner_2_t" : {
+        "slotName": "Desktop_Inner_2_T",
+        "slotSize": [[773, 21],[3,3]]
+    },
+    "inner_2" : {
+        "slotName": "Desktop_Inner_2",
+        "slotSize": [[773, 20],[2,2]]
+    },
+
+    "inner_2_fake" : {
+        "slotName": "Desktop_Inner_2",
+        "slotSize": [[2,2]]
+    },
+
+    "inner_rich" : {
+        "slotName": "Desktop_Inner_Rich",
+        "slotSize": [[773, 432]]
+    },
+    "top_banner": {
+        "slotName": "Desktop_Top_Banner",
+        "slotSize": [[728, 90]]
+    },
+    "top_banner_for_king": {
+        "slotName": "Desktop_Top_Banner",
+        "slotSize": [[728, 91]]
+    },
+    "bottom_banner": {
+        "slotName": "Desktop_Bottom_Banner",
+        "slotSize": [[980, 90]]
+    },
+    "top_banner_kones": {
+        "slotName": "Desktop_Top_Banner_Kones",
+        "slotSize": [[980, 90]]
+    },
+    "bottom_banner_2": {
+        "slotName": "Desktop_Bottom_Banner_2",
+        "slotSize": [[728, 90]]
+    },
+    "bottom_banner_hp": {
+        "slotName": "Desktop_Bottom_Banner_Hp",
+        "slotSize": [[728, 90]]
+    },
+    "merchant_sponsorship": {
+        "slotName": "Desktop_Merchant_Sponsorship",
+        "slotSize": [[483, 38]]
+    },
+    "sponsorship_search": {
+        "slotName": "Desktop_Sponsorship_Search",
+        "slotSize": [[315, 25]]
+    },
+    "pic_sponsorship": {
+        "slotName": "Desktop_Pic_Sponsorship",
+        "slotSize": [[400, 21]]
+    },
+    "big_pic_sponsorship": {
+        "slotName": "Desktop_Big_Pic_Sponsorship",
+        "slotSize": [[465, 21]]
+    },
+    "ad_cube": {
+        "slotName": "Desktop_Ad_Cube",
+        "slotSize": [[180, 110]]
+    },
+    "realestate_ad_cube": {
+        "slotName": "Desktop_Realestate_Ad_Cube",
+        "slotSize": [[180, 110]]
+    },
+    "small_top": {
+        "slotName": "Desktop_Small_Top",
+        "slotSize": [[220, 90]]
+    },
+    "bottom_small_top": {
+        "slotName": "Desktop_Bottom_Small_Top",
+        "slotSize": [[220, 90]]
+    },
+    "text_link": {
+        "slotName": "Desktop_Text_Link",
+        "slotSize": [[231, 56]]
+    },
+    "text_link_clicky_2": {
+        "slotName": "Desktop_Text_Link_Clicky_2",
+        "slotSize": [[170, 129]]
+    },
+    "toster": {
+        "slotName": "Desktop_Toster",
+        "slotSize": [[221, 146]],
+        "minWidth": 1260,
+        "minHeight": 750
+
+    },
+    "pic_text_link": {
+        "slotName": "Desktop_Pic_Text_Link",
+        "slotSize": [[231, 56],[450, 56]]
+    },
+    "text_link_clicky": {
+        "slotName": "Desktop_Text_Link_Clicky",
+        "slotSize": [[172, 58]]
+    },
+    "ad_button": {
+        "slotName": "Desktop_Ad_Button",
+        "slotSize": [[187, 30]]
+    },
+    "ad_button_2": {
+        "slotName": "Desktop_Ad_Button_2",
+        "slotSize": [[187, 30]]
+    },
+    "big_ad_botton": {
+        "slotName": "Desktop_Big_Ad_Botton",
+        "slotSize": [[179, 46]]
+    },
+    "big_ad_button_2": {
+        "slotName": "Desktop_Big_Ad_Button_2",
+        "slotSize": [[179, 46]]
+    },
+    "big_ad_button_3": {
+        "slotName": "Desktop_Big_Ad_Button_3",
+        "slotSize": [[179, 46]]
+    },
+    "big_ad_button_4": {
+        "slotName": "Desktop_Big_Ad_Button_4",
+        "slotSize": [[179, 46]]
+    },
+    "ad_side_button": {
+        "slotName": "Desktop_Ad_Side_Button",
+        "slotSize": [[180, 110]]
+    },
+    "side_button": {
+        "slotName": "Desktop_Side_Button",
+        "slotSize": [[127, 135]]
+    },
+    "price_side_button": {
+        "slotName": "Desktop_Price_Side_Button",
+        "slotSize": [[120, 120]]
+    },
+    "top_button_1": {
+        "slotName": "Desktop_Top_Button_1",
+        "slotSize": [[114, 62]]
+    },
+    "top_button_2": {
+        "slotName": "Desktop_Top_Button_2",
+        "slotSize": [[114, 62]]
+    },
+    "top_button_3": {
+        "slotName": "Desktop_Top_Button_3",
+        "slotSize": [[114, 62]]
+    },
+    "top_button_4": {
+        "slotName": "Desktop_Top_Button_4",
+        "slotSize": [[114, 62]]
+    },
+    "top_button_5": {
+        "slotName": "Desktop_Top_Button_5",
+        "slotSize": [[114, 62]]
+    },
+    "top_button_6": {
+        "slotName": "Desktop_Top_Button_6",
+        "slotSize": [[114, 62]]
+    },
+    "top_button_7": {
+        "slotName": "Desktop_Top_Button_7",
+        "slotSize": [[114, 62]]
+    },
+    "top_button_8": {
+        "slotName": "Desktop_Top_Button_8",
+        "slotSize": [[114, 62]]
+    },
+    "center_button_1": {
+        "slotName": "Desktop_Center_Button_1",
+        "slotSize": [[120, 120]]
+    },
+    "center_button_2": {
+        "slotName": "Desktop_Center_Button_2",
+        "slotSize": [[120, 120]]
+    },
+    "center_button_3": {
+        "slotName": "Desktop_Center_Button_3",
+        "slotSize": [[120, 120]]
+    },
+    "center_button_4": {
+        "slotName": "Desktop_Center_Button_4",
+        "slotSize": [[120, 120]]
+    },
+    "center_button_5": {
+        "slotName": "Desktop_Center_Button_5",
+        "slotSize": [[120, 120]]
+    },
+    "center_button_6": {
+        "slotName": "Desktop_Center_Button_6",
+        "slotSize": [[120, 120]]
+    },
+    "bottom_button_1": {
+        "slotName": "Desktop_Bottom_Button_1",
+        "slotSize": [[100, 135]]
+    },
+    "bottom_button_2": {
+        "slotName": "Desktop_Bottom_Button_2",
+        "slotSize": [[100, 135]]
+    },
+    "bottom_button_3": {
+        "slotName": "Desktop_Bottom_Button_3",
+        "slotSize": [[100, 135]]
+    },
+    "bottom_button_4": {
+        "slotName": "Desktop_Bottom_Button_4",
+        "slotSize": [[100, 135]]
+    },
+    "bottom_button_5": {
+        "slotName": "Desktop_Bottom_Button_5",
+        "slotSize": [[100, 135]]
+    },
+    "bottom_button_6": {
+        "slotName": "Desktop_Bottom_Button_6",
+        "slotSize": [[100, 135]]
+    },
+    "bottom_button_7": {
+        "slotName": "Desktop_Bottom_Button_7",
+        "slotSize": [[100, 135]]
+    },
+    "bottom_1": {
+        "slotName": "Desktop_Bottom_1",
+        "slotSize": [[127, 135]]
+    },
+    "bottom_2": {
+        "slotName": "Desktop_Bottom_2",
+        "slotSize": [[127, 135]]
+    },
+    "bottom_3": {
+        "slotName": "Desktop_Bottom_3",
+        "slotSize": [[127, 135]]
+    },
+    "bottom_4": {
+        "slotName": "Desktop_Bottom_4",
+        "slotSize": [[127, 135]]
+    },
+    "bottom_5": {
+        "slotName": "Desktop_Bottom_5",
+        "slotSize": [[127, 135]]
+    },
+    "bottom_6": {
+        "slotName": "Desktop_Bottom_6",
+        "slotSize": [[127, 135]]
+    },
+    "bottom_7": {
+        "slotName": "Desktop_Bottom_7",
+        "slotSize": [[127, 135]]
+    },
+    "top_logo": {
+        "slotName": "Desktop_Top_Logo",
+        "slotSize": [[126, 37]]
+    },
+    "pic_branding": {
+        "slotName": "Desktop_Pic_Branding",
+        "slotSize": [[500, 128]]
+    },
+    "hot_pic_branding": {
+        "slotName": "Desktop_Hot_Pic_Branding",
+        "slotSize": [[598, 126]]
+    },
+    "big_pic_branding": {
+        "slotName": "Desktop_Big_Pic_Branding",
+        "slotSize": [[792, 139]]
+    },
+    "monster": {
+        "slotName": "Desktop_Monster",
+        "slotSize": [[134, 63],[327, 55]]
+    },
+    "martef": {
+        "slotName": "Desktop_Martef",
+        "slotSize": [[978, 300],[978, 312]]
+    },
+    "ad_strip": {
+        "slotName": "Desktop_Ad_Strip",
+        "slotSize": [[296, 35]]
+    },
+    "plasma_2": {
+        "slotName": "Desktop_Plasma_2",
+        "slotSize": [[700, 180]]
+    },
+    "plasma": {
+        "slotName": "Desktop_Plasma",
+        "slotSize": [[930, 180],[1,1]]
+    },
+    "pic_cube": {
+        "slotName": "Desktop_Pic_Cube",
+        "slotSize": [[127, 135]]
+    },
+    "pic_cube_2": {
+        "slotName": "Desktop_Pic_Cube",
+        "slotSize": [[127, 135]]
+    },
+    "pic_cube_3": {
+        "slotName": "Desktop_Pic_Cube",
+        "slotSize": [[127, 135]]
+    },
+    "pic_cube_small": {
+        "slotName": "Desktop_Pic_Cube_Small",
+        "slotSize": [[90, 70]]
+    },
+    "big_car_cube": {
+        "slotName": "Desktop_Big_Car_Cube",
+        "slotSize": [[181, 238]]
+    },
+    "background": {
+        "slotName": "Desktop_Background",
+        "slotSize": [[1470, 995]],
+        "minWidth": 1260
+    },
+    "interstitial": {
+        "slotName": "Desktop_Interstitial",
+        "slotSize": [[720, 300]]
+    },
+    "prestitial": {
+        "slotName": "Desktop_Prestitial",
+        "slotSize": [[700, 418]]
+    },
+    "popunder": {
+        "slotName": "Desktop_Popunder",
+        "slotSize" : [[10, 10],[1,1]]
+    },
+    "lightbox": {
+        "slotName": "Desktop_Lightbox",
+        "slotSize": [[10, 10]]
+    },
+    "left_column_banner": {
+        "slotName": "Desktop_Left_Column_Banner",
+       // "slotSize": [160, 356]
+        "slotSize": [181, 362]
+    },
+    "pricelist_cube": {
+        "slotName" : "Desktop_Pricelist_Cube",
+        "slotSize" : [[240, 400]]
+    },
+    "strip_top" : {
+        "slotName" : "Desktop_Strip_Top",
+        "slotSize" : [[726, 80]]
+    },
+    "strip_bottom" : {
+        "slotName" : "Desktop_Strip_Bottom",
+        "slotSize" : [[726, 80]]
+    },
+    "content_marketing" : {
+        "slotName" : "Desktop_Content_Marketing",
+        "slotSize" : [[180, 240]]
+    },
+    "strip_1" : {
+        "slotName" : "Mobile_Strip_Top",
+        "slotSize" : [[320, 50]]
+    },
+    "strip_2" : {
+        "slotName" : "Mobile_Strip_Middle",
+        "slotSize" : [[320, 50]]
+    },
+    "strip_3" : {
+        "slotName" : "Mobile_Strip_Middle",
+        "slotSize" : [[320, 50]]
+    },
+    "full_screen" : {
+        "slotName" : "Mobile_Full_Screen",
+        "slotSize" : [[320, 460]],
+        "minHitsSession" : 2
+    },
+    "sponsorship" : {
+        "slotName" : "Mobile_Sponsorship_Full_Screen",
+        "slotSize" : [[320, 460]],
+        "maxHitsSession" : 1
+    },
+    "Yad1_Banner" : {
+        "slotName" : "Desktop_Yad1_Banner",
+        "slotSize" : [[970, 90]]
+    },
+    "Yad1_Banner_Mobile" : {
+        "slotName" : "Mobile_Yad1_Banner",
+        "slotSize" : [[320, 50]]
+    },
+    "Homeprice_Banner" : {
+        "slotName" : "Desktop_Homeprices_Banner",
+        "slotSize" : [[970, 90]]
+    },
+    "Homeprice_Banner_Mobile" : {
+        "slotName" : "Mobile_Homeprices_Banner",
+        "slotSize" : [[320, 50]]
+    },
+    "Desktop_homeprices_left_column" : {
+        "slotName" : "Desktop_homeprices_left_column",
+        "slotSize" : [[165, 340]]
+    }
+};
+
+/*if (document.referrer == "" || document.referrer.indexOf(window.location.hostname) == -1){
+    DesktopMediaManager.instances['sponsorship'] =  {
+        "slotName" : "Mobile_Sponsorship",
+        "slotSize" : [[320, 460]]
+    };
+}*/

@@ -1,0 +1,170 @@
+div.promoteTitle{
+	font-size:16px;
+	color:black;
+	font-weight:bold;
+	text-align:center;
+	margin-bottom:13px;
+	margin-top:17px;
+}
+div.promoteMain{
+	width:auto;
+	margin-top:0px;
+	direction:rtl;
+}
+
+table.promoteAdTable{
+	width: 188px;
+	direction:rtl;
+	border: 1px solid #CBCBCB;
+	border-radius:6px;
+	margin-bottom: 5px;
+}
+
+table.promoteAdTable img{
+	padding:0px !important;
+	border-radius: 0px 5px 5px 0px;
+}
+
+td.promoteTitle{
+	text-align: center;
+}
+
+td.promoteTitle{
+	color:#fc751a;
+	font-weight:bold;
+	font-size:15px;
+}
+
+td.promoteText{
+	text-align:center;
+}
+
+td.promoteText a{
+	color:#424242;
+	font-weight:bold;
+	font-size:12px;
+	text-decoration: none;
+}
+
+td.promoteMoreDetails{
+	text-align:center;
+}
+
+td.promoteMoreDetails a{
+	color:#424242;
+	font-size:12px;
+	text-decoration:underline;
+}
+
+div.promoteMapMain{
+	margin-top:0px;
+}
+div.promoteMapMainExpose{
+	margin-top:0px;
+	width:180px;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+table.promoteMapAdTable{
+	width: 127px;
+	height: 111px;
+	direction:rtl;
+	border:solid 1px #CBCBCB;
+	border-radius:6px;
+	margin-bottom:8px;
+}
+
+table.promoteMapAdTableExpose{
+	width: 180px;
+	height: 111px;
+	direction:rtl;
+	border:solid 1px #CBCBCB;
+	border-radius:6px;
+	margin-bottom:14px;
+	background-color:#fff;
+}
+
+td.promoteMapImage{
+	background-image: url(http://images.yad2.co.il/Pic/Pics/promoteYad1Pics/imageUnderLine.png); 
+	background-repeat: no-repeat; 
+	background-position: center bottom; 
+	height: 65px; 
+	vertical-align: top;
+}
+
+td.promoteMapImagExpose{
+	background-image: url(http://images.yad2.co.il/Pic/Pics/promoteYad1Pics/pas.jpg); 
+	background-repeat: no-repeat; 
+	background-position: center bottom; 
+	height: 58px; 
+	vertical-align: top;
+}
+td.promoteMapImage a, 
+td.promoteMapImage img{
+ text-decoration: none;
+ border: 0px;
+ border-radius:5px 5px 0px 0px;
+}
+td.promoteMapImagExpose a, 
+td.promoteMapImagExpose img{
+ text-decoration: none;
+ border: 0px;
+ border-radius:5px 5px 0px 0px;
+}
+
+td.promoteMapTitle{
+	color:#fc751a;
+	font-weight:bold;
+	font-size:16px;
+	height:10px; 
+	line-height:7px;
+}
+td.promoteMapTitleExpose{
+	height:16px;
+}
+td.promoteMapTitleExpose a{
+	color:#fc751a;
+	font-weight:bold;
+	font-size:14px;
+	/*height:10px; 
+	line-height:7px;*/
+}
+/*td.promoteMapImagExpose img{
+	border-radius:3px;
+}*/
+
+div.promoteTitleWrap{
+	margin-bottom: 4px;
+}
+
+div.promoteTitleWrapExpose{
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+td.promoteMapText a{
+	color:#424242;
+	font-weight:bold;
+	font-size:12px;
+	text-decoration: none;
+}
+td.promoteMapTextExpose {
+	height:28px; 
+}
+td.promoteMapTextExpose a{
+	color:#424242;
+	font-weight:bold;
+	font-size:12px;
+	text-decoration: none;
+}
+
+td.promoteMapText div.textWrapper{
+	width:106px;
+}
+td.promoteMapText div.textWrapperExpose{
+	width:160px;
+}
+img{
+	border:none;
+}

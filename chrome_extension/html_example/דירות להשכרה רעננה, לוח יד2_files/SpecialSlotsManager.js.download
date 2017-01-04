@@ -1,0 +1,940 @@
+var SpecialSlotsManager = {
+    plasmaSlots: ["Desktop_Plasma"],
+    topBannersSlots: ["Desktop_Top_Banner", "Desktop_Small_Top"],
+    toasterSlot: "Desktop_Toster",
+    backgroundSlot: "Desktop_Background",
+    hideBackgroundSlots: [],
+    slotEvents: [],
+    pageEntriesUpdated: false,
+    _shouldDisplayTopBanners : null,
+    displayedTopBanners: false,
+    shouldHideBackgroundOnClose: true,
+    shouldDisplayBackgroundOnly: "",
+    backgroundPlasmaReminderURL: "",
+    backgroundMainImageClickURL: "",
+    backgroundPlasmaBehavior: "",
+    loadedInner2: false,
+    loadedPopUnder : false,
+    takeOverFunctions : [],
+    waitForKingKong: [],
+
+    innerInreadClosed: false,
+    loadedInnerInread: false,
+
+    init: function(multipleRequest){
+        this.initRelevantSlots();
+
+
+        if(!multipleRequest){
+            this.initPreviewImageChange();
+            this.initSekindo();
+          //  this.initImageCube();
+            this.loadInnerInread();
+            this.initDynamicBanners();
+            this.initOldFunctions();
+            this.initGooglePopunder();
+         //   this.initHomepagePromotion();
+        //    this.initArticlesBlock();
+           // this.initHomepricesReplacementBanners();
+           // this.initYad1ReplacementBanners();
+            this.initSmallTopAndTopBanner();
+            View.initViewSlots();
+        }
+        this.toggleMegas();
+    },
+
+    initRelevantSlots: function(){
+        window.googletag.pubads().addEventListener('slotRenderEnded', function(e) {
+            var self = SpecialSlotsManager;
+
+            var slotID = e.slot.getSlotElementId();
+
+            if(~slotID.indexOf("toster")){
+                self.initToaster(e);
+            }
+
+            if(~slotID.indexOf("background")){
+                self.initBackground(e);
+            }
+
+            if(~slotID.indexOf("king_kong")){
+                self.initKingKong(e);
+
+            }
+        });
+    },
+
+    getPageEntries: function(){
+        var currentPath = "dfp_" + window.location.pathname;
+        var pathCounter = parseInt(sessionStorage.getItem(currentPath));
+
+        if(isNaN(pathCounter)){
+            pathCounter = 1;
+        }
+        else{
+            pathCounter++;
+        }
+
+        return pathCounter;
+    },
+
+    updatePageEntries: function(){
+        if(this.pageEntriesUpdated){
+            return false;
+        }
+
+        this.pageEntriesUpdated = true;
+
+        var currentPath = "dfp_" + window.location.pathname;
+        sessionStorage.setItem(currentPath, this.getPageEntries());
+
+        return true;
+    },
+
+    shouldDisplayPopUnder: function() {
+
+        if(~DesktopMediaManager.zone.indexOf("vehicles")){
+            return false;
+        }
+
+        var _3mKey = SpecialSlotsManager.getPopUnderLoadKey("3m");
+        var _3mVal = SpecialSlotsManager.getCookie(_3mKey);
+        var _12hKey = SpecialSlotsManager.getPopUnderLoadKey("12h");
+        var _12hVal = SpecialSlotsManager.getCookie(_12hKey);
+
+        _12hVal = parseInt(_12hVal);
+        _3mVal = parseInt(_3mVal);
+
+        if(isNaN(_12hVal)){
+            _12hVal = 0;
+        }
+
+        if(isNaN(_3mVal)){
+            _3mVal = 0;
+        }
+
+        return (_3mVal == null || _3mVal == 0) && (_12hVal == null  || _12hVal <= 2);
+    },
+
+    initToaster: function(event){
+        if(!event.isEmpty){
+            var $toaster = $("." + this.toasterSlot);
+
+            $toaster.show();
+            $toaster.animate({'bottom': '0'}, 2000);
+        }
+    },
+
+    closeToaster: function(){
+        var $toaster = $("." + this.toasterSlot);
+
+        $toaster.animate({'bottom': '-146px'}, 2000);
+    },
+
+    initBackground: function(event){
+        if(!event.isEmpty){
+            var $desktopBackground = jQuery(".Desktop_Background");
+            var newWidth = jQuery(window).width();
+            //var contentWidth = $backgroundContainer.width();
+            var contentWidth = 900;
+
+            jQuery("#top_banners").hide();
+
+            $desktopBackground.find("iframe").width(newWidth);
+            $desktopBackground.find("div:first").css({'right': ((newWidth - contentWidth) / 2) * -1});
+            jQuery("#header").find(".logo").css({'margin-left': '10px'});
+
+            DesktopMediaManager.addEvent(window, "resize", function(){
+                newWidth = jQuery(window).width();
+                $desktopBackground.find("iframe").width(newWidth);
+                $desktopBackground.find("div:first").css({'right': ((newWidth - contentWidth) / 2) * -1});
+            });
+
+            SpecialSlotsManager.backgroundCloseButtonHandler();
+        }
+    },
+
+    initKingKong: function(event){
+        if(!event.isEmpty) {
+            var instances = {
+                "small_top": {
+                    "slotName": "Desktop_Small_Top",
+                    "slotSize": [[220, 90]],
+                    "divIDs": ["small_top___ID___1"]
+                }
+            };
+
+            DesktopMediaManager.requestNewAds(instances);
+        }
+    },
+
+    initBackgroundClick: function(url){
+        url = decodeURIComponent(url);
+
+        var $background = jQuery(".Desktop_Background");
+        var $body = jQuery("body");
+
+        $background.css({"cursor": "pointer"});
+
+        $background.on("click", function(){
+            KMMediaManager.loadURL(url, 1);
+        });
+
+        var clicksWidth = (jQuery(window).width() - 993) / 2;
+
+        var $leftClick = jQuery("<div/>", {"id": "leftBackgroundClick", "style": "position: absolute; top: 0; left: 0; opacity: 0; z-index: 100000; width: " + clicksWidth + "px; height: 995px; cursor: pointer;"});
+        var $rightClick = jQuery("<div/>", {"id": "rightBackgroundClick", "style": "position: absolute; top: 0; right: 0; opacity: 0; z-index: 100001; width: " + clicksWidth + "px; height: 995px; cursor: pointer;"});
+
+        $leftClick.on("click", function(){
+            KMMediaManager.loadURL(url, 1);
+        });
+
+        $rightClick.on("click", function(){
+            KMMediaManager.loadURL(url, 1);
+        });
+
+        $body.append($leftClick);
+        $body.append($rightClick);
+
+        DesktopMediaManager.addEvent(window, "resize", function(){
+            clicksWidth = (jQuery(window).width() - 993) / 2;
+
+            $leftClick.width(clicksWidth);
+            $rightClick.width(clicksWidth);
+        });
+    },
+
+    showCloseButton: function(iframeWindow, closeButtonURL, plasmaReminder, plasmaBehavior, mainImageClickURL){
+        var self = this;
+        var closeButtonRight = (jQuery(window).width() - 993) / 2;
+        var $closeButtonDiv = jQuery("<img/>", {'id': 'adCloseButton', 'src': closeButtonURL, 'alt': 'close', 'style': 'position: absolute; right: ' + closeButtonRight + 'px; top: 5px; cursor: pointer; z-index: 10000;'});
+
+        self.shouldHideBackgroundOnClose = plasmaReminder == "" && plasmaBehavior == "";
+        self.shouldDisplayBackgroundOnly = plasmaReminder == "" && plasmaBehavior == "Show Background";
+        self.backgroundPlasmaReminderURL = plasmaReminder;
+        self.backgroundPlasmaBehavior = plasmaBehavior;
+        self.backgroundMainImageClickURL = decodeURIComponent(mainImageClickURL);
+
+        $closeButtonDiv.on("click", function(event){
+            self.closeButtonHandler(event, iframeWindow);
+
+            $(this).hide();
+        });
+
+        DesktopMediaManager.addEvent(window, "resize", function(){
+            closeButtonRight = (jQuery(window).width() - 993) / 2;
+
+            $closeButtonDiv.css({"right": closeButtonRight});
+        });
+
+        jQuery("body").append($closeButtonDiv);
+    },
+
+    closeButtonHandler: function(event, iframeWindow){
+        var $iframe = jQuery(iframeWindow.frameElement);
+        var $background = jQuery(".Desktop_Background");
+
+        $iframe.hide();
+        $background.css({"pointer": "default"});
+
+        if(~$iframe.attr("id").indexOf("Desktop_King_Kong")){
+            DesktopMediaManager.reloadInstances(["mega", "right_mega"]);
+        }
+    },
+
+    backgroundReminderHandler: function($plasma){
+        var $background = jQuery(".Desktop_Background");
+        var $leftClick = jQuery("#leftBackgroundClick");
+        var $rightClick = jQuery("#rightBackgroundClick");
+        var $adCloseButton = jQuery("#adCloseButton");
+
+        if(this.backgroundPlasmaBehavior == "Reopen Background"){
+            $plasma.remove();
+            $background.show();
+            $adCloseButton.show();
+            $leftClick.show();
+            $rightClick.show();
+        }
+        else{
+            KMMediaManager.loadURL(this.backgroundMainImageClickURL, 1);
+        }
+    },
+
+    backgroundCloseButtonHandler: function(){
+        var self = this;
+        var ___closeButtonHandler = SpecialSlotsManager.closeButtonHandler;
+        var $background = jQuery(".Desktop_Background");
+
+        $background.show();
+
+        SpecialSlotsManager.closeButtonHandler = function (event, iframeWindow) {
+            var $leftClick = jQuery("#leftBackgroundClick");
+            var $rightClick = jQuery("#rightBackgroundClick");
+            if(SpecialSlotsManager.shouldHideBackgroundOnClose){
+
+                var instances = {
+                    "top_banner": {
+                        "slotName": "Desktop_Top_Banner",
+                        "slotSize": [[728, 90]],
+                        "divIDs": ["top_banner___ID___1"]
+                    },
+                    "small_top": {
+                        "slotName": "Desktop_Small_Top",
+                        "slotSize": [[220, 90]],
+                        "divIDs": ["small_top___ID___1"]
+                    }
+                }
+
+                DesktopMediaManager.requestNewAds(instances);
+
+                DesktopMediaManager.reloadInstances(["king_kong","mega","right_mega"]);
+
+                jQuery("#top_banners").show();
+
+                ___closeButtonHandler(event, iframeWindow);
+                jQuery(".Desktop_Background").hide();
+
+                $leftClick.hide();
+                $rightClick.hide();
+
+                SpecialSlotsManager.closeButtonHandler = ___closeButtonHandler;
+            }
+            else{
+                if(self.shouldDisplayBackgroundOnly){
+                    $leftClick.css({"margin-top": "-180px"});
+                    $rightClick.css({"margin-top": "-180px"});
+                    jQuery(".adCloseButton").hide();
+
+                    var $childBody = $($("#background___ID___1").find("iframe:first").contents()[0].body);
+                    var $mainImage = $childBody.find("#mainImage");
+                    $mainImage.find("#mainImageIframeContainer").remove();
+                    $mainImage.css({"background-color": "#ffffff"});
+                    $background.css({"height": "0"});
+                }
+                else{
+                    var $plasmaDiv = jQuery("<div/>", {"id": "backgroundPlasmaDiv", "style": "position: relative; display: block; width: 930px; height: 180px;"});
+                    var $plasmaClick = jQuery("<div/>", {"id": "backgroundPlasmaClick", "style": "position: absolute; opacity: 0; z-index: 20; width: 930px; height: 180px; cursor: pointer;"});
+                    var $plasmaIframe = jQuery("<iframe/>", {"id": "backgroundPlasmaIframe", "scrolling": "no", "src": self.backgroundPlasmaReminderURL, "style": "position: absolute; z-index: 10; cursor: pointer; width: 930px; height: 180px; border: none;"});
+
+                    $plasmaDiv.append($plasmaClick);
+                    $plasmaDiv.append($plasmaIframe);
+
+                    $plasmaDiv.on("click", function(){
+                        self.backgroundReminderHandler(this);
+                    });
+
+                    $background.parent().prepend($plasmaDiv);
+                    $background.hide();
+                    $leftClick.hide();
+                    $rightClick.hide();
+                }
+            }
+        }
+    },
+
+    picCubeImageClickHandler: function(src, clickUrl, target){
+        if(target != "_blank" && target != "_self"){
+            target = "_blank";
+        }
+
+        document.getElementById('img_pic').innerHTML = (clickUrl == 'http://' || clickUrl == '') ? '<img src="' + src + '" border="0" height="400" width="400" />' : '<a href="' + clickUrl + '" target="' + target + '" rel="nofollow"><img src="' + src + '" border="0" height="400" width="400" /></a>';
+    },
+
+    showInterstitial: function(seconds){
+        var self = this;
+        var $interstitial = jQuery(".Desktop_Interstitial");
+
+        if(!seconds){
+            seconds = 4000;
+        }
+        else{
+            seconds *= 1000;
+        }
+
+        jQuery("*").not($interstitial).hide();
+        $interstitial.show();
+
+        setTimeout(function(){
+            self.hideInterstitial();
+        }, seconds);
+    },
+
+    hideInterstitial: function(){
+        var $interstitial = jQuery(".Desktop_Interstitial");
+
+        jQuery("*").not($interstitial).show();
+        $interstitial.hide();
+    },
+
+    initGooglePopunder: function(){
+        jQuery(document).ready(function(){
+            jQuery(".showPopupUnder").on("click", function(){
+                if(SpecialSlotsManager.loadedPopUnder){
+                    return;
+                }
+
+                SpecialSlotsManager.loadedPopUnder = true;
+
+                var instances = {
+                    "popunder": {
+                        "slotName": "Desktop_Popunder",
+                        "slotSize": [90, 80],
+                        "divIDs": ["popunder___ID___1"],
+                        "isOutOfSlot": true
+                    }
+                };
+
+                DesktopMediaManager.requestNewAds(instances);
+            });
+        });
+    },
+
+    loadPopunder: function (popUrl, popWidth, popHeight){
+
+        
+        if(~DesktopMediaManager.zone.indexOf("vehicles")){
+            return;
+        }
+
+        if (SpecialSlotsManager.loadedPopUnder){
+            return;
+        }
+
+        SpecialSlotsManager.loadedPopUnder = true;
+        popUrl = decodeURIComponent(popUrl);
+
+        if(isNaN(parseInt(popWidth))){
+            popWidth = 1040;
+        }
+
+        if(isNaN(parseInt(popHeight))){
+            popHeight = 750;
+        }
+
+        var $s = document.createElement("script");
+
+        $s.type = "text/javascript";
+        $s.src = "//www.yad2.co.il/dfpV2/popupunder/yad2under.js";
+        $s.onload = function () {
+            window.yad2under = new Y2PopunderManager(popUrl, popWidth, popHeight);
+        };
+
+        document.body.insertBefore($s,document.body.firstChild);
+    },
+
+    //*****Only exists in second hand at the moment.*****
+    initImageCube: function(){
+        return;
+        jQuery(document).ready(function(){
+            var $adPicContainer = jQuery("#ad_pic_cube_small_2");
+            var $adPics = $adPicContainer.siblings().find("img");
+            var foundEmptyImage = false;
+
+            $adPics.each(function(){
+                if(~jQuery(this).attr("src").indexOf("viewImage_yad2logo_empty")){
+                    foundEmptyImage = true;
+                }
+            });
+
+            if(foundEmptyImage){
+                var instances = {
+                    "pic_cube_small_2": {
+                        "slotName": "Desktop_Pic_Cube_Small_2",
+                        "slotSize": [90, 80],
+                        "divIDs": ["pic_cube_small_2___ID___1"]
+                    }
+                };
+
+                DesktopMediaManager.requestNewAds(instances);
+            }
+        });
+    },
+
+    initPreviewImageChange: function(){
+        jQuery(document).ready(function(){
+            var $previewImages = jQuery(".imgDiv");
+
+            $previewImages.on("click", function(){
+                adtReloadAds(["big_pic_sponsorship", "big_pic_branding"]);
+            });
+        });
+    },
+
+    initSekindo: function(){
+        jQuery(document).ready(function(){
+            if(jQuery(window).width() >= 1230){
+                var sekindoSizes = {"680px": 3, "510px": 2, "340px": 1};
+                var divIds = ["left_sekindo1", "left_sekindo2", "left_sekindo3"];
+                var roomForSekindo = ((jQuery(".right_column").height()) - jQuery(".left_column").height());
+                var sekindoExistsOnPage = false;
+
+                var newInstances = {};
+
+                for(var sekindoHeightPX in sekindoSizes){
+                    var sekindoHeight = parseInt(sekindoHeightPX.replace("px",""));
+
+                    if(roomForSekindo >= sekindoHeight){
+                        for (var i = 0; i < divIds.length; i++){
+                            var $dom = $("#"+divIds[i]);
+
+                            if(!$dom.length){
+                                continue;
+                            }
+
+                            var $dfpDiv = jQuery("<div/>", {'id': 'Desktop_Side_Button_' + divIds[i]});
+                            $dom.append($dfpDiv);
+
+                            sekindoExistsOnPage = true;
+
+                            newInstances[divIds[i]] = {
+                                "slotName" : "Desktop_Side_Button",
+                                "slotSize" : [127, 135],
+                                "divIDs": ['Desktop_Side_Button_' + divIds[i]]
+                            };
+
+                            $dom.show();
+                        }
+
+                        break;
+                    }
+                    else{
+                        divIds.splice(0, 1);
+                    }
+                }
+
+                if(sekindoExistsOnPage){
+                    $("#leftSekindo").show();
+
+                    DesktopMediaManager.requestNewAds(newInstances);
+                }
+            }
+        });
+    },
+
+    initDynamicBanners: function(){
+        adtReloadAds = function(divIds, sp_names){
+            if(Object.prototype.toString.call(divIds) !== '[object Array]'){
+                return;
+            }
+
+            var spNamesIsValid = Object.prototype.toString.call(sp_names) === '[object Array]';
+
+            if(spNamesIsValid){
+                for(var i = 0; i < sp_names.length; i++){
+                    if(jQuery.inArray(sp_names[i], divIds) == -1){
+                        divIds.push(sp_names[i]);
+                    }
+                }
+            }
+
+            DesktopMediaManager.reloadInstances(divIds);
+        }
+    },
+
+    initLightbox : function (htmlContent) {
+        if(jQuery("#sLightbox_container").length){
+            return false;
+        }
+
+        jQuery.sLightbox({
+            'content': htmlContent,
+            'type': 'html'
+        });
+
+        return true;
+    },
+
+    initOldFunctions: function(){
+        if(typeof reload_mega !== "function"){
+            return;
+        }
+
+        if(typeof megaObj === "object"){
+            megaObj["mega"] = megaObj["left"];
+            megaObj["right_mega"] = megaObj["right"];
+            megaObj["inner_mega"] = megaObj["inner"];
+
+            delete megaObj["left"];
+            delete megaObj["right"];
+            delete megaObj["inner"];
+        }
+
+        var megaItemsAmount = 0;
+        var originalReloadMega = reload_mega;
+        var loadedMegaItems = 0;
+        var callStack = [];
+
+        reload_mega = function(interval, times){
+            if(loadedMegaItems == megaItemsAmount && loadedMegaItems > 0){
+                originalReloadMega(interval, times);
+            }
+            else{
+                callStack.push([interval, times]);
+            }
+        };
+
+        getLoadedSpaces = function(){
+
+        };
+
+        for(var item in megaObj){
+            if(!megaObj.hasOwnProperty(item)){
+                continue;
+            }
+
+            megaItemsAmount++;
+        }
+
+        window.googletag.pubads().addEventListener('slotRenderEnded', function(event) {
+            var slotID = event.slot.getSlotElementId();
+
+            if(megaObj && loadedMegaItems < megaItemsAmount){
+                for(var i in megaObj){
+                    if(!megaObj.hasOwnProperty(i)){
+                        continue;
+                    }
+
+                    var instance = DesktopMediaManager.instances[i];
+
+                    if(typeof instance === "undefined" || typeof instance.slots === "undefined"){
+                        continue;
+                    }
+
+                    if(instance.slots.hasOwnProperty(slotID)){
+                        if(!event.isEmpty){
+                            megaObj[i].isVisible = 1;
+                        }
+
+                        loadedMegaItems++;
+
+                        if(loadedMegaItems == megaItemsAmount){
+                            for(var j = 0; j < callStack.length; j++){
+                                originalReloadMega(callStack[j][0], callStack[j][1]);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    },
+
+    closeInnerInread: function(){
+        var $inreadDiv = jQuery(".Desktop_Inner_Rich");
+
+        if(!$inreadDiv.length || !$inreadDiv.is(":visible")){
+            return;
+        }
+
+        this.innerInreadClosed = true;
+        $inreadDiv.slideUp(1000);
+    },
+
+    loadInnerInread: function(){
+        var self = this;
+
+        jQuery(document).ready(function(){
+            var $inreadDiv = jQuery(".Desktop_Inner_Rich");
+
+            if(!$inreadDiv.length){
+                return;
+            }
+            return;
+            DesktopMediaManager.addEvent(window, "scroll", function(){
+                if(!self.loadedInnerInread && !$inreadDiv.is(":visible") && !self.innerInreadClosed && (jQuery(window).scrollTop() / jQuery(document).height()) * 100 > 33){
+                    self.loadedInnerInread = true;
+		    
+                    var instances = {
+                        "inner_rich": {
+                            "slotName": "Desktop_Inner_Rich",
+                            "slotSize" : [[773, 432]],
+                            "divIDs": ["inner_rich___ID___1"]
+                        }
+                    };
+
+                    DesktopMediaManager.requestNewAds(instances);
+                }
+            });
+        });
+    },
+
+    initInnerInread: function(closeButtonUrl, height, closeButtonPosition, stayTime){
+        var self = this;
+        var $inreadDiv = jQuery(".Desktop_Inner_Rich");
+
+        if(!$inreadDiv.length){
+            return;
+        }
+
+        var $iframe = $inreadDiv.find("iframe:first");
+        $iframe.height(height);
+
+        $inreadDiv.css({"position": "relative"});
+
+        stayTime = parseInt(stayTime);
+
+        if(isNaN(parseInt(stayTime))){
+            stayTime = 30;
+        }
+
+        $inreadDiv.slideDown(1000, function(){
+            if(closeButtonUrl.length){
+                var $closeButtonDiv = jQuery("<img/>", {'id': 'adCloseButton', 'src': closeButtonUrl, 'alt': 'close', 'style': 'position: absolute; ' + closeButtonPosition + ': 10px; top: 5px; cursor: pointer; z-index: 10000;'});
+
+                $closeButtonDiv.on("click", function(){
+                    self.closeInnerInread();
+                });
+
+                $inreadDiv.append($closeButtonDiv);
+            }
+
+            setTimeout(function(){
+                self.closeInnerInread();
+            }, stayTime * 1000);
+        });
+    },
+
+    /*bannerReplacementHandler: function(options){
+        jQuery(document).ready(function(){
+            var foundOriginalDivs = false;
+
+            for(var i = 0; i < options.originalElements.length; i++){
+                if(jQuery(options.originalElements[i]).length){
+                    foundOriginalDivs = true;
+
+                    break;
+                }
+            }
+
+            if(!foundOriginalDivs){
+                return;
+            }
+
+            window.googletag.pubads().addEventListener('slotRenderEnded', function(e) {
+                var slotID = e.slot.getSlotElementId();
+
+                if(slotID == options.instance.divIDs[0] && !e.isEmpty){
+                    for(var i = 0; i < options.originalElements.length; i++){
+                        jQuery(options.originalElements[i]).hide();
+                    }
+                }
+            });
+
+            var instances = {};
+            instances[options.instance.placementName] = options.instance;
+
+            DesktopMediaManager.requestNewAds(instances);
+        });
+    },
+*/
+    initHomepagePromotion: function(){
+        this.bannerReplacementHandler({
+            "originalElements": ["#homepage_promotion_box", "#default_homepage_promotion_box"],
+            "instance": {
+                "slotName": "Desktop_Homepage_Promotion",
+                "slotSize": [125, 276],
+                "divIDs": ["Desktop_Homepage_Promotion_~dfp~childdfp_homepage_promotion"],
+                "placementName": "homepage_promotion"
+            }
+        });
+    },
+
+    initArticlesBlock: function(){
+        this.bannerReplacementHandler({
+            "originalElements": ["#walla_articles_block"],
+            "instance": {
+                "slotName": "Desktop_Articles_Block",
+                "slotSize": [483, 260],
+                "divIDs": ["Desktop_Articles_Block_~dfp~childdfp_articles_block"],
+                "placementName": "articles_block"
+            }
+        });
+    },
+
+    initHomepricesReplacementBanners: function(){
+        return;
+        if(!~window.location.href.indexOf("homeprices.yad2.co.il")){
+            return;
+        }
+
+        var self = this;
+
+        this.bannerReplacementHandler({
+            "originalElements": [".divur_promotion_wrap"],
+            "instance": {
+                "slotName": "Desktop_Homeprices_Left_Column",
+                "slotSize": [165, 340],
+                "divIDs": ["dfp_left_column"],
+                "placementName": "homeprices_left_column"
+            }
+        });
+
+        jQuery(document).ready(function(){
+            var instance = {
+                "slotName": "Desktop_Homeprices_Banner",
+                "slotSize": [970, 90],
+                "divIDs": ["dfp-banner"],
+                "placementName": "homeprices_left_column"
+            };
+
+            if(jQuery(".homeprices-mobile").length){
+                instance["slotSize"] = [320, 50];
+                instance["slotName"] = "Mobile_Homeprices_Banner";
+            }
+
+            self.bannerReplacementHandler({
+                "originalElements": ["#banner"],
+                "instance": instance
+            });
+        });
+    },
+
+    initYad1ReplacementBanners: function(){
+        return;
+        if(!~window.location.href.indexOf("yad1.yad2.co.il")){
+            return;
+        }
+
+        var self = this;
+
+        jQuery(document).ready(function(){
+            var instance = {
+                "slotName": "Desktop_Yad1_Banner",
+                "slotSize": [970, 90],
+                "divIDs": ["dfp-banner"],
+                "placementName": "yad1_banner"
+            };
+
+            if(jQuery(".isMobile").length){
+                instance["slotSize"] = [320, 50];
+                instance["slotName"] = "Mobile_Yad1_Banner";
+            }
+
+            self.bannerReplacementHandler({
+                "originalElements": ["#banner"],
+                "instance": instance
+            });
+        });
+    },
+
+    setCookie : function( name, value, expires, path, domain, secure ) {
+        var today = new Date();
+        today.setTime(today.getTime());
+
+        /*
+         if the expires variable is set, make the correct
+         expires time, the current script below will set
+         it for x number of days, to make it for hours,
+         delete * 24, for minutes, delete * 60 * 24
+         */
+        if (expires) {
+            expires = expires * 1000 * 60;
+        }
+        var expires_date = new Date(today.getTime() + (expires));
+
+        document.cookie = name + "=" + escape(value) +
+            ( ( expires ) ? ";expires=" + expires_date.toGMTString() : "" ) +
+            ( ( path ) ? ";path=" + path : "" ) +
+            ( ( domain ) ? ";domain=" + domain : "" ) +
+            ( ( secure ) ? ";secure" : "" );
+    },
+
+    getCookie : function( name ){
+
+        var start = document.cookie.indexOf( name + "=" );
+        var len = start + name.length + 1;
+        if ( ( !start ) &&( name != document.cookie.substring( 0, name.length ) ) ){
+            return null;
+        }
+
+        if ( start == -1 ) return null;
+        var end = document.cookie.indexOf( ";", len );
+        if ( end == -1 )
+            end = document.cookie.length;
+        return decodeURIComponent( document.cookie.substring( len, end ) );
+
+    },
+
+    getPopUnderLoadKey : function (t) {
+        var zone = DesktopMediaManager.zone;
+
+        if(!~DesktopMediaManager.zone.indexOf("vehicles") && !~DesktopMediaManager.zone.indexOf("realestate")){
+            zone = "desktop/second_hand";
+        }
+
+        return "popunder_" + t + "_" + zone.replace(/\//,"_");
+    },
+
+
+    remove_prestitial: function () {
+        jQuery("#prestitial").hide();
+        jQuery("#prestitial_wrap").hide();
+        jQuery("#wrap").show();
+    } ,
+
+
+    show_prestitial: function () {
+        jQuery("#prestitial").show();
+        jQuery("#prestitial_wrap").show();
+        jQuery("#wrap").hide();
+
+        setTimeout(function(){
+            jQuery("#prestitial").hide();
+            jQuery("#prestitial_wrap").hide();
+            jQuery("#wrap").show();
+        }, 5000);
+    },
+
+    initSmallTopAndTopBanner: function (){
+        window.googletag.pubads().addEventListener('slotRenderEnded', function(event) {
+
+
+            var slotID = event.slot.getSlotElementId();
+
+            if(~slotID.indexOf("plasma")){
+                if(event.isEmpty){
+
+                    var instances = {
+                        "small_top": {
+                            "slotName": "Desktop_Small_Top",
+                            "slotSize": [[220, 90]],
+                            "divIDs" : ["small_top___ID___1"]
+                        },
+                        "top_banner": {
+                            "slotName": "Desktop_Top_Banner",
+                            "slotSize": [[728, 90]],
+                            "divIDs" : ["top_banner___ID___1"]
+                        }
+                    };
+
+                    DesktopMediaManager.requestNewAds(instances);
+                }
+            }
+
+        });
+    },
+
+    toggleMegas : function () {
+
+
+        var toggleMegaResize = function () {
+            var browserSize = DesktopMediaManager.getBrowserSize();
+            var $selectors = jQuery("[id*='mega___ID___'],.mega_right_container,.mega_left_container,#rtower,#GamboBanner");
+            if(typeof(DesktopMediaManager.instances.mega) != 'undefined') {
+                if (DesktopMediaManager.instances.mega.minWidth > browserSize['width']) {
+                    $selectors.hide();
+                } else {
+                    $selectors.show();
+                }
+            } else {
+                $selectors.hide();
+            }
+        };
+        
+        if (typeof window.LoadLeftBanner === "undefined") {
+            jQuery(window).on("resize",toggleMegaResize );
+        }
+
+        toggleMegaResize();
+
+    }
+};

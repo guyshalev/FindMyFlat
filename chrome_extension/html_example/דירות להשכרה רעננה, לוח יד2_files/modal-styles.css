@@ -1,0 +1,26 @@
+.space { width: 23px; height: 5px; display: inline-block; *display: inline; zoom: 1; }
+
+/*@font-face { font-family: 'FbSpoiler'; src: url("fonts/spoilerregularwebfont.eot");*/
+  /*!* IE9 Compat Modes *!*/
+  /*src: url("fonts/spoilerregularwebfont.eot?#iefix") format("embedded-opentype"), url("fonts/spoilerregularwebfont.woff") format("woff"), url("fonts/spoilerregularwebfont.ttf") format("truetype"), url("fonts/FbSpoiler-Regular.otf") format("opentype"), url("fonts/spoilerregularwebfont.svg#svgFontName") format("svg");*/
+  /*!* Legacy iOS *!*/
+  /*!*src: url(//:) format ('no404'), url('fonts/FbSpoiler-Regular.otf') format('opentype'); *!*/
+  /*!* tricky! *! }*/
+
+@font-face {
+  font-family: 'FbSpoiler';
+  font-weight: normal;
+  font-style: normal;
+  src: url('http://www.yad2.co.il/css/fonts/newFont/fbspoileren-regular-webfont.eot');
+  src: url('http://www.yad2.co.il/css/fonts/newFont/fbspoileren-regular-webfont.eot?#iefix') format('embedded-opentype'), url('http://www.yad2.co.il/css/fonts/newFont/fbspoileren-regular-webfont.ttf') format('truetype');
+}
+
+div.modal-wrap { border-radius: 5px; width: 626px; height: 370px; background: #ffffff; margin: 100px auto; position: relative; display: none; }
+div.modal-wrap > a { position: absolute; display: block; top: 6px; left: 6px; z-index: 1; }
+div.modal-wrap > div.modal-head { font-family: "FbSpoiler", Arial, sans-serif; width: 626px; height: 70px; border-bottom: 2px solid #C2C2C2; background: #F2F2F2; color: #FF6600; text-align: center; position: relative; border-radius: 5px 5px 0 0; }
+div.modal-wrap > div.modal-head > h1 { font-size: 40px; font-weight: bold; text-align: right; padding-right: 35px; line-height: 75px; }
+div.modal-wrap > div.modal-content { width: 626px; height: 280px; direction: rtl; position: relative; }
+div.modal-wrap > div.modal-content > img.modal-pic { position: absolute; top: 8px; left: 32px; }
+div.modal-wrap > div.modal-content > ul { font-family: "FbSpoiler", Arial, sans-serif; list-style-type: none; display: block; margin: 40px 35px 0 0; }
+div.modal-wrap > div.modal-content > ul > li { margin-bottom: 10px; font-size: 30px; }
+div.modal-wrap > div.modal-content > button.modal-next-step { display: block; width: 155px; height: 54px; outline: none; border: none; border-radius: 5px; background: #ff6600; margin: 38px auto 0; color: #ffffff; font-family: "FbSpoiler", Arial, sans-serif; font-size: 40px; text-align: center; cursor: pointer; }

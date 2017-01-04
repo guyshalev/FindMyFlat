@@ -1,0 +1,3533 @@
+(function($) {
+
+    $.fn.serializeObject = function () {
+        "use strict";
+
+        var result = {};
+        var extend = function (i, element) {
+            var node = result[element.name];
+
+            // If node with same name exists already, need to convert it to an array as it
+            // is a multi-value field (i.e., checkboxes)
+
+            if ('undefined' !== typeof node && node !== null) {
+                if ($.isArray(node)) {
+                    node.push(element.value);
+                } else {
+                    result[element.name] = [node, element.value];
+                }
+            } else {
+                result[element.name] = element.value;
+            }
+        };
+
+        $.each(this.serializeArray(), extend);
+        return result;
+    };
+
+    Number.prototype.toRad = function() {
+        return this * Math.PI / 180;
+    }
+
+    Number.prototype.toDeg = function() {
+        return this * 180 / Math.PI;
+    }
+
+    var yad2_fw = {
+
+        modelsSearchJson : null,
+		modelsMultiSearchJson : null,
+		 
+		Settings : {
+            ajaxPath : '../',
+            ajaxVersion : 1.4
+        },
+
+        scrollToAnchor : function(anchorName) {
+            window.location.hash = anchorName;
+            document.getElementsByName(anchorName)[0].scrollIntoView(true);
+        },
+
+        guid : function() {
+            // http://www.ietf.org/rfc/rfc4122.txt
+            var s = [];
+            var hexDigits = "0123456789abcdef";
+            for (var i = 0; i < 36; i++) {
+                s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+            }
+            s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+            s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+            s[8] = s[13] = s[18] = s[23] = "-";
+
+            var uuid = s.join("");
+            return uuid;
+        },
+        
+		clone : function(obj){
+				var copy;
+
+				// Handle the 3 simple types, and null or undefined
+				if (null == obj || "object" != typeof obj) return obj;
+
+				// Handle Date
+				if (obj instanceof Date) {
+					copy = new Date();
+					copy.setTime(obj.getTime());
+					return copy;
+				}
+
+				// Handle Array
+				if (obj instanceof Array) {
+					copy = [];
+					for (var i = 0, len = obj.length; i < len; i++) {
+						copy[i] = yad2_fw.clone(obj[i]);
+					}
+				return copy;
+			}
+
+			// Handle Object
+			if (obj instanceof Object) {
+				copy = {};
+				for (var attr in obj) {
+					if (obj.hasOwnProperty(attr)) copy[attr] = yad2_fw.clone(obj[attr]);
+				}
+				return copy;
+			}
+
+			throw new Error("Unable to copy obj! Its type isn't supported.");
+			
+		},
+
+        oSize: function(obj) {
+            Object.size = function(obj) {
+                var size = 0, key;
+                for (key in obj) {
+                    if (obj.hasOwnProperty(key)) size++;
+                }
+                return size;
+            };
+            return Object.size(obj);
+        },
+
+        JSON2String : function(json) {
+            var string = "";
+            if (typeof json == "object" && json) {
+                $.each(json, function(field,value) {
+                    if (string == "") {
+                        string = field+"="+value;
+                    }
+                    else {
+                        string = "&"+field+"="+value;
+                    }
+                });
+            }
+            return string;
+        },
+        
+        getRunningScript: function() {
+            var url =window.location.href;
+            var splited = url.split("?");
+            if(splited.length==0){
+               return null;
+            }
+            var address = splited[0].split('/');
+            if(address.length==0){
+                return null;
+            }
+            return address[address.length-1];
+            //var url = unescape(window.location.href).split('/');
+            //return (url.length>0) ? url[url.length-1].split('?')[0] : null;
+        },
+        getURLParams: function() {
+            if (  unescape(window.location.href).indexOf("?")==-1 ) return null;                        
+                var param;
+                var retParamArr = {};
+                var params = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+                for(var i = 0; i < params.length; i++)
+                {
+                    param = params[i].split('=');
+                    retParamArr[param[0]] = param[1];
+                    if(retParamArr[param[0]].indexOf('#')>-1){
+                        var tmp = retParamArr[param[0]].split('#');
+                        retParamArr[param[0]]=tmp[0];
+                    }
+                    //console.log('t1');
+                }
+                delete params;
+                delete param;
+                return retParamArr;
+        },
+
+        getParamValue: function(paramName) {
+                if (  unescape(window.location.href).indexOf("?")==-1 ) return null;                        
+                var retParamArr = [], param;
+                var params = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+                for(var i = 0; i < params.length; i++)
+                {
+                    param = params[i].split('=');
+                    if ( param[0]==paramName ) return unescape(param[1]);
+                }
+                delete params;
+                delete param;
+                return null;                
+        },
+        
+        arrayToString : function(array) {
+        	if (array != null && typeof array != "undefined") {
+        		return array.join(",");
+        	}
+        	else {
+        		return "";
+        	}
+        },
+
+		Fields : {
+
+            Autocomplete : {
+
+                City : function(inputId, afterCompleteClickCallback, onBlurCallback) {
+                    $("#"+inputId).sAutocomplete({
+                        ajaxFile	: '/ajax/autocomplete/cities.php',
+                        afterCompleteClick : function(data) {
+                            window.sAutocomplete.cityId = data.Id;
+                            if (typeof afterCompleteClickCallback == "function") {
+                                afterCompleteClickCallback(window.sAutocomplete.cityId);
+                            }
+                        },
+                        onTyping : function() {
+                            delete window.sAutocomplete.cityId;
+                        },
+                        onBlur : function(input) {
+                            var value = input.val();
+
+                            var cityExists = false;
+
+                            /*
+                                checks if the city is exists when user blur from the input
+                                and not selected the city from the autocomplete list
+                             */
+                            if (jQuery.trim(value) != "") {
+                                jQuery.ajax({
+                                    type: 'GET',
+                                    url: '/ajax/autocomplete/checkCity.php',
+                                    data: "keyword="+jQuery.base64Encode(value),
+                                    dataType: 'json',
+                                    success: function(data) {
+                                        if (typeof data == "object") {
+                                            if (data.error === false) {
+                                                cityExists = true;
+                                                if (typeof data.CityID !== "undefined") {
+                                                    window.sAutocomplete.cityId = data.CityID;
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+
+                            setTimeout(function() {
+                                if (!cityExists) {
+                                    if (!window.sAutocomplete.cityId) {
+                                        input.val('');
+                                    }
+                                }
+                                if (typeof onBlurCallback == "function") {
+                                    onBlurCallback(window.sAutocomplete.cityId);
+                                }
+                            }, 400);
+                        }
+                    });
+                },
+                Neighborhood : function(inputId, afterCompleteClickCallback, onBlurCallback) {
+                    $("#"+inputId).sAutocomplete({
+                        ajaxFile	: '/ajax/autocomplete/neighborhood.php',
+                        paramsFields	: { 'city' : "City" },
+                        afterCompleteClick : function(data) {
+                            window.sAutocomplete.neighborhoodId = data.Id;
+                            if (typeof afterCompleteClickCallback == "function") {
+                                afterCompleteClickCallback(window.sAutocomplete.cityId);
+                            }
+                        },
+                        onTyping : function() {
+                            delete window.sAutocomplete.neighborhoodId;
+                        },
+                        onBlur : function(input) {
+
+                            var value = input.val();
+                            var city = jQuery("#City").val();
+
+                            var cityExists = (!window.sAutocomplete.cityId) ? false : true;
+                            var neighborhoodExists = false;
+
+                            /*
+                             checks if the neighborhood is exists when user blur from the input
+                             and not selected the neighborhood from the autocomplete list
+                             */
+                            if (jQuery.trim(value) != "" && cityExists) {
+                                jQuery.ajax({
+                                    type: 'GET',
+                                    url: '/ajax/autocomplete/checkNeighborhood.php',
+                                    data: "city="+jQuery.base64Encode(city)+"&keyword="+jQuery.base64Encode(value),
+                                    dataType: 'json',
+                                    success: function(data) {
+                                        if (typeof data == "object") {
+                                            if (data.error === false) {
+                                                neighborhoodExists = true;
+                                                if (typeof data.nhoodID !== "undefined") {
+                                                    window.sAutocomplete.neighborhoodId = data.nhoodID;
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+
+                            setTimeout(function() {
+                                if (!neighborhoodExists && cityExists) {
+                                    if (!window.sAutocomplete.neighborhoodId) {
+                                        input.val('');
+                                    }
+                                }
+                                if (typeof onBlurCallback == "function") {
+                                    onBlurCallback(window.sAutocomplete.neighborhoodId);
+                                }
+                            }, 400);
+                        }
+                    });
+                }
+
+            },
+			
+			checkNumbersOnly : function(str) {
+				for (var i = 0; i < str.length; i++) {
+			        var oneChar = str.substring(i, i + 1);
+			        if (oneChar < "0" || oneChar > "9") {
+			            alert("אנא הזן ספרות בלבד בשדה זה");
+			            return false;
+			        }
+			    }
+			    return true;
+			},
+			
+			checkIsKeyNumber : function (e) {
+				var key = window.event ? e.keyCode : e.which;
+				var keychar = String.fromCharCode(key);
+			
+				if (key == 8) return true;
+				if ((key > 0 && key < 13)  || (key > 13 && key < 48)  || (key > 57)){
+					alert("אנא הזן ספרות בלבד!");
+					return false;
+				}
+				return !isNaN(keychar);
+			},
+			
+			changeInputOrders : function(fromObjId, toObjId) {
+				
+				var from = $("#" + fromObjId);
+				var to = $("#" + toObjId);
+				
+				var fromTag = from.get(0).tagName;
+				var toTag = from.get(0).tagName;
+				
+				
+				if (fromTag != toTag) {
+					console.log("changeInputOrders Error: elements tags doesn't match'");
+					return false;
+				}
+	
+				switch(fromTag.toLowerCase()) {
+					case "select":
+						
+						var fromIndex = from.prop("selectedIndex");
+						var toIndex = to.prop("selectedIndex");
+
+                        var fromValue = parseFloat(from.val());
+                        var toValue = parseFloat(to.val());
+						
+						if (fromValue == "" || toValue == "") {
+							return false;
+						}
+						
+						if (fromValue > toValue) {
+							from.prop("selectedIndex", toIndex);
+							to.prop("selectedIndex", fromIndex);
+						}
+					break;
+					
+					case "input":
+						var fromValue = parseFloat(from.val());
+						var toValue = parseFloat(to.val());
+						
+						if (fromValue == "" || toValue == "") {
+							return false;
+						}
+						
+						if (fromValue > toValue) {
+							from.val(toValue);
+							to.val(fromValue);
+						}
+					break;
+				}
+				
+				return true;			
+			}
+		},
+
+		Maps : {
+
+			Atlas : function(width,height) {
+				
+				var map = null;
+
+				var layersManager = null;
+				
+				var mapWidth = width;
+				var mapHeight = height;
+				
+	
+				this.getWidth = function() {
+					return mapWidth;
+				} // getWidth
+				
+				this.getHeight = function() {
+					return mapHeight;
+				} // getHeight
+				
+				this.getMap = function() {
+					return map;
+ 				} // getMap
+				
+				this.create = function() {
+					
+					if (!mapWidth || !mapHeight) {
+						console.log("Map: Error creating a map, sizes does not mentioned");
+						return false;
+					}
+					map = new Map(mapWidth,mapHeight);
+					
+					return this;
+				} // create
+				
+				this.writeMap = function() {
+					map.writeMap();
+					
+					return this;
+				} // writeMap
+				
+				this.centerMap = function(x,y,z) {
+					map.setCenterPosition(new LatLong(y,x),z);
+					
+					return this;
+				} // centerMap
+				
+				
+				this.addFlashOverlayToScreen = function(posX,posY,flashURL) {
+					map.addFlashOverlayToScreen(posX, posY, flashURL);
+					
+					return this;
+				} // addFlashOverlayToScreen
+				
+				
+				this.getLayersManager = function() {
+					if (layersManager == null) {
+						layersManager = map.getLayersManager();
+					}
+
+					return layersManager;
+				} // getLayersManager
+				
+				this.addNavigationBar = function() {
+					this.addFlashOverlayToScreen(0, 0, 'http://www.yad2.co.il/Nadlan/AdsMap/inner/flash/yad2_nav_bar.swf');
+				
+					map.addListener("ModeChanged", function onModeChanged(sender,mode){
+					    switch (mode.toLowerCase()){
+					        case "drag":
+					            map.setMode(Map.MODE_PAN)
+					            break;
+					        case "zoom":
+					            map.setMode(Map.MODE_ZOOM_IN)
+					            break;
+					        case "measure":
+					            this.getLayersManager().clearMeasureEx();
+					            map.setMode(Map.MODE_MEASURE_EX)
+					            break;
+					        case "poly":
+					            this.getLayersManager().clearMeasureEx();
+					            map.setMode(Map.MODE_INSERT_POLYGON)
+					            break;
+					    }
+					});
+				} // addNavigationBar
+				
+				// Add a flash layer for to the map at X,Y point
+				this.addIconLayer = function(x,y,icon) {
+					
+					layersManager = this.getLayersManager();
+					// Create local vector layer
+					layer = layersManager.createLocalVectorLayer('House');
+					layer.enableAutoRedraw();
+					
+					var Locator   = new ExternalIcon(icon);
+					var locatorMarker = new Marker('Locator',new LatLong(y,x),Locator,'','');
+					
+					// Add them to the local vector layer
+					layer.addShape(locatorMarker);
+					layer.redraw();
+					
+					return this;
+				} // addIconLayer
+				
+			} // Atlas
+			
+		}, // Maps
+
+		Search : {
+			
+			SwitchAdvance : function(advance, style) {
+				
+				if (style == undefined || style == null) {
+					style = '';
+				}
+				
+				if (advance) {
+					if (document.getElementById('tab_advance'))
+						document.getElementById('tab_advance').className = 'active';
+						
+					if (document.getElementById('tab_normal'))
+						document.getElementById('tab_normal').className ='';
+					
+					if (document.getElementById('search_block') && style != '')
+						document.getElementById('search_block').className = 'search_block_advance';
+						
+					if (document.getElementById('table_advance_search'))
+						document.getElementById('table_advance_search').style.display = '';
+						
+					if (document.getElementById('table_normal_search')) 
+						document.getElementById('table_normal_search').style.display = 'none'; 
+				}
+				else {
+					if (document.getElementById('tab_advance'))
+						document.getElementById('tab_advance').className = '';
+					
+					if (document.getElementById('tab_normal'))
+						document.getElementById('tab_normal').className ='active';
+					
+					if (document.getElementById('search_block') && style != '')
+						document.getElementById('search_block').className = 'search_block';
+					
+					if (document.getElementById('table_advance_search'))
+						document.getElementById('table_advance_search').style.display = 'none';
+						
+					if (document.getElementById('table_normal_search')) 
+						document.getElementById('table_normal_search').style.display = ''; 
+				}
+				
+			},
+			
+			Cars : {
+				Private : {
+					SwitchAdvance : function(advance) {
+						
+						/*
+						 * The fields IDs
+						 */
+						var AdvanceFields = new Array("SubSubModelID","OwnerID","fromKM","KM","fromEngineVal","untilEngineVal","EngineTypeID","fromHand","Hand","TradeIn","Color"); 
+						
+						if (advance) {
+							$.each(AdvanceFields, function(index,field) {
+								//console.log(field);
+								$("#" + field).removeAttr('disabled');
+							});
+							
+							$("#fromPrice, #untilPrice").css('width', '45px');
+							$("#td_TradeIn").show();
+						}
+						else {
+							$.each(AdvanceFields, function(index,field) {
+								$("#" + field).attr('disabled',true);
+							});
+							
+							$("#fromPrice, #untilPrice").css('width', '90px');
+							$("#td_TradeIn").hide();
+						}
+					}
+				},
+				
+				Truck : {
+					SwitchAdvance : function(advance) {
+						
+						/*
+						 * The fields IDs
+						 */
+						var AdvanceFields = new Array("SubSubModelID","OwnerID","fromKM","KM","fromEngineVal","untilEngineVal","EngineTypeID","fromHand","Hand","TradeIn","Color"); 
+						
+						if (advance) {
+							$.each(AdvanceFields, function(index,field) {
+								//console.log(field);
+								$("#" + field).removeAttr('disabled');
+							});
+							
+							$("#fromPrice, #untilPrice").css('width', '45px');
+							$("#td_TradeIn").show();
+						}
+						else {
+							$.each(AdvanceFields, function(index,field) {
+								$("#" + field).attr('disabled',true);
+							});
+							
+							$("#fromPrice, #untilPrice").css('width', '90px');
+							$("#td_TradeIn").hide();
+						}
+					}
+				},
+				
+				Jeep : {
+					SwitchAdvance : function(advance) {
+						
+						/*
+						 * The fields IDs
+						 */
+						var AdvanceFields = new Array("SubSubModelID","OwnerID","fromKM","KM","fromEngineVal","untilEngineVal","EngineTypeID","fromHand","Hand","TradeIn","Color"); 
+						
+						if (advance) {
+							$.each(AdvanceFields, function(index,field) {
+								//console.log(field);
+								$("#" + field).removeAttr('disabled');
+							});
+							
+							$("#fromPrice, #untilPrice").css('width', '45px');
+							$("#td_TradeIn").show();
+						}
+						else {
+							$.each(AdvanceFields, function(index,field) {
+								$("#" + field).attr('disabled',true);
+							});
+							
+							$("#fromPrice, #untilPrice").css('width', '90px');
+							$("#td_TradeIn").hide();
+						}
+					}
+				},
+				
+				
+				
+				LoadModels : function( ManufacturerID, selected ) {
+				
+				    if ( yad2_fw.modelsSearchJson != null ) {
+				       this.bulidModelOptions( ManufacturerID, selected );
+					   return;
+				    }
+					
+					var $this = this;
+					
+					$.ajax({
+						type: 'GET',
+						url: Yad2.Settings.ajaxPath + 'ajax/sMultiSearch/Cars/CarModels.json?v=' + Yad2.Settings.ajaxVersion,
+						dataType: 'json',
+						async: false,
+						success: function(data) {
+							
+							if ( data ) 
+							{
+								if ( data.hasOwnProperty("regular") )
+								{
+									
+									try { yad2_fw.modelsMultiSearchJson = yad2_fw.clone(data.regular); } catch(e){}
+									
+									yad2_fw.modelsSearchJson = data.regular;
+									
+									if ( data.hasOwnProperty("virtual") )
+									{
+										for ( manufacturer in data.virtual )
+										{
+											if ( data.regular.hasOwnProperty(manufacturer) )
+											{
+												for ( yad2_model in data.virtual[manufacturer] )
+												{
+													data.regular[manufacturer].push(data.virtual[manufacturer][yad2_model]);
+													data.regular[manufacturer].sort(function(a,b){
+														return (a.Title < b.Title) ? -1 : (a.Title == b.Title) ? 0 : 1;
+													});
+												}
+											}
+										}
+										yad2_fw.modelsSearchJson = data.regular;
+									}
+									
+									$this.bulidModelOptions( ManufacturerID, selected );
+								}
+							}
+						}
+					});
+				},
+				
+				bulidModelOptions : function( ManufacturerID, selected ) {
+					if ( yad2_fw.modelsSearchJson && Yad2.oSize(yad2_fw.modelsSearchJson) > 0 ) {
+						var select = '<option value="">בחר דגם</option>';
+						$("#SubModelID").html(select);
+						
+						$.each(yad2_fw.modelsSearchJson[ManufacturerID], function(index, model) {
+							if (selected == model.Id) {
+								var isSelected = ' selected="selected"';
+							}
+							else {
+								var isSelected = "";
+							}
+							var select = '<option value="'+model.Id+'"'+isSelected+'>'+model.Title+'</option>';
+							$("#SubModelID").append(select);
+						});
+					}
+				},
+				
+				unsetSelect : function(elmId) {
+					/*
+					 * TODO:
+					 * unset the select options
+					 */
+				}
+			},
+			
+			Nadlan : {
+				
+				RetrieveCityName : function(cityId) {
+					var cityName = "";
+	    			if (cityId != "") {
+	    				$.each(Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Nadlan.City.Name], function(index, obj) {
+	    					if (obj.Id == cityId) {
+	    						cityName = obj.Title;
+	    					}
+	        			});
+	    			}
+	    			
+	    			if (cityName != "") {
+	    				return cityName
+	    			}
+	    			return null;
+	    		},
+
+                RetrieveCityId : function(cityName) {
+                    var cityId = "";
+                    if (cityName != "") {
+                        $.each(Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Nadlan.City.Name], function(index, obj) {
+                            if (obj.Title == cityName) {
+                                cityId = obj.Id;
+                            }
+                        });
+                    }
+
+                    if (cityId != "") {
+                        return cityId
+                    }
+                    return null;
+                },
+				
+				Sales : {
+					SwitchAdvance : function(advance) {
+						
+						/*
+						 * The fields IDs
+						 */
+						var AdvanceFields = new Array("fromSquareMeter","untilSquareMeter","Parking","Elevator","AirConditioner","mamad","Meshupatz","patio","storeroom","handicapped","Immediate"); 
+						
+						if (advance) {
+							$.each(AdvanceFields, function(index,field) {
+								//console.log(field);
+								$("#" + field).removeAttr('disabled');
+							});
+						}
+						else {
+							$.each(AdvanceFields, function(index,field) {
+								$("#" + field).attr('disabled',true);
+							});
+						}
+					}
+				},
+				
+				Rent : {
+					SwitchAdvance : function(advance) {
+						
+						/*
+						 * The fields IDs
+						 */						
+						var AdvanceFields = new Array(
+							"fromSquareMeter",
+							"untilSquareMeter",
+							"Furniture",
+							"Parking",
+							"Elevator",
+							"Grating",
+							"AirConditioner",
+							"mamad",
+							"patio",
+							"Meshupatz",
+							"storeroom",
+							"handicapped",
+							"PetsInHouse",
+							"Partner",
+							"Immediate",
+							"EnterDate"
+						);
+						
+						if (advance) {
+							$.each(AdvanceFields, function(index,field) {
+								//console.log(field);
+								$("#" + field).removeAttr('disabled');
+							});
+						}
+						else {
+							$.each(AdvanceFields, function(index,field) {
+								$("#" + field).attr('disabled',true);
+							});
+						}
+					}
+				},
+				
+				/*
+				 * parentId is usually the id of the city element Id (usually input)
+				 * childId is usually the id of the neighborhood element Id (usually input)
+				 */
+				ToggleNeighborhood : function(parentId,childId) {
+					var parentValue = $.trim(document.getElementById(parentId).value);
+
+                    if (parentValue != "" && (parentValue != "סביון" && parentValue != "כוכב יאיר / צור יגאל") ){   //Cities that have less then 5 neighborhood
+						Yad2.Search.Nadlan.DisableInput(childId, false);
+					}
+					else {
+						Yad2.Search.Nadlan.DisableInput(childId, true);
+					}
+				},
+				
+				DisableInput : function(elmId,status) {
+					jQuery("#"+elmId).attr("disabled",status);
+					if (status === true) {
+						jQuery("#"+elmId).val('');
+					}
+				},
+				
+				DisableArea : function(obj) {
+					if (jQuery.trim(obj.value) == "") {
+
+						jQuery("#Area").attr('disabled',false);
+					}
+					else {
+                        jQuery("#Area").attr('disabled',true);
+                        jQuery("#villages").attr('disabled',true);
+						jQuery("#villages").attr('checked',false);
+						jQuery("#Area").prop("selectedIndex", 0);
+					}
+					
+				}
+			}
+			
+			
+		},
+        
+        MultiSearch : {
+            
+            CatID : null,
+            SubCatID : null,
+            
+            isInit : {
+                Cars : {
+                    Private : false,
+                    Truck : false,
+                    Jeep : false
+                },
+                Nadlan : {
+                	Sales : false
+                }
+            },
+            
+            /*
+             * if search has changed then it is sets to true
+             */
+            searchChanged : false,
+            
+            /*
+             * The checked items
+             */
+            checkedItems : {},
+            
+            // Holds which multisearches are opened
+            openedMultiSearch : {},
+            
+            // Holds all the jsons
+            jsonStorage : {},
+            
+            /*
+             * If has chosen more than 1 value in some multisearch field
+             * then this param will change to true
+             * else the param stays false
+             */
+            isMultiSearchArgs : false,
+
+            /*
+             * Check if one of the multisearch fields has more than one option 
+             */
+            CheckMultiSearchArgs : function(elmId) {
+              
+                Yad2.MultiSearch.isMultiSearchArgs = false;
+                
+                /*
+                 * If no elmId defined then loop on all multisearch fields
+                 */
+                if (elmId == undefined || elmId == "") {
+                    for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                        if ($("#arr" + Yad2.MultiSearch.MultiSearchFields[i]).val().indexOf(",") != -1) {
+                            Yad2.MultiSearch.isMultiSearchArgs = true;
+                        }
+                    }
+                }
+                else {
+                    if ($("#arr" + elmId).val().indexOf(",") != -1) {
+                        Yad2.MultiSearch.isMultiSearchArgs = true;
+                    }
+                }
+                
+                Yad2.MultiSearch.ChangeSingleToMultiSearchFields();
+                
+                return Yad2.MultiSearch.isMultiSearchArgs;
+                
+            },
+            
+            /*
+             * If CheckMultiSearchArgs function return true
+             * then we want to change all the multisearch fields from single to multiple
+             */
+            ChangeSingleToMultiSearchFields : function() {
+
+                /*
+                 * If multisearch has multiple checked items
+                 */
+                if (Yad2.MultiSearch.isMultiSearchArgs) {
+                	$("#isMultiSearch").removeAttr('disabled');
+                	
+                    for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                        if (Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.MultiSearchFields[i]] && Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.MultiSearchFields[i]].length > 1) {
+                            $("#" + Yad2.MultiSearch.MultiSearchFields[i]).val('');
+                        }
+                        $("#" + Yad2.MultiSearch.MultiSearchFields[i]).attr('disabled',true);
+                        $("#arr" + Yad2.MultiSearch.MultiSearchFields[i]).attr('disabled',false);
+                    }
+                }
+                else {
+                	$("#isMultiSearch").attr('disabled', true);
+                	
+                    for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                    	var regularSelect = $("#" + Yad2.MultiSearch.MultiSearchFields[i]);
+                    	var multiSearchSelect = $("#arr" + Yad2.MultiSearch.MultiSearchFields[i]);
+                    	
+                    	//Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.MultiSearchFields[i]] = { 0 : regularSelect.val() };
+                    	
+                        regularSelect.attr('disabled',false);
+                       /* if ( multiSearchSelect.val() > 0 ) {
+                        	regularSelect.val(multiSearchSelect.val());
+                        }*/
+                        
+                        multiSearchSelect.attr('disabled',true);
+                    }
+                }
+                
+            },
+            
+            /*
+             * MultiSearch Fields
+             */
+            MultiSearchFields : new Array(),
+            
+            /*
+             * MultiSearch Fields function triggers
+             */
+            MultiSearchFieldsFunctions : {},
+
+            /*
+             *
+             */
+            Events : {
+                BlurChooseAllMultiSearch : function() {
+                    $(document).on('click', function(e) {
+                        var $target = jQuery(e.target);
+                        try {
+                            if (!$target.hasClass('multi-search-element') && !$target.hasClass('multi-search-container') && $target.parents('.multi-search-container').length==0) {
+                                if (Yad2.MultiSearch.openedMultiSearch) {
+
+                                    $.each(Yad2.MultiSearch.openedMultiSearch, function(index, obj) {
+                                        var multiSearchObj = jQuery("#multi-search-"+index+"-input");
+                                        multiSearchObj.click();
+                                    });
+                                }
+                            }
+                        }
+                        catch(Exception){}
+                    });
+                }
+            },
+
+
+            /*
+             * Build the multisearch boxes
+             */
+            Construct : {
+                Cars : {
+                    Private : function() {
+                        Yad2.MultiSearch.CatID = 1;
+                        Yad2.MultiSearch.SubCatID = 1;
+
+                        Yad2.MultiSearch.Events.BlurChooseAllMultiSearch();
+                        
+                        /*
+                         * Create the multisearch fields only if it's not yet created
+                         */
+                        if (!Yad2.MultiSearch.isInit.Cars.Private) {
+                            Yad2.MultiSearch.Fields.Area.Create();
+                            Yad2.MultiSearch.Fields.Cars.Manufacturers.Create(1);
+                            Yad2.MultiSearch.Fields.Cars.Models.Create();
+                            Yad2.MultiSearch.Fields.Cars.SubModels.Create();
+                            Yad2.MultiSearch.Fields.Cars.Gear.Create();
+                            Yad2.MultiSearch.Fields.Cars.Owner.Create();
+                            
+                            Yad2.MultiSearch.isInit.Cars.Private = true;
+                        }
+                        
+                        $("#isMultiSearch").removeAttr('disabled');
+                        
+                        /*
+                         * Define the multisearch fields
+                         * The ID Of the element of the regular search (the Name in the object of the function in Fields object)
+                         * This should be exactly the same name of the Id of the regular select
+                         */
+                        Yad2.MultiSearch.MultiSearchFields = new Array("Area","ModelID","SubModelID","SubSubModelID","Auto","OwnerID");
+                        
+                        Yad2.MultiSearch.MultiSearchFieldsFunctions['ModelID'] = "Yad2.MultiSearch.Fields.Cars.Models.Reload()";
+                        Yad2.MultiSearch.MultiSearchFieldsFunctions['SubModelID'] = "Yad2.MultiSearch.Fields.Cars.Models.GetModels()";
+                        Yad2.MultiSearch.MultiSearchFieldsFunctions['SubSubModelID'] = "Yad2.MultiSearch.Fields.Cars.SubModels.GetSubModels()";
+                        
+                        /*
+                         * Changing the fields to multisearch fields
+                         * Show multisearch field and hide regular field
+                         */
+                        for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                            Yad2.MultiSearch.UI.SwitchMS(Yad2.MultiSearch.MultiSearchFields[i]);
+                        }                      
+                       
+                       	var value = null;
+                        for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                        	// Trying to get the multisearch value from the GET URL
+                        	value = Yad2.getParamValue('arr' + Yad2.MultiSearch.MultiSearchFields[i]);
+                        	if (value == null || value == "") {
+                        		// Trying to get the regular search value from the GET URL
+                        		value = Yad2.getParamValue(Yad2.MultiSearch.MultiSearchFields[i]);
+                        		if (value == null || value == "") {
+                        			// Trying to get the value from the select itself
+                        			value = $("#" + Yad2.MultiSearch.MultiSearchFields[i]).val();
+                        		}
+                        	}
+                        	
+                        	if (value != "") {
+                        		Yad2.MultiSearch.Actions.FillMultiSearch(Yad2.MultiSearch.MultiSearchFields[i], value);
+                        	}
+                        }
+                       
+                        
+                        /*
+                         * Check whether the multisearch is multisearch (more than 1 params are checked)
+                         * OR regular select (only 1 param is checked in each field)
+                         */
+                        Yad2.MultiSearch.CheckMultiSearchArgs();
+                        
+                    },
+                    
+                    Truck : function() {
+                        Yad2.MultiSearch.CatID = 1;
+                        Yad2.MultiSearch.SubCatID = 2;
+
+                        Yad2.MultiSearch.Events.BlurChooseAllMultiSearch();
+                        
+                        /*
+                         * Create the multisearch fields only if it's not yet created
+                         */
+                        if (!Yad2.MultiSearch.isInit.Cars.Truck) {
+                            Yad2.MultiSearch.Fields.Area.Create();
+                            Yad2.MultiSearch.Fields.Cars.Manufacturers.Create(2);
+                            Yad2.MultiSearch.Fields.Cars.Models.Create();
+                            Yad2.MultiSearch.Fields.Cars.SubModels.Create();
+                            Yad2.MultiSearch.Fields.Cars.Gear.Create();
+                            Yad2.MultiSearch.Fields.Cars.Owner.Create();
+                            
+                            Yad2.MultiSearch.isInit.Cars.Truck = true;
+                        }
+                        
+                        $("#isMultiSearch").removeAttr('disabled');
+                        
+                        /*
+                         * Define the multisearch fields
+                         * The ID Of the element of the regular search (the Name in the object of the function in Fields object)
+                         * This should be exactly the same name of the Id of the regular select
+                         */
+                        Yad2.MultiSearch.MultiSearchFields = new Array("Area","ModelID","SubModelID","SubSubModelID","Auto","OwnerID");
+                        
+                        Yad2.MultiSearch.MultiSearchFieldsFunctions['ModelID'] = "Yad2.MultiSearch.Fields.Cars.Models.Reload()";
+                        Yad2.MultiSearch.MultiSearchFieldsFunctions['SubModelID'] = "Yad2.MultiSearch.Fields.Cars.Models.GetModels()";
+                        Yad2.MultiSearch.MultiSearchFieldsFunctions['SubSubModelID'] = "Yad2.MultiSearch.Fields.Cars.SubModels.GetSubModels()";
+                        
+                        /*
+                         * Changing the fields to multisearch fields
+                         * Show multisearch field and hide regular field
+                         */
+                        for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                            Yad2.MultiSearch.UI.SwitchMS(Yad2.MultiSearch.MultiSearchFields[i]);
+                        }
+                        
+                        var value = null;
+                        for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                        	// Trying to get the multisearch value from the GET URL
+                        	value = Yad2.getParamValue('arr' + Yad2.MultiSearch.MultiSearchFields[i]);
+                        	if (value == null || value == "") {
+                        		// Trying to get the regular search value from the GET URL
+                        		value = Yad2.getParamValue(Yad2.MultiSearch.MultiSearchFields[i]);
+                        		if (value == null || value == "") {
+                        			// Trying to get the value from the select itself
+                        			value = $("#" + Yad2.MultiSearch.MultiSearchFields[i]).val();
+                        		}
+                        	}
+                        	
+                        	if (value != "") {
+                        		Yad2.MultiSearch.Actions.FillMultiSearch(Yad2.MultiSearch.MultiSearchFields[i], value);
+                        	}
+                        }
+                        
+                        /*
+                         * Check whether the multisearch is multisearch (more than 1 params are checked)
+                         * OR regular select (only 1 param is checked in each field)
+                         */
+                        Yad2.MultiSearch.CheckMultiSearchArgs();
+                    },
+                    
+                    Jeep : function() {
+                        Yad2.MultiSearch.CatID = 1;
+                        Yad2.MultiSearch.SubCatID = 3;
+
+                        Yad2.MultiSearch.Events.BlurChooseAllMultiSearch();
+                        
+                        /*
+                         * Create the multisearch fields only if it's not yet created
+                         */
+                        if (!Yad2.MultiSearch.isInit.Cars.Jeep) {
+                            Yad2.MultiSearch.Fields.Area.Create();
+                            Yad2.MultiSearch.Fields.Cars.Manufacturers.Create(3);
+                            Yad2.MultiSearch.Fields.Cars.Models.Create();
+                            Yad2.MultiSearch.Fields.Cars.SubModels.Create();
+                            Yad2.MultiSearch.Fields.Cars.Gear.Create();
+                            Yad2.MultiSearch.Fields.Cars.Owner.Create();
+                            
+                            Yad2.MultiSearch.isInit.Cars.Jeep = true;
+                        }
+                        
+                        $("#isMultiSearch").removeAttr('disabled');
+                        
+                        /*
+                         * Define the multisearch fields
+                         * The ID Of the element of the regular search (the Name in the object of the function in Fields object)
+                         * This should be exactly the same name of the Id of the regular select
+                         */
+                        Yad2.MultiSearch.MultiSearchFields = new Array("Area","ModelID","SubModelID","SubSubModelID","Auto","OwnerID");
+                        
+                        Yad2.MultiSearch.MultiSearchFieldsFunctions['ModelID'] = "Yad2.MultiSearch.Fields.Cars.Models.Reload()";
+                        Yad2.MultiSearch.MultiSearchFieldsFunctions['SubModelID'] = "Yad2.MultiSearch.Fields.Cars.Models.GetModels()";
+                        Yad2.MultiSearch.MultiSearchFieldsFunctions['SubSubModelID'] = "Yad2.MultiSearch.Fields.Cars.SubModels.GetSubModels()";
+                        
+                        /*
+                         * Changing the fields to multisearch fields
+                         * Show multisearch field and hide regular field
+                         */
+                        for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                            Yad2.MultiSearch.UI.SwitchMS(Yad2.MultiSearch.MultiSearchFields[i]);
+                        }
+                        
+                        var value = null;
+                        for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                        	// Trying to get the multisearch value from the GET URL
+                        	value = Yad2.getParamValue('arr' + Yad2.MultiSearch.MultiSearchFields[i]);
+                        	if (value == null || value == "") {
+                        		// Trying to get the regular search value from the GET URL
+                        		value = Yad2.getParamValue(Yad2.MultiSearch.MultiSearchFields[i]);
+                        		if (value == null || value == "") {
+                        			// Trying to get the value from the select itself
+                        			value = $("#" + Yad2.MultiSearch.MultiSearchFields[i]).val();
+                        		}
+                        	}
+                        	
+                        	if (value != "") {
+                        		Yad2.MultiSearch.Actions.FillMultiSearch(Yad2.MultiSearch.MultiSearchFields[i], value);
+                        	}
+                        }
+                        
+                        /*
+                         * Check whether the multisearch is multisearch (more than 1 params are checked)
+                         * OR regular select (only 1 param is checked in each field)
+                         */
+                        Yad2.MultiSearch.CheckMultiSearchArgs();
+                    }
+                    
+                },
+                
+                Nadlan : {
+                	Sales : function() {
+                		Yad2.MultiSearch.CatID = 2;
+                        Yad2.MultiSearch.SubCatID = 1;
+
+                        Yad2.MultiSearch.Events.BlurChooseAllMultiSearch();
+                        
+                        /*
+                         * Create the multisearch fields only if it's not yet created
+                         */
+                        if (!Yad2.MultiSearch.isInit.Nadlan.Sales) {
+                            Yad2.MultiSearch.Fields.Nadlan.Area.Create();
+                            Yad2.MultiSearch.Fields.Nadlan.City.Create();
+                            Yad2.MultiSearch.Fields.Nadlan.HomeType.Create();
+                            //Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Create();
+                            
+                            Yad2.MultiSearch.isInit.Nadlan.Sales = true;
+                        }
+                        
+                        $("#isMultiSearch").removeAttr('disabled');
+                        
+                        /*
+                         * Define the multisearch fields
+                         * The ID Of the element of the regular search (the Name in the object of the function in Fields object)
+                         * This should be exactly the same name of the Id of the regular select
+                         */
+                        Yad2.MultiSearch.MultiSearchFields = new Array("Area","City","HomeTypeID"/*,"Neighborhood"*/);
+                        
+                        Yad2.MultiSearch.MultiSearchFieldsFunctions['City'] = "Yad2.MultiSearch.Fields.Nadlan.City.Fill(selectedValues)";
+                        //Yad2.MultiSearch.MultiSearchFieldsFunctions['SubModelID'] = "Yad2.MultiSearch.Fields.Cars.Models.GetModels()";
+                        //Yad2.MultiSearch.MultiSearchFieldsFunctions['SubSubModelID'] = "Yad2.MultiSearch.Fields.Cars.SubModels.GetSubModels()";
+                        
+                        /*
+                         * Changing the fields to multisearch fields
+                         * Show multisearch field and hide regular field
+                         */
+                        for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                            Yad2.MultiSearch.UI.SwitchMS(Yad2.MultiSearch.MultiSearchFields[i]);
+                        }                      
+                       
+                       	var value = null;
+                        for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                        	// Trying to get the multisearch value from the GET URL
+                        	value = Yad2.getParamValue('arr' + Yad2.MultiSearch.MultiSearchFields[i]);
+                        	if (value == null || value == "") {
+                        		// Trying to get the regular search value from the GET URL
+                        		//value = Yad2.getParamValue(Yad2.MultiSearch.MultiSearchFields[i]);
+                        		//if (value == null || value == "") {
+                        			// Trying to get the value from the autcomplete chosen id if the input is an autocomplete type
+                        			if (typeof $("#" + Yad2.MultiSearch.MultiSearchFields[i]).attr('data-autocomplete-chosen-id') != "undefined") {
+                        				value = $("#" + Yad2.MultiSearch.MultiSearchFields[i]).attr('data-autocomplete-chosen-id');
+                        			}
+                        			else {
+	                        			// Trying to get the value from the select/input itself
+    	                    			value = $("#" + Yad2.MultiSearch.MultiSearchFields[i]).val();
+    	                    		}
+                        		//}
+                        	}
+                        	
+                        	if (value != "") {
+                        		Yad2.MultiSearch.Actions.FillMultiSearch(Yad2.MultiSearch.MultiSearchFields[i], value);
+                        	}
+                        }
+                       
+                        
+                        /*
+                         * Check whether the multisearch is multisearch (more than 1 params are checked)
+                         * OR regular select (only 1 param is checked in each field)
+                         */
+                        Yad2.MultiSearch.CheckMultiSearchArgs();
+                        
+	                },
+	                
+	                Rent : function() {
+	                	
+	                	Yad2.MultiSearch.CatID = 2;
+	                    Yad2.MultiSearch.SubCatID = 2;
+
+                        Yad2.MultiSearch.Events.BlurChooseAllMultiSearch();
+	                    
+	                    /*
+	                     * Create the multisearch fields only if it's not yet created
+	                     */
+	                    if (!Yad2.MultiSearch.isInit.Nadlan.Rent) {
+	                        Yad2.MultiSearch.Fields.Nadlan.Area.Create();
+	                        Yad2.MultiSearch.Fields.Nadlan.City.Create();
+	                        Yad2.MultiSearch.Fields.Nadlan.HomeType.Create();
+	                        //Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Create();
+	                        
+	                        Yad2.MultiSearch.isInit.Nadlan.Rent = true;
+	                    }
+	                    
+	                    $("#isMultiSearch").removeAttr('disabled');
+	                    
+	                    /*
+	                     * Define the multisearch fields
+	                     * The ID Of the element of the regular search (the Name in the object of the function in Fields object)
+	                     * This should be exactly the same name of the Id of the regular select
+	                     */
+	                    Yad2.MultiSearch.MultiSearchFields = new Array("Area","City","HomeTypeID"/*,"Neighborhood"*/);
+	                    
+	                    Yad2.MultiSearch.MultiSearchFieldsFunctions['City'] = "Yad2.MultiSearch.Fields.Nadlan.City.Fill(selectedValues)";
+	                    
+	                    /*
+	                     * Changing the fields to multisearch fields
+	                     * Show multisearch field and hide regular field
+	                     */
+	                    for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+	                        Yad2.MultiSearch.UI.SwitchMS(Yad2.MultiSearch.MultiSearchFields[i]);
+	                    }                      
+	                   
+	                   	var value = null;
+	                    for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+	                    	// Trying to get the multisearch value from the GET URL
+	                    	value = Yad2.getParamValue('arr' + Yad2.MultiSearch.MultiSearchFields[i]);
+	                    	if (value == null || value == "") {
+	                    		// Trying to get the regular search value from the GET URL
+	                    		//value = Yad2.getParamValue(Yad2.MultiSearch.MultiSearchFields[i]);
+	                    		//if (value == null || value == "") {
+	                    			
+	                    			// Trying to get the value from the autcomplete chosen id if the input is an autocomplete type
+	                    			if (typeof $("#" + Yad2.MultiSearch.MultiSearchFields[i]).attr('data-autocomplete-chosen-id') != "undefined") {
+	                    				value = $("#" + Yad2.MultiSearch.MultiSearchFields[i]).attr('data-autocomplete-chosen-id');
+	                    			}
+	                    			else {
+	                        			// Trying to get the value from the select/input itself
+		                    			value = $("#" + Yad2.MultiSearch.MultiSearchFields[i]).val();
+		                    		}
+	                    		//}
+	                    	}
+	                    	
+	                    	if (value != "") {
+	                    		Yad2.MultiSearch.Actions.FillMultiSearch(Yad2.MultiSearch.MultiSearchFields[i], value);
+	                    	}
+	                    }
+	                    
+	                    /*
+	                     * Check whether the multisearch is multisearch (more than 1 params are checked)
+	                     * OR regular select (only 1 param is checked in each field)
+	                     */
+	                    Yad2.MultiSearch.CheckMultiSearchArgs();
+	                	
+	                }
+                
+            	}
+            
+         	},
+            
+            /*
+             * Destroy the mutlisearch boxes
+             */
+            Destruct : {
+                Cars : {
+                    Private : function() {
+                        $("#isMultiSearch").attr('disabled', true);
+                        
+                        /*
+                         * If there is any multisearch fields
+                         * then change the mutlisearch fields into regular fields
+                         * -- Show regular fields and hide multisearch fields
+                         */
+                        if (Yad2.MultiSearch.MultiSearchFields.length > 0) {
+                            for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                            	// Switching to regular selects
+                                Yad2.MultiSearch.UI.SwitchRegular(Yad2.MultiSearch.MultiSearchFields[i]);
+                                
+                                /*
+                                 * Clears all the multisearch selections
+                                 */
+                                Yad2.MultiSearch.Actions.ClearAll(Yad2.MultiSearch.MultiSearchFields[i]);
+                                Yad2.MultiSearch.Actions.Choose(Yad2.MultiSearch.MultiSearchFields[i]);
+                            }
+                        }
+                        Yad2.Search.Cars.Private.SwitchAdvance(false);
+                        
+                        // Clear all the checked items object
+                        Yad2.MultiSearch.checkedItems = {};
+                    },
+                    Truck : function() {
+                    	$("#isMultiSearch").attr('disabled', true);
+                        
+                        /*
+                         * If there is any multisearch fields
+                         * then change the mutlisearch fields into regular fields
+                         * -- Show regular fields and hide multisearch fields
+                         */
+                        if (Yad2.MultiSearch.MultiSearchFields.length > 0) {
+                            for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                            	// Switching to regular selects
+                                Yad2.MultiSearch.UI.SwitchRegular(Yad2.MultiSearch.MultiSearchFields[i]);
+                                
+                                /*
+                                 * Clears all the multisearch selections
+                                 */
+                                Yad2.MultiSearch.Actions.ClearAll(Yad2.MultiSearch.MultiSearchFields[i]);
+                                Yad2.MultiSearch.Actions.Choose(Yad2.MultiSearch.MultiSearchFields[i]);
+                            }
+                        }
+                        Yad2.Search.Cars.Private.SwitchAdvance(false);
+                        
+                        // Clear all the checked items object
+                        Yad2.MultiSearch.checkedItems = {};
+                    },
+                    Jeep : function() {
+                    	$("#isMultiSearch").attr('disabled', true);
+                        
+                        /*
+                         * If there is any multisearch fields
+                         * then change the mutlisearch fields into regular fields
+                         * -- Show regular fields and hide multisearch fields
+                         */
+                        if (Yad2.MultiSearch.MultiSearchFields.length > 0) {
+                            for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                            	// Switching to regular selects
+                                Yad2.MultiSearch.UI.SwitchRegular(Yad2.MultiSearch.MultiSearchFields[i]);
+                                
+                                /*
+                                 * Clears all the multisearch selections
+                                 */
+                                Yad2.MultiSearch.Actions.ClearAll(Yad2.MultiSearch.MultiSearchFields[i]);
+                                Yad2.MultiSearch.Actions.Choose(Yad2.MultiSearch.MultiSearchFields[i]);
+                            }
+                        }
+                        Yad2.Search.Cars.Private.SwitchAdvance(false);
+                        
+                        // Clear all the checked items object
+                        Yad2.MultiSearch.checkedItems = {};
+                    }
+                },
+                
+                Nadlan : {
+                	Sales : function() {
+                		$("#isMultiSearch").attr('disabled', true);
+                        
+                        /*
+                         * If there is any multisearch fields
+                         * then change the mutlisearch fields into regular fields
+                         * -- Show regular fields and hide multisearch fields
+                         */
+                        if (Yad2.MultiSearch.MultiSearchFields.length > 0) {
+                            for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                            	// Switching to regular selects
+                                Yad2.MultiSearch.UI.SwitchRegular(Yad2.MultiSearch.MultiSearchFields[i]);
+                                
+                                /*
+                                 * Clears all the multisearch selections
+                                 */
+                                Yad2.MultiSearch.Actions.ClearAll(Yad2.MultiSearch.MultiSearchFields[i]);
+                                Yad2.MultiSearch.Actions.Choose(Yad2.MultiSearch.MultiSearchFields[i]);
+                            }
+                        }
+                        Yad2.Search.Nadlan.Sales.SwitchAdvance(false);
+                        
+                        // Clear all the checked items object
+                        Yad2.MultiSearch.checkedItems = {};
+                        
+                        Yad2.Search.Nadlan.DisableArea(document.getElementById("City"));
+                        Yad2.Search.Nadlan.ToggleNeighborhood('City','Neighborhood');
+                        
+                	},
+                
+	                Rent : function() {
+	            		$("#isMultiSearch").attr('disabled', true);
+	                    
+	                    /*
+	                     * If there is any multisearch fields
+	                     * then change the mutlisearch fields into regular fields
+	                     * -- Show regular fields and hide multisearch fields
+	                     */
+	                    if (Yad2.MultiSearch.MultiSearchFields.length > 0) {
+	                        for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+	                        	// Switching to regular selects
+	                            Yad2.MultiSearch.UI.SwitchRegular(Yad2.MultiSearch.MultiSearchFields[i]);
+	                            
+	                            /*
+	                             * Clears all the multisearch selections
+	                             */
+	                            Yad2.MultiSearch.Actions.ClearAll(Yad2.MultiSearch.MultiSearchFields[i]);
+	                            Yad2.MultiSearch.Actions.Choose(Yad2.MultiSearch.MultiSearchFields[i]);
+	                        }
+	                    }
+	                    Yad2.Search.Nadlan.Sales.SwitchAdvance(false);
+	                    
+	                    // Clear all the checked items object
+	                    Yad2.MultiSearch.checkedItems = {};
+	                    
+	                    Yad2.Search.Nadlan.DisableArea(document.getElementById("City"));
+	                    Yad2.Search.Nadlan.ToggleNeighborhood('City','Neighborhood');
+	                        
+	            	}
+            	}
+            },
+            
+            UI : {
+                /*
+                 * Params:
+                 * elmId = the elementId that we want to create the multisearch after it
+                 * title = the title of the multisearch
+                 * width = the width of the multisearch "input/div"
+                 * selectAll = if the show the "select all" button
+                 */
+                createMultiSearch : function(elmId, title, width, style, selectAll, maxSelect, callbackFunction) {
+                        
+                        if (style == undefined)
+                            style = '';
+                        
+                        var maxSelectInput = '';
+                        var maxSelectLine = '';
+                        if (maxSelect == undefined || maxSelect == 0) {
+                            maxSelectInput = '';
+                        }
+                        else if (maxSelect > 0) {
+                            maxSelectInput = '<input type="hidden" id="multi-search-'+elmId+'-maxSelect" value="'+maxSelect+'" />';
+                            maxSelectLine = '<div class="multi-search-maxSelect">';
+                            maxSelectLine += '<table style="border-collapse: collapse;" cellspacing="0" cellpadding="0"><tr><td>* עד </td><td><div class="multi-search-maxSelect-number">' + maxSelect + '</div></td><td> ' + title + '</td></tr></table></div>'
+                        }
+                        
+                        if (selectAll == true) {
+                            selectAll = '<td><div class="multi-search-selectall" onclick="Yad2.MultiSearch.Actions.SelectAll(\''+elmId+'\');">'
+                                            + '<u>בחר הכל</u>'
+                                       + '</div></td>';
+                        }
+                        else {
+                            selectAll = "";
+                        }
+                       
+                        var multiSearchBoxWidth = parseInt(width) + 50;
+
+                        if (document.getElementById("multi-search-"+elmId+"-wrap")) {
+                            $("#multi-search-"+elmId+"-wrap").remove();
+                            //return { 'container' : 'multi-search-'+elmId+'-container', 'content' : 'multi-search-'+elmId+'-scrollable-content' };
+                        }
+                        
+                        var ToggleFunction = 'Yad2.MultiSearch.UI.Toggle(\''+elmId+'\')';
+                        
+                        if (callbackFunction != undefined && callbackFunction != "") {
+                            ToggleFunction = 'Yad2.MultiSearch.UI.Toggle(\''+elmId+'\', \''+callbackFunction+'\')';
+                        }
+
+                        html = '<div class="multi-search-container" id="multi-search-'+elmId+'-wrap">';
+                        html += '<input type="hidden" disabled="disabled" name="arr'+elmId+'" id="arr'+elmId+'" value="" />' + maxSelectInput
+                                + '<div onclick="'+ToggleFunction+'" id="multi-search-'+elmId+'-input" style="width: '+width+'px; display: block;" class="multi-search-element">לחץ לבחירה</div>'
+                                + '<div id="multi-search-'+elmId+'-container" style="z-index: 900;">'
+                                    + '<div class="multi-search-tab" style="width: '+(parseInt(width)+5)+'px;">'
+                                        + '<div class="leftcurv"></div>'
+                                    + '</div>'
+                                    + '<div id="multi-search-'+elmId+'-box" class="multi-search-box'+style+'">'
+                                        + '<div class="multi-search-close" onclick="'+ToggleFunction+'"></div>'
+                                        + '<div class="multi-search-title">בחר <span id="multi-search-'+elmId+'-title">'+title+'</span>'
+                                            + maxSelectLine
+                                        + '</div>'
+                                        + '<div class="multi-search-inner-gray">'
+                                            + '<div id="multi-search-'+elmId+'-scrollable-content" class="multi-search-scrollable-content" style="width: auto; min-width: '+multiSearchBoxWidth+'px"></div>'
+                                        + '</div>'
+                                        + '<div class="multi-search-select" onclick="'+ToggleFunction+'"></div>'
+                                        + '<div class="multi-search-actions">'
+                                        	+ '<table style="border-collapse: collapse;" cellspacing="0" cellpadding="0"><tr>'
+                                            + '<td><div class="multi-search-clearall" onclick="Yad2.MultiSearch.Actions.ClearAll(\''+elmId+'\');">'
+                                                + '<u>נקה הכל</u>'
+                                            + '</div></td>'
+                                            + selectAll
+                                            + '</tr></table>'
+                                        + '</div>'
+                                    + '</div>'
+                                + '</div>';
+                       html += '</div>';
+                       
+                       $("#"+elmId).after(html);
+                       $('#multi-search-'+elmId+'-container').hide();
+                       
+                       return { 'container' : 'multi-search-'+elmId+'-container', 'content' : 'multi-search-'+elmId+'-scrollable-content', 'input' : 'multi-search-'+elmId+'-input' };
+                       
+                }, // /createMultiSearch
+
+				disableMultiSearch : function(elmId, disabled) {
+					
+					if (typeof disabled == "undefined" || disabled == null) {
+						disabled = false;
+					}
+					
+					if (disabled) {
+						jQuery("#multi-search-"+elmId+"-input").addClass("disabled");
+					}
+					else {
+						jQuery("#multi-search-"+elmId+"-input").removeClass("disabled");
+					}
+				},
+                
+                /*
+                 * Change the mutlisearch styling (define by css class)
+                 */
+                changeMultiSearchStyle : function(elmId, style) {
+                	$("#multi-search-"+elmId+"-box").removeAttr('class');
+                	$("#multi-search-"+elmId+"-box").attr('class', style);
+                	
+                	return true;
+                },
+                
+                /*
+                 * Return the multisearch object (divs) IDs
+                 */
+                getMultiSearchObj : function(elmId) {
+                	return { 'container' : 'multi-search-'+elmId+'-container', 'content' : 'multi-search-'+elmId+'-scrollable-content' };
+                },
+                
+                /*
+                 * Toggles the multisearch box
+                 */
+                Toggle : function(elmId, callbackFunction) {
+                    
+                 //  console.log("before visible="+$("#multi-search-"+elmId+"-container").is(":visible"));
+                  // console.log(Yad2.MultiSearch.searchChanged);
+                   
+                   	/*
+                   	 * If there is any multisearch then before closing those, we need to trigger Actions.Choose
+                   	 * on them so we won't lose the checked items 
+                   	 */
+                   	if (Yad2.oSize(Yad2.MultiSearch.openedMultiSearch) > 0) {
+                        $.each(Yad2.MultiSearch.openedMultiSearch, function(index, obj) {
+                            Yad2.MultiSearch.Actions.Choose(index);
+                        });
+                    }
+                    
+                    /* This line must be before the callback function!!!
+                     * We trigger on the multisearch the Choose function so when we close the multisearch box
+                     * we also choose the checked items
+                     */
+                    Yad2.MultiSearch.Actions.Choose(elmId);
+                    
+                    /*
+                     * Trigger a callback function we called - if defined one
+                     */
+                    if (callbackFunction != undefined && callbackFunction != "") {
+                    	
+                        if (!eval(callbackFunction)) {
+                            return false;
+                        }
+                    }
+                    
+                    /* This line must be after the callback function!!!
+                     * --
+                     * We change the searchChanged variable to false beacuse user has finished choosing options
+                     * and closed the box (or opened the box and we start all again)
+                     */
+                    Yad2.MultiSearch.searchChanged = false;
+                    
+                    /*
+                     * Toggle the multisearch container
+                     */
+                    $("#multi-search-"+elmId+"-container").toggle();
+                    
+                    if ($("#multi-search-"+elmId+"-container").is(":visible")) {
+                    	
+                    	/*
+                    	 * Change the inputs z-index to lower except the current input
+                    	 */
+                    	for (var i = 0 ; i < Yad2.MultiSearch.MultiSearchFields.length ; i++) {
+                    		if (Yad2.MultiSearch.MultiSearchFields[i] != elmId) {
+                    			$("#multi-search-"+Yad2.MultiSearch.MultiSearchFields[i]+"-input").css('z-index', '99').css('position','static');
+                    			/*
+                    			 * Fixing the z-index of the fields in IE7
+                    			 */
+                    			if ($.browser.msie && parseInt($.browser.version) == 7) {
+	                    			$("#multi-search-"+Yad2.MultiSearch.MultiSearchFields[i]+"-input").parents('div.multi-search-wrapper').css('position','static');
+	                    		}
+                    		}
+                    		else {
+                    			$("#multi-search-"+Yad2.MultiSearch.MultiSearchFields[i]+"-input").css('z-index', '9999').css('position','relative');
+                    			/*
+                    			 * Fixing the z-index of the fields in IE7
+                    			 */
+                    			if ($.browser.msie && parseInt($.browser.version) == 7) {
+                    				$("#multi-search-"+Yad2.MultiSearch.MultiSearchFields[i]+"-input").parents('div.multi-search-wrapper').css('position','relative');
+                    			}
+                    		}
+                    	}
+                        
+                        /*
+                         * checkes if there is any other multisearches opened
+                         * if so - close them and delete them from the object variable "openedMultiSearch"
+                         */
+                        if (Yad2.oSize(Yad2.MultiSearch.openedMultiSearch) > 0) {
+                            $.each(Yad2.MultiSearch.openedMultiSearch, function(index, obj) {
+                            	Yad2.MultiSearch.UI.ToggleDisplay(index);
+                                delete Yad2.MultiSearch.openedMultiSearch[index];
+                            });
+                        }
+                        Yad2.MultiSearch.openedMultiSearch[elmId] = true;
+                    }
+                    else {
+                        delete Yad2.MultiSearch.openedMultiSearch[elmId];
+                    }
+                    
+                }, // /Toggle
+                
+                /*
+                 * Toggle the multisearch box
+                 * THIS FUNCTION IS USED ONLY TO KNOW SOME CALCULATIONS OF ELEMENTS INSIDE THE MULTISEARCH BOX
+                 * E.G.
+                 * IF WE WANT TO KNOW THE WIDTH OF THE DIV'S INSIDE 
+                 */
+                ToggleDisplay : function(elmId) {
+                	
+                	$("#multi-search-"+elmId+"-container").toggle();
+                	
+                },
+                
+                /*
+                 * Switch between regular and multi searches
+                 */
+                Switch : function(elmId) {
+                    
+                    $("#"+elmId).toggle(); // toggle the regular select
+                    
+                    // Change to regular select
+                    if ($("#"+elmId).is(":visible")) {
+                        $("#"+elmId).attr('disabled',false); // un disable regular select
+                        $("#arr"+elmId).attr('disabled',true); // disable the multisearch values
+                        $("#multi-search-"+elmId+"-input").hide(); // hide multisearch "input"
+                        $("#multi-search-"+elmId+"-container").hide();
+                        
+                        Yad2.MultiSearch.openedMultiSearch = {};
+                    }
+                    // Change to multisearch select
+                    else {
+                        //$("#"+elmId).attr('disabled',true); // disable regular select
+                        
+                        /*
+                        if ($("#arr"+elmId).val() != "") {
+                        	$("#arr"+elmId).attr('disabled',false); // un disable the multisearch values
+                        }*/
+                       
+                        $("#multi-search-"+elmId+"-input").show(); // show multisearch "input"
+                    }
+                    
+                },
+                
+                SwitchRegular : function(elmId) {
+                    $("#"+elmId).show();
+                    
+                    $("#"+elmId).attr('disabled',false); // un disable regular select
+                    $("#arr"+elmId).attr('disabled',true); // disable the multisearch values
+                    $("#multi-search-"+elmId+"-input").hide(); // hide multisearch "input"
+                    $("#multi-search-"+elmId+"-container").hide();
+                    
+                    Yad2.MultiSearch.openedMultiSearch = {};
+                },
+                
+                SwitchMS : function(elmId) {
+                    $("#"+elmId).hide();
+                    /*
+                    $("#"+elmId).attr('disabled',true); // disable regular select
+                    if ($("#arr"+elmId).val() != "") {
+                    	$("#arr"+elmId).attr('disabled',false); // un disable the multisearch values
+                    }
+                    */
+                    $("#multi-search-"+elmId+"-input").show(); // show multisearch "input"
+                }
+                
+            }, // /UI
+            
+            Fields : {
+                
+                Area : {
+                    ChosenTitle : 'אזורים',
+                    
+                    /*
+                     * This should be the exactly same name of the ID of the regular select
+                     */
+                    Name : 'Area',
+                    
+                    Create : function(multiSearchObj) {
+                    
+                    	/*if (_multiSearchObj != null && _multiSearchObj != undefined) {
+                    		console.log("a="+_multiSearchObj);
+                       		multiSearchObj = _multiSearchObj;
+                       	}*/
+
+                        $.ajax({
+                            type: 'GET',
+                            url: Yad2.Settings.ajaxPath + 'ajax/sMultiSearch/Areas.json',
+                            dataType: 'json',
+                            async: false,
+                            success: function(data) {
+                                if (data && data.length > 0) {
+                                    
+                                    Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Area.Name] = data;
+                                    
+                                    var html = '';
+                                    
+                                    $.each(data, function(index, area) {
+                                        
+                                        var Main = (area.Main==1) ? 'font-weight: bold; color: red;' : '';
+                                        if (area.Id!=area.Parent) {
+                                            var Parent = 'onclick="return Yad2.MultiSearch.Actions.Select(\'Area\',this);" data-multi-search-parent="'+area.Parent+'"';
+                                        }
+                                        else {
+                                            var Parent = 'onclick="Yad2.MultiSearch.Actions.checkGroup(\'Area\','+area.Parent+');" data-multi-search-isParent="true"';
+                                        }
+                                        
+                                        html += '<div style="margin-bottom: 3px;">';
+                                        html += '<input style="vertical-align: middle;" data-multi-search-name="Area" ' + Parent + ' type="checkbox" id="chkArea_'+area.Id+'" value="'+area.Id+'" />';
+                                        html += '<label style="margin-right: 4px;' + Main + '" id="lblArea_'+area.Id+'" for="chkArea_'+area.Id+'">'+area.Title+'</label>';
+                                        html += '</div>';
+                                    });
+
+                                    if (multiSearchObj == null || typeof multiSearchObj == "undefined") {
+                                    	multiSearchObj = Yad2.MultiSearch.UI.createMultiSearch('Area', Yad2.MultiSearch.Fields.Area.ChosenTitle, '130', '-flat', true);
+                                    }
+                                    
+                                    $("#"+multiSearchObj['content']).html(html);
+                                }
+                            }
+                        });
+                        
+                    }
+                },
+                
+                Cars : {
+                    
+                    Manufacturers : {
+                        ChosenTitle : 'יצרנים',
+                        Name : 'ModelID',
+                        maxSelect: 4,
+                        
+                        Create : function(TypeID) {
+                            
+                            $.ajax({
+                                type: 'GET',
+                                url: Yad2.Settings.ajaxPath + 'ajax/sMultiSearch/Cars/CarManufacturers.json',
+                                dataType: 'json',
+                                async: false,
+                                success: function(data) {
+                                	
+                                    if (data && Yad2.oSize(data) > 0) {
+                                        
+                                        Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Manufacturers.Name] = data[TypeID];
+                                        
+                                        var boxWidth = 0;
+                                        var html = '<table style="width: 410px;"><tr>';
+                                        
+                                        $.each(data[TypeID], function(index, manufactur) {
+                                            
+                                            
+                                            if (manufactur.Id!=manufactur.Parent) {
+                                            	if (manufactur.Parent == undefined) {
+                                            		manufactur.Parent = 0;
+                                            	}
+                                                var Parent = 'onclick="return Yad2.MultiSearch.Actions.Select(\''+Yad2.MultiSearch.Fields.Cars.Manufacturers.Name+'\',this);" data-multi-search-parent="'+manufactur.Parent+'"';
+                                            }
+                                            else {
+                                                var Parent = 'onclick="Yad2.MultiSearch.Actions.checkGroup(\''+Yad2.MultiSearch.Fields.Cars.Manufacturers.Name+'\','+manufactur.Parent+');" data-multi-search-isParent="true"';
+                                            }
+                                            
+                                            if (index%3 == 0 && index > 0) {
+                                                html += '</tr><tr>';
+                                            }
+                                            
+                                            html += '<td>';
+                                            html += '<input style="vertical-align: middle;" data-multi-search-name="'+Yad2.MultiSearch.Fields.Cars.Manufacturers.Name+'" ' + Parent + ' type="checkbox" id="chk'+Yad2.MultiSearch.Fields.Cars.Manufacturers.Name+'_'+manufactur.Id+'" value="'+manufactur.Id+'" />';
+                                            html += '<label style="margin-right: 4px;" id="lbl'+Yad2.MultiSearch.Fields.Cars.Manufacturers.Name+'_'+manufactur.Id+'" for="chk'+Yad2.MultiSearch.Fields.Cars.Manufacturers.Name+'_'+manufactur.Id+'">'+manufactur.Title+'</label>';
+                                            html += '</td>';
+                                            
+                                        });
+                                        
+                                        html += '</tr></table>';
+                                        var multiSearchObj = Yad2.MultiSearch.UI.createMultiSearch(Yad2.MultiSearch.Fields.Cars.Manufacturers.Name, Yad2.MultiSearch.Fields.Cars.Manufacturers.ChosenTitle, '130', null, false, Yad2.MultiSearch.Fields.Cars.Manufacturers.maxSelect, 'Yad2.MultiSearch.Fields.Cars.Models.Reload()');
+                                        
+                                        $("#"+multiSearchObj['content']).html(html);
+                                        
+                                        Yad2.MultiSearch.UI.ToggleDisplay(Yad2.MultiSearch.Fields.Cars.Manufacturers.Name);
+                                        /*
+                                         * Fixing for IE7
+                                         */
+                                        var IE7Additional = 0;
+                                        if ($.browser.msie && parseInt($.browser.version) == 7) {
+                                        	IE7Additional = 200;
+                                        }
+                                        boxWidth = parseInt(boxWidth) + parseInt($("#"+multiSearchObj['content']).width()) + parseInt(IE7Additional);
+                                        Yad2.MultiSearch.UI.ToggleDisplay(Yad2.MultiSearch.Fields.Cars.Manufacturers.Name);
+                                        $("#"+multiSearchObj['content']).width(boxWidth);
+                                    }
+                                }
+                            });
+                            
+                            return true;
+                            
+                        }
+                        
+                    },
+                    
+                    Models : {
+                        ChosenTitle : 'דגם',
+                        Name: 'SubModelID',
+                        
+                        Create : function() {
+
+                            var multiSearchObj = Yad2.MultiSearch.UI.createMultiSearch(Yad2.MultiSearch.Fields.Cars.Models.Name, Yad2.MultiSearch.Fields.Cars.Models.ChosenTitle, '130', null, false, null, 'Yad2.MultiSearch.Fields.Cars.Models.GetModels()');
+                            
+                            Yad2.MultiSearch.Fields.Cars.Models.ajaxModels();
+                            
+                        }, // /Create
+                        
+                        /*
+                         * ManufacturersID = a string of manufacturers joined with commas ","
+                         * ModelID = the ModelID we want to find in which ManufacturerID
+                         */
+                        FindManufacturerByModelID : function(ManufacturersID,ModelID) {
+                    		
+                    		var FoundManufacturer = null;
+                    		
+                    		ManufacturersID = ManufacturersID.split(",");
+
+                    		$.each(ManufacturersID, function(index,manufacturer) {
+                    			if (Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Models.Name][manufacturer]) {
+	                    			$.each(Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Models.Name][manufacturer], function(index,obj) {
+	                    				if (obj.Id == ModelID) {
+											FoundManufacturer = manufacturer; 
+	                    				}
+	                    			});
+	                    		}
+                    		});
+                    		
+                    		return FoundManufacturer;
+                    	},
+                       
+                        // The Manufacturs call this function to set Refresh to true
+                        Reload : function() {
+							
+							if (Yad2.MultiSearch.searchChanged) {
+
+								// TODO: ReSelectModels
+								Yad2.MultiSearch.Fields.Cars.Models.ReSelectModels();
+								
+                        		Yad2.MultiSearch.Fields.Cars.Models.ReloadModels();
+                        		Yad2.MultiSearch.Fields.Cars.SubModels.ReloadSubModels();
+                        	}
+                        	
+                        	return true;
+                        },
+                        
+                        ajaxModels : function() {
+                        	
+                        	if ( yad2_fw.modelsMultiSearchJson != null ) {
+							   Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Models.Name] = yad2_fw.modelsMultiSearchJson;
+							   return;
+							}
+							
+							$.ajax({
+                                type: 'GET',
+                                url: Yad2.Settings.ajaxPath + 'ajax/sMultiSearch/Cars/CarModels.json',
+                                dataType: 'json',
+                                async: false,
+                                success: function(data) {
+									
+									if ( data && data.hasOwnProperty("regular") )
+									{
+										var data = data.regular;
+									}
+									
+									if (data && Yad2.oSize(data) > 0) {
+										Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Models.Name] = data;
+									}
+									else {
+										Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Models.Name] = {};
+									}
+								}
+                           });
+                        	
+                        },
+
+                        ReloadModels : function() {
+                        	
+                            var ManufacturerID;
+                            var ManufacturersTitle = new Array();
+                            
+                            var arrManufacturer = $("#arr" + Yad2.MultiSearch.Fields.Cars.Manufacturers.Name);
+                            
+                            if (arrManufacturer && arrManufacturer.val() != "") {
+                                ManufacturerID = arrManufacturer.val();
+                            }
+                            else {
+                                ManufacturerID = $("#" + Yad2.MultiSearch.Fields.Cars.Manufacturers.Name).val();
+                            }
+
+                            if (ManufacturerID != "" && ManufacturerID != "0")
+                            {
+                                var Manufacturers = new Array();
+                                
+                                if (ManufacturerID.indexOf(",") != -1) {
+                                    var Manufacturers = ManufacturerID.split(",");
+                                }
+                                else {
+                                    var Manufacturers = new Array();
+                                    Manufacturers[0] = ManufacturerID;
+                                }
+                                
+                                /*
+                                 * Get the Manufacturers titles into an array
+                                 */
+                                $.each(Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Manufacturers.Name], function(index,obj) {
+                                    
+                                    if ($.inArray(obj.Id, Manufacturers) != -1) {
+                                        ManufacturersTitle[obj.Id] = obj.Title;
+                                    }
+                                    
+                                });
+                                
+                                var multiSearchObj = Yad2.MultiSearch.UI.getMultiSearchObj(Yad2.MultiSearch.Fields.Cars.Models.Name);
+                                
+                                /*
+                                 * Change the multisearch box style depends on the numbers of the manufacturs that chosen
+                                 */
+                                if (Manufacturers.length == 4) {
+                                	Yad2.MultiSearch.UI.changeMultiSearchStyle(Yad2.MultiSearch.Fields.Cars.Models.Name, 'multi-search-box-4cells');
+                                }
+                                else if (Manufacturers.length > 1) {
+                                	Yad2.MultiSearch.UI.changeMultiSearchStyle(Yad2.MultiSearch.Fields.Cars.Models.Name, 'multi-search-box');
+                                } 
+                                // If only one Manufactur has chosen
+                                else {
+									Yad2.MultiSearch.UI.changeMultiSearchStyle(Yad2.MultiSearch.Fields.Cars.Models.Name, 'multi-search-box-flat');
+                                }
+                                
+                                /*
+                                 * If the json object is empty then fill it from the ajax
+                                 */
+                                if (Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Models.Name] == undefined || (Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Models.Name] && Yad2.oSize(Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Models.Name]) == 0) ) {
+                                	Yad2.MultiSearch.Fields.Cars.Models.ajaxModels();
+                                }
+                                
+                                var data = Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Models.Name];
+                                
+                                if (data && Yad2.oSize(data) > 0) {
+                                    
+                                    $("#"+multiSearchObj['content']).html('').width('auto');
+                                    
+                                    var html = '';
+                                    var boxWidth = 0;
+                                    
+                                    var i = 0;
+                                    
+                                    var currentChecked = new Array();
+                                    
+                                    $.each(Manufacturers, function(index, manufactur) {
+                                        
+                                        if (manufactur != "") {
+                                            if (i < Manufacturers.length-1 ) {
+                                                var classStyle = ' class="multi-search-v-seperator"';
+                                                var style = 'padding-left: 25px; margin-left: 25px;';
+                                            } else {
+                                                var classStyle = '';
+                                                var style = '';
+                                            }
+                                            
+                                            html = '<div style="float: right;'+style+'min-height: 180px;"'+classStyle+'>';
+                                            
+                                            html += '<div style="font-weight: bold; color: #FF5E0E; margin-bottom: 3px;">'+ManufacturersTitle[manufactur]+'</div>';
+                                            
+                                            $.each(data[manufactur], function(index, item) {
+
+												
+	                                            if (item.Id!=item.Parent) {
+	                                            	if (item.Parent == undefined) {
+	                                            		item.Parent = 0;
+	                                            	}
+	                                                var Parent = 'onclick="return Yad2.MultiSearch.Actions.Select(\''+Yad2.MultiSearch.Fields.Cars.Models.Name+'\',this);" data-multi-search-parent="'+item.Parent+'"';
+	                                            }
+	                                            else {
+	                                                var Parent = 'onclick="Yad2.MultiSearch.Actions.checkGroup(\''+Yad2.MultiSearch.Fields.Cars.Models.Name+'\','+item.Parent+');" data-multi-search-isParent="true"';
+	                                            }
+                                                
+                                                var checked = '';
+                                                
+                                                if (
+                                                	Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.Models.Name] && 
+                                                	Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.Models.Name][manufactur] &&
+                                                	Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.Models.Name][manufactur].length > 0
+                                                	) {
+                                                	if ($.inArray(item.Id, Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.Models.Name][manufactur]) != -1) {
+                                                		
+                                                		checked = ' checked="checked"';
+                                                		if (!currentChecked[manufactur]) {
+                                                			currentChecked[manufactur] = new Array();
+                                                		}
+	                                            		currentChecked[manufactur][currentChecked[manufactur].length] = item.Id;
+    	                                            	
+                                                	}
+                                                }
+                                                
+                                                html += '<div style="margin-bottom: 3px;">';
+                                                html += '<input data-ManufacturerID="'+manufactur+'" style="vertical-align: middle;" data-multi-search-name="'+Yad2.MultiSearch.Fields.Cars.Models.Name+'" ' + Parent + ' type="checkbox" id="chk'+Yad2.MultiSearch.Fields.Cars.Models.Name+'_'+item.Id+'" value="'+item.Id+'"'+checked+' />';
+                                                html += '<label style="margin-right: 4px;" id="lbl'+Yad2.MultiSearch.Fields.Cars.Models.Name+'_'+item.Id+'" for="chk'+Yad2.MultiSearch.Fields.Cars.Models.Name+'_'+item.Id+'">'+item.Title+'</label>';
+                                                html += '</div>';
+                                                    
+                                            });
+                                            
+                                            html += '</div>';
+
+                                            $("#"+multiSearchObj['content']).append(html);
+                                            
+                                            i++;
+                                        }
+                                        
+                                     });
+                                    
+                                    if (currentChecked.length > 0) {
+                                        Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.Models.Name] = currentChecked;
+									}
+									
+									/*
+									 * We need to set the container width so we need to display it and then hide it
+									 */
+									Yad2.MultiSearch.UI.ToggleDisplay(Yad2.MultiSearch.Fields.Cars.Models.Name);
+                                    $.each($("#"+multiSearchObj['content']).children('div'), function(index,element) {
+                                    	
+										boxWidth = parseInt(boxWidth) + (parseInt($(this).outerWidth(true)) + 5);
+										
+									});
+									Yad2.MultiSearch.UI.ToggleDisplay(Yad2.MultiSearch.Fields.Cars.Models.Name);
+									
+                                    if (boxWidth > 0) {
+                                    	$("#"+multiSearchObj['content']).width(boxWidth + (41*Manufacturers.length));
+                                    }
+                                	
+                                }
+                                
+                                Yad2.MultiSearch.Actions.Choose(Yad2.MultiSearch.Fields.Cars.Models.Name);
+                            }
+                            else {
+                            	Yad2.MultiSearch.Actions.Choose(Yad2.MultiSearch.Fields.Cars.Models.Name);
+                                return false;
+                            }
+                         	
+                            return true;
+                        	
+                        },
+                        
+                        // Get models
+                        GetModels : function() {
+                        	
+                        	var Manufacturers = Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.Manufacturers.Name];
+                        	
+                        	if (Manufacturers && Manufacturers.length == 1) {
+                        		Yad2.Search.Cars.LoadModels(Manufacturers[0]);
+                        	}
+                        	
+                        	if (!Yad2.MultiSearch.Fields.Cars.Models.ReloadModels()) {
+                        		Yad2.MultiSearch.Fields.Cars.SubModels.ReSelectSubModels();
+                        		alert("שים לב יש לבחור יצרן לפני בחירת דגם");
+                        		return false;
+                        	}
+                        	else {
+                        		Yad2.MultiSearch.Fields.Cars.SubModels.ReSelectSubModels();
+                        		return true;
+                        	}
+                            
+						},
+						
+						ReSelectModels : function() {
+							
+							if (Yad2.MultiSearch.checkedItems.SubModelID) {
+								
+								var SubModels = new Array();
+								
+								$.each(Yad2.MultiSearch.checkedItems.SubModelID, function(ModelID,SubModelID) {
+									if (
+										SubModelID != undefined &&
+										(Yad2.MultiSearch.checkedItems.ModelID && $.inArray(String(ModelID), Yad2.MultiSearch.checkedItems.ModelID) != -1) 
+									) {
+									//	console.log("SubModelID="+SubModelID);
+										SubModels[ModelID] = SubModelID;
+									}
+								});
+								
+								//if (Yad2.MultiSearch.searchChanged) {
+									Yad2.MultiSearch.checkedItems.SubModelID = SubModels;
+
+									$("#arr"+Yad2.MultiSearch.Fields.Cars.Models.Name).val(Yad2.MultiSearch.checkedItems.SubModelID.join());
+									
+									if (Yad2.MultiSearch.checkedItems.SubModelID.length > 0) {
+										$.each(Yad2.MultiSearch.checkedItems.SubModelID, function(index, SubModel) {
+											$("input[data-multi-search-name='"+Yad2.MultiSearch.Fields.Cars.Models.Name+"']").each(function(index,elm) {
+												elm = jQuery(elm);
+											//	console.log(SubModel);
+											//	console.log("elm="+elm.val());
+												if ($.inArray(elm.val(),SubModel) != -1) {
+													//console.log("FOUND="+elm.val());
+													elm.attr('checked',true);
+												}
+												else {
+													//console.log(SubModel);
+													//console.log("NOT FOUND="+elm.val());
+													elm.attr('checked',false);
+												}
+											});
+										});
+									}
+									else {
+										$("input[data-multi-search-name='"+Yad2.MultiSearch.Fields.Cars.Models.Name+"']:checked").each(function(index,elm) {
+											$(this).attr('checked',false);
+										});
+									}
+									
+									Yad2.MultiSearch.Actions.Choose(Yad2.MultiSearch.Fields.Cars.Models.Name);
+									
+									Yad2.MultiSearch.Fields.Cars.SubModels.ReSelectSubModels();
+							//	}
+							}
+							
+						}
+						
+                    },
+                    
+                    SubModels : {
+                    	ChosenTitle : 'תת דגם',
+                    	Name : 'SubSubModelID',
+                    	
+                    	Create : function() {
+                    		var multiSearchObj = Yad2.MultiSearch.UI.createMultiSearch(Yad2.MultiSearch.Fields.Cars.SubModels.Name, Yad2.MultiSearch.Fields.Cars.SubModels.ChosenTitle, '138', '-flat', false, null, 'Yad2.MultiSearch.Fields.Cars.SubModels.GetSubModels()');
+                    	},
+                    	
+                    	ReloadSubModels : function() {
+                    		
+                    		var Manufacturers = $("#arr" + Yad2.MultiSearch.Fields.Cars.Manufacturers.Name).val();
+                    		var Models = $("#arr" + Yad2.MultiSearch.Fields.Cars.Models.Name).val();
+                    		
+                    		var haveSubModels = false;
+                    		
+                    		if (Manufacturers != "" && Models != "") {
+                    			
+                    			var multiSearchObj = Yad2.MultiSearch.UI.getMultiSearchObj(Yad2.MultiSearch.Fields.Cars.SubModels.Name);
+                    			
+                    			var i = 0;
+                    			
+	                    		$.ajax({
+	                    			type: 'GET',
+	                    			url: Yad2.Settings.ajaxPath + 'ajax/sMultiSearch/Cars/CarSubModels.php?Manufacturers=' + Manufacturers + '&Models=' + Models,
+	                    			dataType: 'json',
+	                    			async: false,
+	                    			success: function(data) {
+	                    				
+	                    				if (data && Yad2.oSize(data) > 0) {
+	                    					
+	                                		haveSubModels = true;
+		                                    
+											/*
+			                                 * Get the Manufacturers titles & Models title into an array
+			                                 */
+			                                var ManufacturersTitle = new Array();
+			                                Manufacturers = Manufacturers.split(",");
+			                                
+			                                var ModelsTitle = new Array();
+			                                Models = Models.split(",");
+			                                
+			                                $.each(Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Manufacturers.Name], function(index,manufacturer) {
+			                                    if ($.inArray(manufacturer.Id, Manufacturers) != -1) {
+			                                        ManufacturersTitle[manufacturer.Id] = manufacturer.Title;
+			                                        
+			                                        /*
+					                                 * Get the Models titles into an array
+					                                 */
+			                                        $.each(Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Models.Name][manufacturer.Id], function(index,model) {
+					                                    if ($.inArray(model.Id, Models) != -1) {
+					                                        ModelsTitle[model.Id] = model.Title;
+					                                    }
+					                                });
+			                                    }
+			                                });
+		                                    
+		                                    $("#"+multiSearchObj['content']).html('').width('auto');
+		                                    
+		                                    var html = '';
+		                                    var boxWidth = 0;
+		                                    
+		                                    var i = 0;
+		                                    
+		                                    var currentChecked = new Array();
+		                                    
+		                                    $.each(Manufacturers, function(index, manufacturer) {
+		                                        
+		                                        var ManufactureHasSubModel = false;
+		                                        
+		                                        if (manufacturer != "") {
+		                                        	
+		                                        	/*
+		                                        	 * Check if there is any Models that checked in this manufacturer
+		                                        	 */
+		                                        	var hasModelsChecked = false;
+		                                        	//try {
+		                                        	$.each(Models, function(index,model) {
+		                                        		if (Yad2.MultiSearch.Fields.Cars.Models.FindManufacturerByModelID(manufacturer,model)) {
+		                                        			hasModelsChecked = true;
+		                                        		}
+		                                        	});
+		                                  //      	}catch(e){console.log(e.message);}
+		                                        	
+		                                        	if (hasModelsChecked) {
+			                                        	if (i < Manufacturers.length ) {
+			                                                var classStyle = ' class="multi-search-v-seperator"';
+			                                                var style = 'padding-left: 13px; margin-left: 13px;';
+			                                            } else {
+			                                                var classStyle = '';
+			                                                var style = '';
+			                                            }
+			                                        	
+			                                        	html = '<div style="float: right;'+style+'min-height: 180px;"'+classStyle+'>';
+			                                            
+	                                        			html += '<div style="font-weight: bold; color: #FF5E0E; margin-bottom: 3px;">'+ManufacturersTitle[manufacturer]+'</div>';
+			                                            
+			                                            $.each(Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Models.Name][manufacturer], function(index, model) {
+			                                            	
+			                                            	if ($.inArray(model.Id, Models) != -1) {
+			                                            		
+			                                            		var subModelsHTML = '';
+			                                            		if (data[manufacturer] && data[manufacturer][model.Id]) {
+			                                            			ManufactureHasSubModel = true;
+				                                            		$.each(data[manufacturer][model.Id], function(index, item) {
+				                                            			
+				                                            			if (item.Id!=item.Parent) {
+				                                            				if (item.Parent == undefined) {
+				                                            					item.Parent = 0;
+				                                            				}
+						                                                    var Parent = 'onclick="return Yad2.MultiSearch.Actions.Select(\''+Yad2.MultiSearch.Fields.Cars.SubModels.Name+'\',this);" data-multi-search-parent="'+item.Parent+'"';
+						                                                }
+						                                                else {
+						                                                    var Parent = 'onclick="Yad2.MultiSearch.Actions.checkGroup(\''+Yad2.MultiSearch.Fields.Cars.SubModels.Name+'\','+item.Parent+');" data-multi-search-isParent="true"';
+						                                                }
+						                                                
+						                                                var checked = '';
+				                                            			
+				                                            			if (
+				                                            				Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.SubModels.Name] &&
+				                                            				Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.SubModels.Name][manufacturer] &&
+				                                            				Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.SubModels.Name][manufacturer][model.Id] &&
+				                                            				Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.SubModels.Name][manufacturer][model.Id].length > 0
+				                                            				) {
+						                                                	if ($.inArray(item.Id, Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.SubModels.Name][manufacturer][model.Id]) != -1) {
+						                                                		checked = ' checked="checked"';
+						                                                		if (!currentChecked[manufacturer]) {
+						                                                			currentChecked[manufacturer] = new Array();
+						                                                		}
+						                                                		if (!currentChecked[manufacturer][model.Id]) {
+						                                                			currentChecked[manufacturer][model.Id] = new Array();
+						                                                		}
+						                                                		currentChecked[manufacturer][model.Id][currentChecked[manufacturer][model.Id].length] = item.Id;
+						                                                	}
+						                                                }
+						                                                
+						                                                subModelsHTML += '<div style="margin-bottom: 3px;">';
+						                                                subModelsHTML += '<input data-ManufacturerID="'+manufacturer+'" data-ModelID="'+model.Id+'" style="vertical-align: middle;" data-multi-search-name="'+Yad2.MultiSearch.Fields.Cars.SubModels.Name+'" ' + Parent + ' type="checkbox" id="chk'+Yad2.MultiSearch.Fields.Cars.SubModels.Name+'_'+item.Id+'" value="'+item.Id+'"'+checked+' />';
+						                                                subModelsHTML += '<label style="margin-right: 4px;" id="lbl'+Yad2.MultiSearch.Fields.Cars.SubModels.Name+'_'+item.Id+'" for="chk'+Yad2.MultiSearch.Fields.Cars.SubModels.Name+'_'+item.Id+'">'+item.Title+'</label>';
+						                                                subModelsHTML += '</div>';
+				                                            			
+				                                            		});
+				                                            		
+				                                            		if (subModelsHTML != "") {
+				                                            			html +='<div style="font-weight: bold; color: #000; margin-bottom: 3px; margin-top: 3px;">' + ModelsTitle[model.Id] + '</div>';
+				                                            			html += subModelsHTML;
+				                                            		}
+				                                            		
+				                                            	}
+
+			                                            	}
+			                                            	
+			                                            });
+			                                            
+			                                            html += '</div>';
+			                                            
+			                                            if (ManufactureHasSubModel) {
+			                                            	$("#"+multiSearchObj['content']).append(html);
+			                                            }
+			                                           
+			                                            i++;
+													} // if (hasModelsChecked)
+		                                        }
+
+		                                     });
+											
+											/*
+											 * If there is any checked items then add them to the object array of checkedItems 
+											 */
+											if (currentChecked.length > 0) {
+		                                        Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Cars.SubModels.Name] = currentChecked;
+											}
+											
+											/*
+											 * We need to set the container width so we need to display it and then hide it
+											 */
+											Yad2.MultiSearch.UI.ToggleDisplay(Yad2.MultiSearch.Fields.Cars.SubModels.Name);
+		                                    $.each($("#"+multiSearchObj['content']).children('div'), function(index,element) {
+												boxWidth = parseInt(boxWidth) + (parseInt($(this).outerWidth(true)) * 1.8);
+												//console.log("boxWidth="+boxWidth);
+											});
+											Yad2.MultiSearch.UI.ToggleDisplay(Yad2.MultiSearch.Fields.Cars.SubModels.Name);
+											//console.log("Total boxWidth="+boxWidth);
+		                                    if (boxWidth > 0) {
+		                                    	if (boxWidth > 980) {
+		                                    		boxWidth = 980;
+		                                    	}
+		                                    	else {
+		                                    		boxWidth = parseInt(boxWidth) + (35*parseInt(Manufacturers.length));
+		                                    	}
+		                                    	$("#"+multiSearchObj['content']).width(boxWidth);
+		                                    //	console.log("(35*parseInt(Manufacturers.length))="+(35*parseInt(Manufacturers.length)));
+		                                    //	console.log("parseInt(boxWidth) + 35*parseInt(Manufacturers.length)="+parseInt(parseInt(boxWidth) + (35*parseInt(Manufacturers.length))));
+		                                    }
+		                                	
+		                                }
+	                    				
+	                    			}
+	                    		});
+	                    		
+	                    		Yad2.MultiSearch.Actions.Choose(Yad2.MultiSearch.Fields.Cars.SubModels.Name);
+                    		}
+                    		else {
+                    			//שים לב יש לבחור דגם לפני בחירת תת דגם
+                    			return -1;
+                    		}
+                    		
+                    		if (haveSubModels) {
+                    			return 1;
+                    		}
+                    		else {
+                    			//לא קיימים תתי-דגמים לדגמים שנבחרו.
+                    			return -2;
+                    		}
+                    		
+                    	},
+                    	
+                    	GetSubModels : function() {
+                    		var SubModels = Yad2.MultiSearch.Fields.Cars.SubModels.ReloadSubModels();
+                    		
+                    		if (SubModels == -1) {
+                        		alert("שים לב יש לבחור דגם לפני בחירת תת דגם");
+                        		return false;
+                        	}
+                        	else if (SubModels == -2) {
+                        		alert("לא קיימים תתי-דגמים לדגמים שנבחרו.");
+                        		return false;
+                        	}
+                        	else {
+                        		return true;
+                        	}
+                    	},
+                    	
+                    	ReSelectSubModels : function() {
+							
+							if (Yad2.MultiSearch.checkedItems.SubSubModelID) {
+								
+								var SubSubModels = new Array();
+								var SubSubModelIDs = new Array();
+								
+								$.each(Yad2.MultiSearch.checkedItems.SubSubModelID, function(ModelID,SubModelID) {
+									if (SubModelID != undefined) {
+										$.each(Yad2.MultiSearch.checkedItems.SubSubModelID[ModelID], function(SubModelID, SubSubModel) {
+											if (SubSubModel != undefined) {
+												if (
+													SubSubModel != undefined &&
+													(Yad2.MultiSearch.checkedItems.ModelID && $.inArray(String(ModelID), Yad2.MultiSearch.checkedItems.ModelID) != -1) &&
+													(Yad2.MultiSearch.checkedItems.SubModelID && Yad2.MultiSearch.checkedItems.SubModelID[ModelID] && $.inArray(String(SubModelID), Yad2.MultiSearch.checkedItems.SubModelID[ModelID]) != -1) 
+												) {
+													if (!SubSubModels[ModelID]) {
+														SubSubModels[ModelID] = new Array();
+													}
+													 
+													SubSubModels[ModelID][SubModelID] = SubSubModel;
+													
+													$.each(SubSubModel, function(index, SubSubModelID) {
+														SubSubModelIDs[SubSubModelIDs.length] = SubSubModelID;
+													});
+												}
+											}
+										});
+									}
+									
+								});
+								
+									Yad2.MultiSearch.checkedItems.SubSubModelID = SubSubModels;
+	
+									$("#arr"+Yad2.MultiSearch.Fields.Cars.SubModels.Name).val(SubSubModelIDs.join());
+									
+									if (SubSubModelIDs.length > 0) {
+										
+										$("input[data-multi-search-name='"+Yad2.MultiSearch.Fields.Cars.SubModels.Name+"']:checked").each(function(index,elm) {
+											if ($.inArray($(this).val(),SubSubModelIDs) == -1) {
+												$(this).attr('checked',false);
+											}
+										});
+											
+									}
+									else {
+										$("input[data-multi-search-name='"+Yad2.MultiSearch.Fields.Cars.SubModels.Name+"']:checked").each(function(index,elm) {
+											$(this).attr('checked',false);
+										});
+									}
+									
+									Yad2.MultiSearch.Actions.Choose(Yad2.MultiSearch.Fields.Cars.SubModels.Name);
+								
+							}
+							
+						}
+                    
+                    },
+                    
+                    Gear : {
+                        ChosenTitle : 'תיבת הילוכים',
+                        Name : 'Auto',
+                        
+                        Create : function() {
+                        	
+                        	$.ajax({
+                                type: 'GET',
+                                url: Yad2.Settings.ajaxPath + 'ajax/sMultiSearch/Cars/CarGears.json',
+                                dataType: 'json',
+                                async: false,
+                                success: function(data) {
+                                    if (data && data.length > 0) {
+                                        
+                                        Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Gear.Name] = data;
+                                        
+                                        var html = '';
+                                        
+                                        $.each(data, function(index, item) {
+                                            
+                                            if (item.Id!=item.Parent) {
+                                                var Parent = 'onclick="return Yad2.MultiSearch.Actions.Select(\''+Yad2.MultiSearch.Fields.Cars.Gear.Name+'\',this);" data-multi-search-parent="'+item.Parent+'"';
+                                            }
+                                            else {
+                                                var Parent = 'onclick="Yad2.MultiSearch.Actions.checkGroup(\''+Yad2.MultiSearch.Fields.Cars.Gear.Name+'\','+item.Parent+');" data-multi-search-isParent="true"';
+                                            }
+                                            
+                                            html += '<div style="margin-bottom: 3px;">';
+	                                        html += '<input style="vertical-align: middle;" data-multi-search-name="'+Yad2.MultiSearch.Fields.Cars.Gear.Name+'" ' + Parent + ' type="checkbox" id="chk'+Yad2.MultiSearch.Fields.Cars.Gear.Name+'_'+item.Id+'" value="'+item.Id+'" />';
+	                                        html += '<label style="margin-right: 4px;" id="lbl'+Yad2.MultiSearch.Fields.Cars.Gear.Name+'_'+item.Id+'" for="chk'+Yad2.MultiSearch.Fields.Cars.Gear.Name+'_'+item.Id+'">'+item.Title+'</label>';
+	                                        html += '</div>';
+                                            
+                                        });
+                                        
+                                        var multiSearchObj = Yad2.MultiSearch.UI.createMultiSearch(Yad2.MultiSearch.Fields.Cars.Gear.Name, Yad2.MultiSearch.Fields.Cars.Gear.ChosenTitle, '60', '-flat', null, false);
+                                        
+                                        $("#"+multiSearchObj['content']).html(html);
+                                        
+                                        /*
+										 * We need to set the container width so we need to display it and then hide it
+										 */
+										var boxWidth = 0;
+										Yad2.MultiSearch.UI.ToggleDisplay(Yad2.MultiSearch.Fields.Cars.SubModels.Name);
+	                                    $.each($("#multi-search-"+Yad2.MultiSearch.Fields.Cars.SubModels.Name+"-scrollable-content").children('div'), function(index,element) {
+											boxWidth = parseInt(boxWidth) + (parseInt($(this).outerWidth(true)));
+										});
+										Yad2.MultiSearch.UI.ToggleDisplay(Yad2.MultiSearch.Fields.Cars.SubModels.Name);
+	                                    if (boxWidth > 0) {
+	                                    	$("#"+multiSearchObj['content']).width(boxWidth + (35*Manufacturers.length));
+	                                    }
+                                    }
+                                }
+                            });
+                        	
+                        }
+                    },
+                    
+                    Owner : {
+                    	ChosenTitle : 'בעלות',
+                    	Name : 'OwnerID',
+                    	
+                    	Create : function() {
+                    		
+                    		$.ajax({
+                                type: 'GET',
+                                url: Yad2.Settings.ajaxPath + 'ajax/sMultiSearch/Cars/CarOwners.json',
+                                dataType: 'json',
+                                async: false,
+                                success: function(data) {
+                                    if (data && data.length > 0) {
+                                        
+                                        Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Cars.Owner.Name] = data;
+                                        
+                                        var html = '';
+                                        
+                                        $.each(data, function(index, item) {
+                                            
+                                            if (item.Id!=item.Parent) {
+                                                var Parent = 'onclick="return Yad2.MultiSearch.Actions.Select(\''+Yad2.MultiSearch.Fields.Cars.Owner.Name+'\',this);" data-multi-search-parent="'+item.Parent+'"';
+                                            }
+                                            else {
+                                                var Parent = 'onclick="Yad2.MultiSearch.Actions.checkGroup(\''+Yad2.MultiSearch.Fields.Cars.Owner.Name+'\','+item.Parent+');" data-multi-search-isParent="true"';
+                                            }
+                                            
+                                            html += '<div style="margin-bottom: 3px;">';
+	                                        html += '<input style="vertical-align: middle;" data-multi-search-name="'+Yad2.MultiSearch.Fields.Cars.Owner.Name+'" ' + Parent + ' type="checkbox" id="chk'+Yad2.MultiSearch.Fields.Cars.Owner.Name+'_'+item.Id+'" value="'+item.Id+'" />';
+	                                        html += '<label style="margin-right: 4px;" id="lbl'+Yad2.MultiSearch.Fields.Cars.Owner.Name+'_'+item.Id+'" for="chk'+Yad2.MultiSearch.Fields.Cars.Owner.Name+'_'+item.Id+'">'+item.Title+'</label>';
+	                                        html += '</div>';
+                                            
+                                        });
+                                        
+                                        var multiSearchObj = Yad2.MultiSearch.UI.createMultiSearch(Yad2.MultiSearch.Fields.Cars.Owner.Name, Yad2.MultiSearch.Fields.Cars.Owner.ChosenTitle, '60', '-flat', null, false);
+                                        
+                                        $("#"+multiSearchObj['content']).html(html);
+                                    }
+                                }
+                            });
+                    		
+                    	}
+                    }
+                
+                	
+                },
+                
+                Nadlan : {
+                	
+                	Area : {
+                		Create : function() {               			
+                			var multiSearchObj = Yad2.MultiSearch.UI.createMultiSearch('Area', Yad2.MultiSearch.Fields.Area.ChosenTitle, '130', '-flat', true, null, "Yad2.MultiSearch.Actions.Nadlan.DisableArea();");
+                			Yad2.MultiSearch.Fields.Area.Create(multiSearchObj);
+                		}
+                	},
+                	
+                	City : {
+                		ChosenTitle : 'ישובים',
+                		Name : "City",
+                		
+                		/*
+                		 * Toggle the lightbox of choosing a city by typing in the autocomplete
+
+                		 * toggle false - hide
+                		 * toggle true - show
+                		 */
+                		ToggleNoCitiesLightbox : function(obj, toggle) {
+                			if (toggle == null || toggle == undefined) {
+                				toggle = false;
+                			}
+                			
+                			if (toggle) {
+                				obj.parents('div.msAutocompleteWrap').prev('div.city_autocomplete_popup').show();
+                				obj.parents('div.msAutocompleteInput').addClass('noCitiesSelected');
+                			}
+                			else {
+                				obj.parents('div.msAutocompleteWrap').prev('div.city_autocomplete_popup').hide();
+                				obj.parents('div.msAutocompleteInput').removeClass('noCitiesSelected');
+                			}
+                		},
+                		
+                		Create : function() {
+                			
+                			$.ajax({
+                                type: 'GET',
+                                url: Yad2.Settings.ajaxPath + 'ajax/sMultiSearch/Nadlan/Cities.json',
+                                dataType: 'json',
+                                async: false,
+                                success: function(data) {
+                                    if (data && data.length > 0) {
+                                    	Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Nadlan.City.Name] = data;
+                                    }
+                               }
+                            });
+
+                            var City = $("#"+Yad2.MultiSearch.Fields.Nadlan.City.Name);
+                            if (City.val() != "") {
+                                var cityId = Yad2.Search.Nadlan.RetrieveCityId(City.val());
+                                if (cityId > 0) {
+                                    City.attr('data-autocomplete-chosen-id', cityId);
+                                }
+                            }
+
+                            var multiSearchWidth = $("#"+Yad2.MultiSearch.Fields.Nadlan.City.Name).width();
+                			
+                			var multiSearchObj = Yad2.MultiSearch.UI.createMultiSearch(Yad2.MultiSearch.Fields.Nadlan.City.Name, Yad2.MultiSearch.Fields.Nadlan.City.ChosenTitle, multiSearchWidth, '-autocomplete', null, false, "Yad2.MultiSearch.Actions.Nadlan.DisableCities();");
+                			
+                			var html;
+
+                			html = '<div class="city_autocomplete_popup" style="display: none;"><div class="overlay"></div>';
+                				html += '<div class="content"><div onclick="Yad2.MultiSearch.Fields.Nadlan.City.ToggleNoCitiesLightbox($(\'#ms_City\'), false);" class="close"></div></div>';
+                			html += '</div>';
+                			
+                			html += '<div class="msAutocompleteWrap">';
+                				html += '<div class="msAutocomplete">';
+                					html += '<div class="msAutocompleteInput">';
+                						html += 'הקלד ישוב <br />';
+                						html += '<input autocomplete="off" type="text" id="ms_City" value="" />';
+            						html += '</div>';
+	                				html += '<ul id="msAutocompleteList_City" class="msAutocompleteList"></ul>';
+    	            			html += '</div>';
+    	            			html += '<div class="msAutocompleteSelected"><div class="title">ישובים שנבחרו:</div><ul class="msAutocompleteSelectedList" id="msAutocompleteSelectedList_City"></ul></div>';
+                			html += '</div>';
+                			
+                			$("#"+multiSearchObj['content']).html(html);
+                			
+                			$("#ms_City").sAutocomplete({ 
+                				ajaxFile	: '/ajax/autocomplete/cities.php',
+                				onTyping : function(obj) {
+                					if (obj.val() != "") {
+                						Yad2.MultiSearch.Fields.Nadlan.City.ToggleNoCitiesLightbox(obj, false);
+                					}
+                					else {
+                						if (Yad2.MultiSearch.checkedItems && Yad2.MultiSearch.checkedItems.City && Yad2.MultiSearch.checkedItems.City.length == 0) {
+                							Yad2.MultiSearch.Fields.Nadlan.City.ToggleNoCitiesLightbox(obj, true);
+                						}
+                					}
+                				},
+                				customizeAc : function(data, obj) {
+                					var content = "";
+                                    console.log(data);
+                					if (data != null && data != "" && typeof data == "object") {
+
+	                					$.each(data, function(index,city)
+										{
+										
+											var checked = "";
+											
+											if (Yad2.MultiSearch.Actions.Nadlan.isCityChecked(city.Id)) {
+												checked = 'checked="checked"';
+											}
+										
+											var onclick = 'onclick="Yad2.MultiSearch.Actions.Nadlan.SelectCity(this);"';
+											content += '<li>';	
+											content += '<input '+checked+' '+onclick+' data-multi-search-name="'+Yad2.MultiSearch.Fields.Nadlan.City.Name+'" type="checkbox" id="chkCity_'+city.Id+'" value="'+city.Id+'" />';
+											content += '<label id="chkCity_title_'+city.Id+'" for="chkCity_'+city.Id+'">';
+											content += city.Title;
+											content += '</label>';
+											content += '</li>';
+	
+										});
+									}
+									else if (obj.val() != "") {
+										content = "לא נמצאו ישובים";
+									}
+									else {
+										content = '';
+									}
+										
+									document.getElementById("msAutocompleteList_City").innerHTML = content;
+                				}
+                			});
+                		},
+                		
+                		Fill : function(cities) {
+
+                			if (cities && cities.length > 0) {
+	                			$.each(cities, function(index,city) {
+	                				$.each(Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Nadlan.City.Name], function(index, obj) {
+                    					if (obj.Id == city || obj.Title == city) {
+	                						Yad2.MultiSearch.Actions.Nadlan.addSelectedCity(obj.Id, obj.Title);
+	                					}
+	                				});
+	                			});
+	                		}
+                		}
+                	},
+                	
+                	Neighborhood : {
+                		ChosenTitle : 'שכונות',
+                		Name : 'Neighborhood',
+                		Create : function() {
+                			
+                			var multiSearchWidth = $("#"+Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name).width();
+                			
+                			var multiSearchObj = Yad2.MultiSearch.UI.createMultiSearch(Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name, Yad2.MultiSearch.Fields.Nadlan.Neighborhood.ChosenTitle, multiSearchWidth, '-autocomplete', null, false, "Yad2.MultiSearch.Actions.Nadlan.DisableNeighborhoods();");
+                			
+                			var html;
+                			
+                			html = '<div class="msAutocompleteWrap">';
+                				html += '<div class="msAutocomplete">';
+                					html += 'הקלד שכונה <br />';
+                					html += '<input autocomplete="off" type="text" id="ms_Neighborhood" value="" />';
+	                				html += '<ul id="msAutocompleteList_Neighborhood" class="msAutocompleteList"></ul>';
+    	            			html += '</div>';
+    	            			html += '<div class="msAutocompleteSelected"><div class="title">שכונות שנבחרו:</div><ul class="msAutocompleteSelectedList" id="msAutocompleteSelectedList_Neighborhood"></ul></div>';
+                			html += '</div>';
+                			
+                			$("#"+multiSearchObj['content']).html(html);
+                			
+                			Yad2.MultiSearch.Actions.Nadlan.DisableNeighborhoods();
+                			
+                			$("#ms_Neighborhood").sAutocomplete({ 
+                				ajaxFile	: '/ajax/autocomplete/neighborhood.php',
+                				paramsFields : {
+                					cities : function() { return Yad2.arrayToString(Yad2.MultiSearch.checkedItems.City); }
+                				},
+                				customizeAc : function(data) {
+                					var content = "";
+                					if (data != null && data != "" && typeof data == "object") {
+	                					$.each(data, function(index,neighborhood)
+										{
+										
+											var checked = "";
+											
+											if (Yad2.MultiSearch.Actions.Nadlan.isNeighborhoodChecked(neighborhood.Id)) {
+												checked = 'checked="checked"';
+											}
+										
+											var onclick = 'onclick="Yad2.MultiSearch.Actions.Nadlan.SelectNeighborhood(this);"';
+											content += '<li>';	
+											content += '<input '+checked+' '+onclick+' data-multi-search-name="'+Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name+'" type="checkbox" id="msNeighborhood_'+neighborhood.Id+'" value="'+neighborhood.Id+'" />';
+											content += '<label id="chkNeighborhood_title_'+neighborhood.Id+'" for="chkNeighborhood_'+neighborhood.Id+'">';
+											content += neighborhood.Title;
+											content += '</label>';
+											content += '</li>';
+	
+										});
+									}
+									else {
+										content = "לא נמצאו שכונות";
+									}
+									
+									document.getElementById("msAutocompleteList_Neighborhood").innerHTML = content;
+                				}
+                			});
+                		}
+                	},
+                	
+                	HomeType : {
+                		ChosenTitle : 'סוגי נכס',
+                		Name : 'HomeTypeID',
+                		Create : function() {
+                			$.ajax({
+	                            type: 'GET',
+	                            url: Yad2.Settings.ajaxPath + 'ajax/sMultiSearch/Nadlan/HomeTypes.php?SubCatID='+Yad2.MultiSearch.SubCatID,
+	                            dataType: 'json',
+	                            async: false,
+	                            success: function(data) {
+	                                if (data && data.length > 0) {
+	                                    
+	                                    Yad2.MultiSearch.jsonStorage[Yad2.MultiSearch.Fields.Nadlan.HomeType.Name] = data;
+	                                    
+	                                    var html = '';
+	                                    
+	                                    $.each(data, function(index, hometype) {
+	                                        
+                                            var onclick = 'onclick="return Yad2.MultiSearch.Actions.Select(\''+Yad2.MultiSearch.Fields.Nadlan.HomeType.Name+'\',this);"';
+	                                        
+	                                        html += '<div style="margin-bottom: 3px;">';
+	                                        html += '<input style="vertical-align: middle;" '+onclick+' data-multi-search-name="'+Yad2.MultiSearch.Fields.Nadlan.HomeType.Name+'" type="checkbox" id="chk'+Yad2.MultiSearch.Fields.Nadlan.HomeType.Name+'_'+hometype.Id+'" value="'+hometype.Id+'" />';
+	                                        html += '<label style="margin-right: 4px;" id="lbl'+Yad2.MultiSearch.Fields.Nadlan.HomeType.Name+'_'+hometype.Id+'" for="chk'+Yad2.MultiSearch.Fields.Nadlan.HomeType.Name+'_'+hometype.Id+'">'+hometype.Title+'</label>';
+	                                        html += '</div>';
+	                                    });
+	
+										var multiSearchWidth = $("#"+Yad2.MultiSearch.Fields.Nadlan.HomeType.Name).width()+10;
+	
+										var multiSearchObj = Yad2.MultiSearch.UI.createMultiSearch('HomeTypeID', Yad2.MultiSearch.Fields.Nadlan.HomeType.ChosenTitle, multiSearchWidth, '-flat', true);
+	                                    
+	                                    $("#"+multiSearchObj['content']).html(html);
+	                                }
+	                            }
+	                        });
+                		}
+                	}
+                }
+            },
+            
+            Actions : {
+				
+				Select : function(elmId, input) {
+				    
+					switch(Yad2.MultiSearch.CatID) {
+						case 1:
+							Yad2.MultiSearch.Actions.Cars.Select(elmId);
+							break;
+						case 2:
+							Yad2.MultiSearch.Actions.Nadlan.Select(elmId);
+							break;
+					}
+					
+					Yad2.MultiSearch.Actions.Global.Select(elmId, input);
+				},
+				
+				ClearAll : function(elmId) {
+
+                    if (elmId == 'options') {
+                      
+                        jQuery('#multi-search-'+elmId+'-scrollable-content').children('.option').children('input').each(function() {
+                       
+                            jQuery(this).prop('checked', false);             
+               
+                        });
+
+
+                    } else {
+                    
+                        switch(Yad2.MultiSearch.CatID) {
+                        	case 2:
+                        		Yad2.MultiSearch.Actions.Nadlan.ClearAll(elmId);
+                        		break;
+                        }
+                        
+                        Yad2.MultiSearch.Actions.Global.ClearAll(elmId);
+                        
+                        Yad2.MultiSearch.checkedItems[elmId] = new Array();
+                        
+                        Yad2.MultiSearch.searchChanged = true;
+
+                    }
+                },
+                
+                checkGroup : function(elmId, ParentId) {
+	                    
+                    Yad2.MultiSearch.Actions.Select(elmId, $("#chk" + elmId + "_" + ParentId));
+
+                    $("input[data-multi-search-name='"+elmId+"']").each(function(index, elm) {
+                        elm = jQuery(elm);
+                        if (elm.attr('data-multi-search-parent')) {
+                            if (elm.attr('data-multi-search-parent') == ParentId) {
+                                if ($("#chk" + elmId + "_" + ParentId).is(":checked")) {
+                                    elm.attr('checked', true);
+                                    Yad2.MultiSearch.Actions.Select(elmId, elm);
+                                }
+                                else {
+                                    elm.attr('checked', false);
+                                    Yad2.MultiSearch.Actions.Select(elmId, elm);
+                                }
+                            }
+                        }
+                    });
+                    
+                    Yad2.MultiSearch.searchChanged = true;
+                },
+                
+                SelectAll : function(elmId) {
+
+                    if (elmId == 'options') {
+                  
+                       jQuery('#multi-search-'+elmId+'-scrollable-content').children('.option').children('input').each(function() {
+                       
+                            jQuery(this).prop('checked', true); 
+                              jQuery("#isMultiSearch").prop("disabled", false);              
+               
+                        });
+
+
+                    } else {	
+                    	Yad2.MultiSearch.checkedItems[elmId] = new Array();
+                    	
+                        $("input[data-multi-search-name='"+elmId+"']").each(function(index,elm) {
+                            elm = jQuery(elm);
+                            elm.attr('checked', true);
+                           
+                           	Yad2.MultiSearch.Actions.Select(elmId, elm);
+                            
+                            /*
+    		                 * Saving into the object variable of checked Items in the same field
+    		                 */
+    		               // Yad2.MultiSearch.checkedItems[elmId][Yad2.MultiSearch.checkedItems[elmId].length] = elm.val();
+                        });
+                        
+                        Yad2.MultiSearch.searchChanged = true;
+
+                    }
+                },
+                
+                /*
+                 * Choose the checked checkboxes
+                 */
+                Choose : function(elmId) {
+                    switch(Yad2.MultiSearch.CatID) {
+						case 2: // Nadlan
+							switch(elmId) {
+								case Yad2.MultiSearch.Fields.Nadlan.City.Name:
+									Yad2.MultiSearch.Actions.Nadlan.ChooseCities(elmId);
+									break;
+								case Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name:
+									Yad2.MultiSearch.Actions.Nadlan.ChooseNeighborhoods(elmId);
+									break;
+								default:
+									Yad2.MultiSearch.Actions.Global.Choose(elmId);
+									break;
+									
+							}
+							/*if (elmId != Yad2.MultiSearch.Fields.Nadlan.City.Name && elmId != Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name) {
+								Yad2.MultiSearch.Actions.Global.Choose(elmId);
+							}
+							else if (elmId == Yad2.MultiSearch.Fields.Nadlan.City.Name){
+								Yad2.MultiSearch.Actions.Nadlan.ChooseCities(elmId);
+							}
+							else if (elmId == Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name) {
+								Yad2.MultiSearch.Actions.Nadlan.ChooseNeighborhoods(elmId);
+							}*/
+							break;
+						default:
+							Yad2.MultiSearch.Actions.Global.Choose(elmId);
+							break;
+					}
+                    
+                },
+                
+                FillMultiSearch : function(elmId, values) {
+                	
+                	if (values != "" && values != null) {
+	                    var selectedValues = values.split(",");
+	                    
+	                    if (selectedValues.length > 0) {
+	                    	
+	                    	if (Yad2.MultiSearch.MultiSearchFieldsFunctions[elmId] && Yad2.MultiSearch.MultiSearchFieldsFunctions[elmId] != "") {
+	                    		eval(Yad2.MultiSearch.MultiSearchFieldsFunctions[elmId]);
+	                    	}
+	                    	
+	                        for (var i = 0 ; i < selectedValues.length ; i++) {
+	                            var checkBox = $("#chk" + elmId + "_" + selectedValues[i]);
+	                            
+	                            if (checkBox) {
+	                            	$("#chk" + elmId + "_" + checkBox.val()).click()
+	                                $("#chk" + elmId + "_" + checkBox.val()).attr('checked', true);
+	                                Yad2.MultiSearch.Actions.Select(elmId, checkBox);
+	                                Yad2.MultiSearch.Actions.Choose(elmId);
+	                            }
+	                        }
+	                        
+	                        Yad2.MultiSearch.Actions.Choose(elmId);
+	                        
+	                    }
+					}
+				},
+				
+				Global : {
+	                
+	                /*
+	                 * This function is checking if all the childrens are checked
+	                 * if so - then we check the parent too
+	                 * else - we uncheck the parent
+	                 * (If there is a parent - data-multi-search-parent)
+	                 */
+	                Select : function(elmId, input) {
+	                    
+	                    input = jQuery(input);
+	                    
+	                    var maxSelect = $("#multi-search-" + elmId + "-maxSelect");
+	                    if (maxSelect && maxSelect.val() > 0) {
+	
+	                        var numSelected = 0;
+	                        $("input[data-multi-search-name='"+elmId+"']:checked").each(function(index,elm) {
+	                            numSelected++;
+	                        });
+	                                                
+	                        if (numSelected > maxSelect.val()) {
+	                            alert("ניתן לבחור עד " + maxSelect.val() + " " + $("#multi-search-" + elmId + "-title").html() + " בלבד");
+	                            input.attr('checked',false);
+	                            
+	                            return false;
+	                        }
+	                        
+	                    }
+
+	                    var ParentId = input.attr('data-multi-search-parent');
+	                    var Parent;
+	                    
+	                    if (ParentId) {
+	                        Parent = $("#chk" + elmId + "_" + ParentId)
+	                    }
+	                    
+	                    // If unchecked a children then uncheck his parent too
+	                    if (!input.is(":checked") && ParentId && ParentId != "") {
+	                        Parent.attr('checked',false);
+	                    }
+	                    
+	                    /*
+	                     * Check if all childrens of the parent are checked
+	                     * if so then check the parent too
+	                     */
+	                    var AllChildrensChecked = true;
+	                    if (ParentId) {
+	                        $("input[data-multi-search-parent='"+ParentId+"']").each(function(index,elm) {
+	                            elm = jQuery(elm);
+	                            if (!elm.is(":checked")) {
+	                                AllChildrensChecked = false;
+	                            }
+	                        });
+	                        
+	                        if (AllChildrensChecked) {
+	                            Parent.attr('checked',true);
+	                        }
+	                    }
+	                    
+	                    Yad2.MultiSearch.searchChanged = true;
+	                },
+	              
+	              	Choose : function(elmId) {
+	            		var selectedValues = new Array();
+                    
+	                    var ParentIds = new Array(); // Holds the index of the ParentId in the selectedValues array only if the parent itself is selected
+	                    var numParents = new Array(); // Hold the number of parent's children that selected
+	                    
+	                    /*
+	                     * Get all the values of the checked checkboxes into an array
+	                     */
+	                    $("input[data-multi-search-name='"+elmId+"']:checked").each(function(index,elm) {
+	                        elm = jQuery(elm);
+	                        
+	                        var Parent = elm.attr('data-multi-search-isParent');
+	                        
+	                        if (Parent != undefined && Parent == "true") {
+	                            ParentIds[ParentIds.length] = selectedValues.length;
+	                        }
+	
+	                        /*
+	                         * Get the parent of the children (if exists) and put it into the numParents array
+	                         */                        
+	                        var childrenParent = elm.attr('data-multi-search-parent');
+	                        
+	                        if (childrenParent != undefined) {
+	                            if ($.inArray(childrenParent, numParents) == -1) {
+	                                numParents[numParents.length] = childrenParent;
+	                            }
+	                        }
+	                        
+	                        // Put all the checked values into selectedValues array
+	                        selectedValues[selectedValues.length] = elm.val();
+	                    });
+	                    
+	                    // Insert into the multisearch hidden input a string of all the values of the checked checkboxes
+	                    $("#arr"+elmId).val(selectedValues.join(','));
+	                    
+	                    Yad2.MultiSearch.CheckMultiSearchArgs();
+	                    
+	                    /*
+	                     * If only one checkbox is selected then disabled the multisearch hidden input
+	                     * and undisable the regular select
+	                     * so instead of passing arrArea it will pass AreaID (for example)
+	                     */
+	                    if (selectedValues.length == 1) {
+	                    	
+	                        if (!Yad2.MultiSearch.isMultiSearchArgs) {
+	                            $("#" + elmId).val(selectedValues[0]).attr('disabled',false);
+	                            $("#arr" + elmId).attr('disabled',true);
+	                        }
+	                        
+	                        $("#multi-search-" + elmId + "-input").html($("#lbl" + elmId + "_" + selectedValues[0]).html());
+	                    }
+	                    /*
+	                     * else, if there is more checkboxes checked then disable the regular select
+	                     * and undisable the multisearch hidden input so the multi params will be passes
+	                     */
+	                    else if (selectedValues.length > 1) {
+	                        $("#" + elmId).val('').attr('disabled',true);
+	                        $("#arr" + elmId).attr('disabled',false);
+	                        
+	                        var numAreas = (parseInt(selectedValues.length) - parseInt(ParentIds.length));
+	                        
+	                        $("#multi-search-" + elmId + "-input").html( 'נבחרו (' + numAreas + ') ' + $("#multi-search-"+elmId+"-title").html() );
+	                        
+	                        /*
+	                         * If there is only 1 parent checked then show the parent title in the multisearch "input"
+	                         */
+	                        if ( (ParentIds.length == 1 && numParents.length == 1) ) {
+	                            $("#multi-search-" + elmId + "-input").html($("#lbl" + elmId + "_" + selectedValues[ParentIds[0]]).html());
+	                        }
+	                        
+	                        $("#arr" + elmId).attr('disabled',false);
+	                    }
+	                    else {
+	                        $("#multi-search-" + elmId + "-input").html( 'לחץ לבחירה' );
+	                        $("#arr" + elmId).attr('disabled',true);
+	                    }
+	            	},
+	                
+	                ClearAll :  function(elmId) {
+	                	$("input[data-multi-search-name='"+elmId+"']").each(function(index,elm) {
+	                        elm = jQuery(elm);
+	                        elm.attr('checked', false);
+	                    });
+	                }
+				},
+	            
+	            Cars : {
+	            	
+	            	Select : function(elmId) {
+	            		/*
+		                 * Saving into the object variable of checked Items in the same field
+		                 */
+		                Yad2.MultiSearch.checkedItems[elmId] = new Array();
+		                var countChecked=0;
+		                $("input[data-multi-search-name='"+elmId+"']:checked").each(function(index,elm) {
+		                	countChecked++;
+		                	elm = jQuery(elm);
+		                	
+		                	if (elm.attr('data-ManufacturerID') != undefined) {
+		                		if (elm.attr('data-ModelID') != undefined) {
+		                			if (!Yad2.MultiSearch.checkedItems[elmId][elm.attr('data-ManufacturerID')]) {
+		                				Yad2.MultiSearch.checkedItems[elmId][elm.attr('data-ManufacturerID')] = new Array();
+		                			}
+		                			if (!Yad2.MultiSearch.checkedItems[elmId][elm.attr('data-ManufacturerID')][elm.attr('data-ModelID')]) {
+		                				Yad2.MultiSearch.checkedItems[elmId][elm.attr('data-ManufacturerID')][elm.attr('data-ModelID')] = new Array();
+		                			}
+		                			Yad2.MultiSearch.checkedItems[elmId][elm.attr('data-ManufacturerID')][elm.attr('data-ModelID')][Yad2.MultiSearch.checkedItems[elmId][elm.attr('data-ManufacturerID')][elm.attr('data-ModelID')].length] = elm.val();
+		                		}
+		                		else {
+		                			if (!Yad2.MultiSearch.checkedItems[elmId][elm.attr('data-ManufacturerID')]) {
+		                				Yad2.MultiSearch.checkedItems[elmId][elm.attr('data-ManufacturerID')] = new Array();
+		                			}
+		                			Yad2.MultiSearch.checkedItems[elmId][elm.attr('data-ManufacturerID')][Yad2.MultiSearch.checkedItems[elmId][elm.attr('data-ManufacturerID')].length] = elm.val();
+		                		}
+		                	}
+		                	else {
+			                	Yad2.MultiSearch.checkedItems[elmId][Yad2.MultiSearch.checkedItems[elmId].length] = elm.val();
+			                }
+		                });
+		              
+						/* if this is submodel and after select there is no selected- clear all model select*/
+						if(elmId =='ModelID' && countChecked==0){
+							Yad2.MultiSearch.Actions.ClearAll('SubModelID');
+							$("#multi-search-SubModelID-input").html('לחץ לבחירה');
+						}
+	            	}
+	            	
+	            },
+	            
+	            Nadlan : {
+	            	
+	            	DisableArea : function() {
+	            		
+	            		if (Yad2.MultiSearch.checkedItems && Yad2.MultiSearch.checkedItems.City) {
+	            			if (Yad2.MultiSearch.checkedItems.City.length > 0) {
+	            				Yad2.MultiSearch.UI.disableMultiSearch(Yad2.MultiSearch.Fields.Area.Name, true);
+	            				return false;
+	            			}
+	            		}
+	            		
+	            		Yad2.MultiSearch.UI.disableMultiSearch(Yad2.MultiSearch.Fields.Area.Name, false);
+	            		
+	            		Yad2.MultiSearch.Actions.Nadlan.DisableCities();
+	            		
+	            		return true;
+	            		
+	            	},
+	            	
+	            	DisableCities : function() {
+	            		
+	            		/*
+	            		 * Focus on toggle cities box
+	            		 */
+	            		setTimeout(function() { $("#ms_City").focus(); } , 100);
+	            		
+	            		/*
+	            		 * we check if any cities is selected
+	            		 * if not, we show up the lightbox for choosing a city
+	            		 * else
+	            		 * we don't show the lightbox
+	            		 */
+	            		if (Yad2.MultiSearch.checkedItems && Yad2.MultiSearch.checkedItems.City) {
+	            			if (Yad2.MultiSearch.checkedItems.City.length > 0) {
+	            				Yad2.MultiSearch.Fields.Nadlan.City.ToggleNoCitiesLightbox($("#ms_City"), false);
+	            			}
+	            			else {
+	            				Yad2.MultiSearch.Fields.Nadlan.City.ToggleNoCitiesLightbox($("#ms_City"), true);
+	            			}
+	            		}
+	            		else {
+	            			Yad2.MultiSearch.Fields.Nadlan.City.ToggleNoCitiesLightbox($("#ms_City"), true);
+	            		}
+	            		
+	            		if (Yad2.MultiSearch.checkedItems && Yad2.MultiSearch.checkedItems.Area) {
+	            			if (Yad2.MultiSearch.checkedItems.Area.length > 0) {
+	            				Yad2.MultiSearch.UI.disableMultiSearch(Yad2.MultiSearch.Fields.Nadlan.City.Name, true);
+	            				return false;
+	            			}
+	            		}
+	            		
+	            		Yad2.MultiSearch.UI.disableMultiSearch(Yad2.MultiSearch.Fields.Nadlan.City.Name, false);
+	            		
+	            		return true;
+	            		
+	            	},
+	            	
+	            	DisableNeighborhoods : function() {
+	            		
+	            		if (Yad2.MultiSearch.checkedItems && Yad2.MultiSearch.checkedItems.City) {
+	            			if (Yad2.MultiSearch.checkedItems.City.length > 1) {
+	            				Yad2.Search.Nadlan.DisableInput('Neighborhood', true);
+	            				//Yad2.MultiSearch.UI.disableMultiSearch(Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name, false);
+	            				return true;
+	            			}
+	            		}
+	            		
+	            		Yad2.Search.Nadlan.DisableInput('Neighborhood', false);
+	            		//Yad2.MultiSearch.UI.disableMultiSearch(Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name, true);
+	            		
+	            		return false;
+	            		
+	            	},
+	            	
+	            	Select : function(elmId) {
+	            		/*
+		                 * Saving into the object variable of checked Items in the same field
+		                 */
+		                if (elmId != "City") {
+			                Yad2.MultiSearch.checkedItems[elmId] = new Array();
+			                var countChecked=0;
+			                $("input[data-multi-search-name='"+elmId+"']:checked").each(function(index,elm) {
+			                	countChecked++;
+			                	elm = jQuery(elm);
+			                		                	
+			                	Yad2.MultiSearch.checkedItems[elmId][Yad2.MultiSearch.checkedItems[elmId].length] = elm.val();
+			                });
+		               }
+	            	},
+	            	
+	            	addSelectedCity : function(Id,Title) {
+	            		
+	            		if (Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name] == undefined) {
+            				Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name] = new Array();
+            			}
+	            		Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name][Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name].length] = Id;
+	            		
+	            		var html;
+		            		
+	            		html = '<li id="msAutocompleteSelectedCity_'+Id+'">'
+	            		html += '<span class="msAutocompleteSelectedRemove" onclick="Yad2.MultiSearch.Actions.Nadlan.RemoveCity('+Id+')"></span>';
+	            		html += '<span class="msAutocompleteSelectedTitle">'+Title+'</span>';
+	            		html += '</li>';
+	            		
+	            		$("#msAutocompleteSelectedList_City").append(html);
+	            		
+	            	},
+	            	
+	            	SelectCity : function(city) {
+	            		
+	            		var city_title = $("#chkCity_title_"+city.value).html();
+	            		var cityId = city.value;
+	            		
+	            		var $city = jQuery(city);
+	            		
+	            		if ($city.is(":checked")) {
+		            		Yad2.MultiSearch.Actions.Nadlan.addSelectedCity(cityId, city_title);
+		            	}
+		            	else {
+		            		Yad2.MultiSearch.Actions.Nadlan.RemoveCity(cityId);
+		            	}
+	            		
+	            	},
+	            	
+	            	RemoveCity : function(cityId) {
+	            		$("#msAutocompleteSelectedCity_"+cityId).remove();
+	            		$("#chkCity_"+cityId).attr('checked',false);
+	            		
+	            		if (Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name] != undefined) {
+	            			var Cities = new Array();	            		
+		            		if (Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name]) {
+		            			$.each(Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name], function(index,city) {
+		            				if (city != cityId) {
+		            					Cities[Cities.length] = city;
+		            				}
+		            			});
+
+		            			Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name] = Cities;
+		            		}
+		            	}
+	            	},
+	            	
+	            	isCityChecked : function(cityId) {
+	            		
+	            		var isChecked = false;
+	            		
+	            		if (Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name]) {
+		            		$.each(Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name], function(index,city) {
+	            				if (city == cityId) {
+	            					isChecked = true;
+	            					return;
+	            				}
+	            			});
+	            		}
+            			
+            			return isChecked;
+	            		
+	            	},
+	            	
+	            	SelectNeighborhood : function(neighborhood) {
+	            		
+	            		var neighborhood_title = $("#chkNeighborhood_title_"+neighborhood.value).html();
+	            		var neighborhoodId = neighborhood.value;
+	            		
+	            		var $neighborhood = jQuery(neighborhood);
+	            		
+	            		if ($neighborhood.is(":checked")) {
+	            			
+	            			if (Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name] == undefined) {
+	            				Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name] = new Array();
+	            			}
+	            			//Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name][Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name].length] = neighborhoodId;
+	            			Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name]
+	            			
+		            		var html;
+		            		
+		            		html = '<li id="msAutocompleteSelectedNeighborhood_'+neighborhoodId+'">'
+		            		html += '<span class="msAutocompleteSelectedRemove" onclick="Yad2.MultiSearch.Actions.Nadlan.RemoveNeighborhood('+neighborhoodId+')"></span>';
+		            		html += '<span class="msAutocompleteSelectedTitle">'+neighborhood_title+'</span>';
+		            		html += '</li>';
+		            		
+		            		$("#msAutocompleteSelectedList_Neighborhood").append(html);
+		            	}
+		            	else {
+		            		Yad2.MultiSearch.Actions.Nadlan.RemoveNeighborhood(neighborhoodId);
+		            	}
+	            		
+	            	},
+	            	
+	            	RemoveNeighborhood : function(neighborhoodId) {
+	            		$("#msAutocompleteSelectedNeighborhood_"+neighborhoodId).remove();
+	            		$("#chkNeighborhood_"+neighborhoodId).attr('checked',false);
+	            		
+	            		if (Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name] != undefined) {
+	            			var Neighborhoods = new Array();	            		
+		            		if (Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name]) {
+		            			$.each(Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name], function(index,neighborhood) {
+		            				if (neighborhood != neighborhoodId) {
+		            					Neighborhoods[Neighborhoods.length] = neighborhood;
+		            				}
+		            			});
+
+		            			Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name] = Neighborhoods;
+		            		}
+		            	}
+	            	},
+	            	
+	            	isNeighborhoodChecked : function(neighborhoodId) {
+	            		
+	            		var isChecked = false;
+	            		
+	            		if (Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name]) {
+		            		$.each(Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name], function(index,neighborhood) {
+	            				if (neighborhood == neighborhoodId) {
+	            					isChecked = true;
+	            					return;
+	            				}
+	            			});
+	            		}
+            			
+            			return isChecked;
+	            		
+	            	},
+	            	
+	            	ChooseCities : function(elmId) {
+
+	            		if (!Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name]) {
+	            			return;
+	            		}
+	            		
+	            		var selectedValues = Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.City.Name];
+
+	                    // Insert into the multisearch hidden input a string of all the values of the checked checkboxes
+	                    $("#arr"+elmId).val(selectedValues.join(','));
+	                    
+	                    Yad2.MultiSearch.CheckMultiSearchArgs();
+
+	                    /*
+	                     * If only one checkbox is selected then disabled the multisearch hidden input
+	                     * and undisable the regular select
+	                     * so instead of passing arrArea it will pass AreaID (for example)
+	                     */
+	                    if (selectedValues.length == 1) {
+	                    	
+	                    	//var cityTitle = $("#msAutocompleteSelectedCity_"+selectedValues[0]+" span.msAutocompleteSelectedTitle").text()
+	                    	
+	                    	var cityTitle = Yad2.Search.Nadlan.RetrieveCityName(selectedValues[0]);
+
+	                    	$("#" + elmId).val(cityTitle); // Beacuse we need it here for the autocomplete of neighborhoods
+
+	                        if (!Yad2.MultiSearch.isMultiSearchArgs) {
+	                            $("#" + elmId).val(cityTitle).attr('disabled',false);
+	                            $("#arr" + elmId).attr('disabled',true);
+	                        }
+
+	                        $("#multi-search-" + elmId + "-input").html(cityTitle);
+	                    }
+	                    /*
+	                     * else, if there is more checkboxes checked then disable the regular select
+	                     * and undisable the multisearch hidden input so the multi params will be passes
+	                     */
+	                    else if (selectedValues.length > 1) {
+	                        $("#" + elmId).val('').attr('disabled',true);
+	                        $("#arr" + elmId).attr('disabled',false);
+	                        
+	                        var numAreas = parseInt(selectedValues.length);
+	                        
+	                        $("#multi-search-" + elmId + "-input").html( 'נבחרו (' + numAreas + ') ' + $("#multi-search-"+elmId+"-title").html() );
+
+	                        $("#arr" + elmId).attr('disabled',false);
+	                    }
+	                    else {
+	                        $("#multi-search-" + elmId + "-input").html( 'לחץ לבחירה' );
+	                        $("#arr" + elmId).attr('disabled',true);
+	                    }
+	                    
+	                    // Disable Area if any city has chosen
+	                    Yad2.Search.Nadlan.DisableArea(jQuery(Yad2.MultiSearch.Fields.Nadlan.City.Name));
+	                    Yad2.MultiSearch.Actions.Nadlan.DisableArea();
+	                    
+	                    // Disable or unDisable Neighborhoods
+	                    Yad2.MultiSearch.Actions.Nadlan.DisableNeighborhoods();
+
+	            	},
+	            	
+	            	ChooseNeighborhoods : function(elmId) {
+	            		
+	            		if (!Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name]) {
+	            			return;
+	            		}
+	            		
+	            		var selectedValues = Yad2.MultiSearch.checkedItems[Yad2.MultiSearch.Fields.Nadlan.Neighborhood.Name];
+	                    
+	                    // Insert into the multisearch hidden input a string of all the values of the checked checkboxes
+	                    $("#arr"+elmId).val(selectedValues.join(','));
+	                    
+	                    Yad2.MultiSearch.CheckMultiSearchArgs();
+	                    
+	                    /*
+	                     * If only one checkbox is selected then disabled the multisearch hidden input
+	                     * and undisable the regular select
+	                     * so instead of passing arrArea it will pass AreaID (for example)
+	                     */
+	                    if (selectedValues.length == 1) {
+	                    	
+	                    	var neighborhoodTitle = $("#msAutocompleteSelectedNeighborhood_"+selectedValues[0]+" span.msAutocompleteSelectedTitle").text()
+	                    	
+	                        if (!Yad2.MultiSearch.isMultiSearchArgs) {
+	                            $("#" + elmId).val(neighborhoodTitle).attr('disabled',false);
+	                            $("#arr" + elmId).attr('disabled',true);
+	                        }
+	                        
+	                        $("#multi-search-" + elmId + "-input").html(neighborhoodTitle);
+	                    }
+	                    /*
+	                     * else, if there is more checkboxes checked then disable the regular select
+	                     * and undisable the multisearch hidden input so the multi params will be passes
+	                     */
+	                    else if (selectedValues.length > 1) {
+	                        $("#" + elmId).val('').attr('disabled',true);
+	                        $("#arr" + elmId).attr('disabled',false);
+	                        
+	                        var numAreas = parseInt(selectedValues.length);
+	                        
+	                        $("#multi-search-" + elmId + "-input").html( 'נבחרו (' + numAreas + ') ' + $("#multi-search-"+elmId+"-title").html() );
+
+	                        $("#arr" + elmId).attr('disabled',false);
+	                    }
+	                    else {
+	
+	                        $("#multi-search-" + elmId + "-input").html( 'לחץ לבחירה' );
+	                        $("#arr" + elmId).attr('disabled',true);
+	                    }
+	                    
+	            	},
+	            	
+	            	ClearAll : function(elmId) {
+	            		
+	            		if (elmId == "City" || elmId == "Neighborhood") {
+	            			$("#msAutocompleteSelectedList_" + elmId).html('');
+	            		}
+	            		
+	            	}
+	            }
+	            
+           }
+            
+        } // /MultiSearch
+        
+    }
+    
+    if ( window.Yad2==null ) {
+        window.Yad2 = yad2_fw;
+    }
+    
+})(jQuery);

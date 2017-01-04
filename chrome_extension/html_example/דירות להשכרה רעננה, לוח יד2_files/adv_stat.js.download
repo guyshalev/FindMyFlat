@@ -1,0 +1,102 @@
+function is_numeric(src) {
+	if(src.length==0){
+		return false;
+	}
+	else{
+		var numberReg = "[0-9]";
+		var regex = new RegExp(numberReg);
+		return regex.test(src);
+	}
+}
+
+/*function stat( path, bid, Pid, redir ){
+	var bannerPath = path+"ajax/click_stat.php?BannerID="+bid+"&Pid="+Pid+"&redir="+redir;
+	if( is_numeric(bid) ){
+		try{
+			var myAjax = new Ajax.Request(
+				bannerPath,
+				{
+					method: 'get', 
+					onComplete: function(response) {
+							//alert("INNN "+response.responseText);
+						//location.href=response.responseText;
+					}
+				} 
+			);
+		}
+		catch(e){
+			jQuery.ajax({
+				url: bannerPath,
+				success:function(){
+					if (typeof console != "undefined")
+					{
+                         //console.log("success");
+					}
+
+				}
+			});
+		}
+	}
+*/	//return false;
+//}
+//
+function stat(path, bid, url, redir) 
+{
+    if (is_numeric(bid)) 
+    {
+		var bannerPath = path + "ajax/click_stat.php?sagiKing=" + bid + "&URL=" + url + "&redir=" + redir;
+		if (typeof Ajax !== "undefined") 
+		{
+			var myAjax = new Ajax.Request(
+							bannerPath,
+							{
+								method: 'get',
+								onComplete: function(response) {
+										//alert("INNN "+response.responseText);
+									//location.href=response.responseText;
+								}
+							}
+						);
+		}
+		else{
+
+			jQuery.ajax({
+					url: bannerPath,
+					async: false,
+					success: function(data) {
+				}
+			});
+		}
+    }
+}
+
+function stat_yad2( path, bid, url, redir ){
+	var bannerPath = path+"ajax/click_stat_yad2.php?BannerID="+bid+"&URL="+url+"&redir="+redir;
+	if( is_numeric(bid) ){
+		try{
+			var myAjax = new Ajax.Request(
+				bannerPath,
+				{
+					method: 'get', 
+					onComplete: function(response) {
+							//alert("INNN "+response.responseText);
+						//location.href=response.responseText;
+					}
+				} 
+			);
+		}
+		catch(e){
+			jQuery.ajax({
+				url: bannerPath,
+				success:function(){
+					if (typeof console != "undefined")
+					{
+                         //console.log("success");
+					}
+
+				}
+			});
+		}
+	}
+	//return false;
+}

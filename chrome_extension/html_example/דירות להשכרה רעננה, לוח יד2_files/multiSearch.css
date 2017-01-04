@@ -1,0 +1,340 @@
+/* 2012-12-09
+ * Snir Seagl
+ */
+div.multi-search-wrapper {
+  position: relative;
+}
+div.multi-search-element {
+  overflow: hidden;
+  border: 1px solid black;
+  font: 12px arial;
+  line-height: 150%;
+  height: 16px;
+  padding: 2px;
+  color: #111;
+  position: relative;
+  cursor: pointer;
+  background: white;
+  z-index: 9999;
+}
+div.multi-search-element.disabled {
+  border: 1px solid #666666;
+  color: #666666;
+}
+div.multi-search-tab {
+  width: auto;
+  /* TEMP */
+
+  padding-right: 2px;
+  padding-left: 2px;
+  background: white;
+  height: 45px;
+  /* MAYBE TEMP */
+
+  position: absolute;
+  top: 0px;
+  border: 1px solid #FF4E00;
+  border-bottom: 0px;
+  border-radius: 6px 6px 0px 0px;
+  margin: 0 -3px;
+  z-index: 1000;
+}
+div.multi-search-tab div.leftcurv {
+  position: absolute;
+  bottom: 0px;
+  left: -5px;
+  width: 5px;
+  height: 5px;
+  background: url(http://images.yad2.co.il/Pic/yad2new/multi_search/tabcurv_left.png) no-repeat;
+}
+div.multi-search-container {
+  /*z-index: 9999;*/
+
+}
+div.multi-search-box-flat {
+  width: auto;
+  min-width: 135px;
+  padding: 6px;
+  padding-left: 0;
+  padding-right: 0;
+  height: auto !important;
+  /*min-height: 250px;*/
+
+  background: white;
+  border: 1px solid #FF4E00;
+  border-radius: 6px 0px 6px 6px;
+  position: absolute;
+  z-index: 999;
+  margin: 8px -3px;
+  padding-bottom: 40px;
+}
+div.multi-search-box-autocomplete,
+div.multi-search-box {
+  width: auto;
+  min-width: 135px;
+  padding: 6px;
+  padding-left: 0;
+  padding-right: 0;
+  height: auto !important;
+  /*min-height: 250px;*/
+
+  background: white;
+  border: 1px solid #FF4E00;
+  border-radius: 6px 6px 6px 6px;
+  position: absolute;
+  z-index: 999;
+  margin: 8px -3px;
+  padding-bottom: 40px;
+  right: -60px;
+}
+div.multi-search-box-4cells {
+  width: auto;
+  min-width: 135px;
+  padding: 6px;
+  padding-left: 0;
+  padding-right: 0;
+  height: auto !important;
+  /*min-height: 250px;*/
+
+  background: white;
+  border: 1px solid #FF4E00;
+  border-radius: 6px 6px 6px 6px;
+  position: absolute;
+  z-index: 999;
+  margin: 8px -3px;
+  padding-bottom: 40px;
+  right: -150px;
+}
+div.multi-search-title {
+  font: 14px arial;
+  padding-right: 4px;
+  font-weight: bold;
+  color: black;
+}
+div.multi-search-close {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  width: 16px;
+  height: 17px;
+  background: url(http://images.yad2.co.il/Pic/yad2new/multi_search/multisearch_close.png) no-repeat;
+  cursor: pointer;
+}
+div.multi-search-inner-gray {
+  /*position: relative;*/
+
+  display: block;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  border: 2px solid #E7E7E7;
+  border-left: 1px solid #E7E7E7;
+  border-right: 1px solid #E7E7E7;
+  background: #F6F6F6;
+  padding: 2px;
+  padding-top: 2px;
+  padding-right: 5px;
+  margin-top: 7px;
+  font: 14px arial;
+  color: black;
+}
+div.multi-search-inner-gray div.multi-search-scrollable-content {
+  position: relative !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /*height: 240px;*/
+
+  height: auto;
+  max-height: 300px;
+}
+div.multi-search-inner-gray div.multi-search-scrollable-content .city_autocomplete_popup .overlay {
+  position: absolute;
+  background: #333;
+  width: 100%;
+  height: 100%;
+  opacity: 0.6;
+  z-index: 1;
+}
+div.multi-search-inner-gray div.multi-search-scrollable-content .city_autocomplete_popup .content {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  z-index: 2;
+  background: url('http://images.yad2.co.il/Pic/yad2new/multi_search/yeshuv_popup1.png') no-repeat;
+  width: 229px;
+  height: 156px;
+}
+div.multi-search-inner-gray div.multi-search-scrollable-content .city_autocomplete_popup .content .close {
+  width: 17px;
+  height: 17px;
+  position: absolute;
+  top: 13px;
+  left: 6px;
+  cursor: pointer;
+}
+div.multi-search-select {
+  position: absolute;
+  bottom: -5px;
+  left: 8px;
+  width: 49px;
+  height: 34px;
+  background: url(http://images.yad2.co.il/Pic/yad2new/multi_search/multisearch_select_btn.png) no-repeat;
+  cursor: pointer;
+}
+div.multi-search-actions {
+  position: absolute;
+  bottom: 11px;
+  right: 8px;
+  z-index: 999999;
+}
+div.multi-search-clearall {
+  display: inline-block;
+  min-width: 14px;
+  height: 15px;
+  background: url(http://images.yad2.co.il/Pic/yad2new/multi_search/multisearch_icon_clear.png) top right no-repeat;
+  padding-right: 14px;
+  font: 11px arial;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+  margin-left: 5px;
+}
+div.multi-search-selectall {
+  display: inline-block;
+  min-width: 14px;
+  height: 15px;
+  background: url(http://images.yad2.co.il/Pic/yad2new/multi_search/multisearch_icon_selall.png) top right no-repeat;
+  padding-right: 14px;
+  font: 11px arial;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+  margin-left: 5px;
+}
+div.multi-search-maxSelect {
+  /*float: left;*/
+
+  position: absolute;
+  top: 5px;
+  left: 27px;
+  font-size: 12px;
+  font-weight: normal;
+}
+div.multi-search-maxSelect-number {
+  width: 17px;
+  height: 16px;
+  display: inline-block;
+  background: #5E5E5D;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  font-family: arial;
+  border-radius: 100%;
+}
+div.multi-search-v-seperator {
+  background: url(http://images.yad2.co.il/Pic/yad2new/multi_search/box_v_spr1.png) 0px 0px no-repeat;
+}
+div.mytooltip {
+  display: none;
+  background: #d4d4d4 url(http://images.yad2.co.il/Pic/yad2new/multi_search/mytooltip_grad.png) top left repeat-x;
+  border: 1px solid #9a9a9a;
+  position: absolute;
+  z-index: 99999;
+  padding: 5px;
+  max-width: 340px;
+  max-height: 340px;
+  overflow-y: hidden;
+  font: 12px arial,tohama,verdana;
+  font-weight: normal;
+  color: #000;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+div.mytooltip span {
+  font-weight: bold;
+}
+.msAutocomplete_label {
+  display: block;
+  width: 125px;
+  clear: both;
+  margin-bottom: 3px;
+}
+.msAutocomplete_checkbox {
+  vertical-align: middle;
+}
+.msAutocomplete_span {
+  vertical-align: middle;
+}
+div.msAutocompleteWrap {
+  width: 300px;
+  height: 300px;
+  font-size: 12px;
+  font-family: arial;
+}
+div.msAutocompleteWrap div.msAutocomplete {
+  float: right;
+  width: 50%;
+  height: 100%;
+  padding-top: 8px;
+}
+div.msAutocompleteWrap div.msAutocomplete ul.msAutocompleteList {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+  margin-top: 3px;
+  overflow-y: scroll;
+  height: 100%;
+}
+div.msAutocompleteWrap div.msAutocomplete ul.msAutocompleteList li {
+  padding-bottom: 4px;
+}
+div.msAutocompleteWrap div.msAutocomplete ul.msAutocompleteList input {
+  vertical-align: middle;
+}
+div.msAutocompleteWrap div.msAutocomplete ul.msAutocompleteList label {
+  vertical-align: middle;
+  padding-right: 5px;
+}
+div.msAutocompleteWrap div.msAutocomplete div.msAutocompleteInput {
+  position: relative;
+  z-index: 2;
+  color: #000;
+}
+div.msAutocompleteWrap div.msAutocomplete div.msAutocompleteInput.noCitiesSelected {
+  color: #fff;
+}
+div.msAutocompleteWrap div.msAutocompleteSelected {
+  float: right;
+  width: 50%;
+  background: #cacdd0;
+  height: 100%;
+  overflow-y: scroll;
+}
+div.msAutocompleteWrap div.msAutocompleteSelected div.title {
+  font-weight: bold;
+  text-decoration: underline;
+  padding: 5px;
+}
+div.multi-search-box-autocomplete div.multi-search-inner-gray div.multi-search-scrollable-content {
+  overflow: hidden;
+}
+ul.msAutocompleteSelectedList {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+  margin-right: 5px;
+}
+ul.msAutocompleteSelectedList li span.msAutocompleteSelectedRemove {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  background: url('http://images.yad2.co.il/Pic/yad2new/multi_search/li_yeshuv_remove.png');
+  cursor: pointer;
+  vertical-align: middle;
+}
+ul.msAutocompleteSelectedList li span.msAutocompleteSelectedTitle {
+  vertical-align: middle;
+  padding-right: 5px;
+  display: inline-block;
+}

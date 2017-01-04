@@ -1,0 +1,81 @@
+.nadlan-apartments-deals-wrap {
+  width: 175px;
+  border: 3px solid #ddd;
+  margin-right: 3px;
+}
+.nadlan-apartments-deals-wrap .main-title {
+  color: #000;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 30px;
+}
+.nadlan-apartments-deals-wrap .sub-title {
+  color: #FF6600;
+  font-size: 14px;
+  text-align: center;
+  line-height: 25px;
+}
+.nadlan-apartments-deals-wrap .apartments-wrap {
+  margin: 5px auto 0px auto;
+  width: 90%;
+  height: auto;
+}
+.nadlan-apartments-deals-wrap .apartments-wrap .property {
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  width: 48%;
+  height: auto;
+  margin: 5px auto 5px auto;
+  font-size: 12px;
+  text-align: center;
+}
+.nadlan-apartments-deals-wrap .apartments-wrap .property a {
+  color: #000;
+  text-decoration: none;
+}
+.nadlan-apartments-deals-wrap .apartments-wrap .property a .rooms-vis {
+  width: 51px;
+  height: 42px;
+  position: relative;
+  margin: 0 auto 10px auto;
+}
+.nadlan-apartments-deals-wrap .apartments-wrap .property a .rooms-vis img {
+  margin: 0 auto;
+  width: 51px;
+  height: 42px;
+}
+.nadlan-apartments-deals-wrap .apartments-wrap .property a .rooms-vis .rooms-number {
+  position: absolute;
+  font-size: 16px;
+  font-weight: bold;
+  top: 10px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+.nadlan-apartments-deals-wrap .apartments-wrap .property a .deal-price {
+  font-weight: bold;
+  margin-top: 5px;
+  text-align: center;
+}
+.nadlan-apartments-deals-wrap .apartments-wrap .property a .deal-address {
+  color: #ff6600;
+}
+.nadlan-apartments-deals-wrap .apartments-wrap .property a .deal-sale-date {
+  color: #ccc;
+}
+.nadlan-apartments-deals-wrap .all-apartments-wrap {
+  margin: 10px auto 0 auto;
+  width: 97%;
+  height: 30px;
+  text-align: center;
+}
+.nadlan-apartments-deals-wrap .all-apartments-wrap a {
+  font-size: 12px;
+  font-weight: bold;
+  color: #037ECC;
+  text-decoration: underline;
+  line-height: 30px;
+}

@@ -1,0 +1,309 @@
+function disable_advance(SubCatID, t)
+{
+	if (document.getElementById('search_block'))
+			document.getElementById('search_block').className = 'search_block';
+	
+	if (SubCatID == 1 || SubCatID == 5 || SubCatID == 9 || SubCatID == 20)
+		disable_advance_sales(SubCatID, t);
+		
+	if (SubCatID == 2 || SubCatID == 6)
+		disable_advance_rent(SubCatID, t);
+		
+	if (SubCatID == 3)
+		disable_advance_partners(SubCatID, t);
+		
+	if (SubCatID == 4 || SubCatID == 7)
+		disable_advance_business(SubCatID, t);
+}
+
+function disable_advance_sales(SubCatID, t)
+{	
+	var fromSquareMeter = document.getElementById("fromSquareMeter");
+	var untilSquareMeter = document.getElementById("untilSquareMeter");
+	var Parking = document.getElementById("Parking");
+	var Elevator = document.getElementById("Elevator");
+	var AirConditioner = document.getElementById("AirConditioner");
+	var mamad = document.getElementById("mamad");
+	//var sunpatio = document.getElementById("sunpatio");
+	var Meshupatz = document.getElementById("Meshupatz");
+	var storeroom = document.getElementById("storeroom");
+	var handicapped = document.getElementById("handicapped");
+	var Immediate = document.getElementById("Immediate");
+	//var Flexible = document.getElementById("Flexible");
+	
+	if (t == 1)
+	{
+		fromSquareMeter.disabled = true;
+		untilSquareMeter.disabled = true;
+		Parking.disabled = true;
+		Elevator.disabled = true;
+		AirConditioner.disabled = true;
+		mamad.disabled = true;
+		//sunpatio.disabled = true;
+		if (Meshupatz != "undefined" && Meshupatz != null ) Meshupatz.disabled = true;		
+		storeroom.disabled = true;
+		handicapped.disabled = true;
+		Immediate.disabled = true;
+		//Flexible.disabled = true;
+	}
+	else
+	{
+		fromSquareMeter.disabled = false;
+		untilSquareMeter.disabled = false;
+		Parking.disabled = false;
+		Elevator.disabled = false;
+		AirConditioner.disabled = false;
+		mamad.disabled = false;
+		//sunpatio.disabled = false;
+		if (Meshupatz != "undefined" && Meshupatz != null ) Meshupatz.disabled = false;
+		storeroom.disabled = false;
+		handicapped.disabled = false;
+		Immediate.disabled = false;
+		//Flexible.disabled = false;
+	}
+}
+
+function disable_advance_rent(SubCatID, t)
+{
+	var fromSquareMeter = document.getElementById("fromSquareMeter");
+	var untilSquareMeter = document.getElementById("untilSquareMeter");
+	var Furniture = document.getElementById("Furniture");
+	var Parking = document.getElementById("Parking");
+	var Elevator = document.getElementById("Elevator");
+	var Grating = document.getElementById("Grating");
+	var AirConditioner = document.getElementById("AirConditioner");
+	var mamad = document.getElementById("mamad");
+	var Immediate = document.getElementById("Immediate");
+	var patio = document.getElementById("patio");
+    //var sunpatio = document.getElementById("sunpatio");
+    var Meshupatz = document.getElementById("Meshupatz");
+	var storeroom = document.getElementById("storeroom");
+	var handicapped = document.getElementById("handicapped");
+	var PetsInHouse = document.getElementById("PetsInHouse");
+	var Partner = document.getElementById("Partner");
+	
+	if (t == 1)
+	{
+		if (document.getElementById("td_freetext_advance").innerHTML != "")
+		{
+			document.getElementById("td_freetext").innerHTML = document.getElementById("td_freetext_advance").innerHTML;
+			document.getElementById("td_freetext_advance").innerHTML = '';
+			document.getElementById("td_freetext").style.display = '';
+		}
+		document.getElementById("Info").style.width = "152px";
+		//alert(document.getElementById("Info").style.width);
+		document.getElementById("td_advance_search").style.width = "700px";
+		
+		fromSquareMeter.disabled = true;
+		untilSquareMeter.disabled = true;
+		Furniture.disabled = true;
+		Parking.disabled = true;
+		Elevator.disabled = true;
+		Grating.disabled = true;
+		AirConditioner.disabled = true;
+		mamad.disabled = true;
+		if (Immediate) Immediate.disabled = true;
+		patio.disabled = true;
+       	//sunpatio.disabled = true;
+        if (Meshupatz != "undefined" && Meshupatz != null ) Meshupatz.disabled = true;			
+		storeroom.disabled = true;
+		handicapped.disabled = true;
+		PetsInHouse.disabled = true;
+		Partner.disabled = true;
+	}
+	else
+	{
+		if (document.getElementById("td_freetext").innerHTML != "")
+		{
+			document.getElementById("td_freetext_advance").innerHTML = document.getElementById("td_freetext").innerHTML;
+			document.getElementById("td_freetext").innerHTML = '';
+			
+			document.getElementById("td_freetext").style.display = 'none';
+		}
+		document.getElementById("Info").style.width = "152px";
+		//alert(document.getElementById("Info").style.width);
+		document.getElementById("td_advance_search").style.width = "100%";
+		
+		fromSquareMeter.disabled = false;
+		untilSquareMeter.disabled = false;
+		Furniture.disabled = false;
+		Parking.disabled = false;
+		Elevator.disabled = false;
+		Grating.disabled = false;
+		AirConditioner.disabled = false;
+		mamad.disabled = false;
+		if (Immediate) Immediate.disabled = false;
+		patio.disabled = false;
+        //sunpatio.disabled = false;
+        if (Meshupatz != "undefined" && Meshupatz != null ) Meshupatz.disabled = false;		
+		storeroom.disabled = false;
+		handicapped.disabled = false;
+		PetsInHouse.disabled = false;
+		Partner.disabled = false;
+	}
+}
+
+function disable_advance_partners(SubCatID, t)
+{
+	var Elevator = document.getElementById("Elevator");
+	var Meshupatz = document.getElementById("Meshupatz");
+	var Smoking = document.getElementById("Smoking");
+	var Grating = document.getElementById("Grating");
+	var patio = document.getElementById("patio");
+    //var sunpatio = document.getElementById("sunpatio");
+    var Meshupatz = document.getElementById("Meshupatz");
+	var storeroom = document.getElementById("storeroom");
+	var handicapped = document.getElementById("handicapped");
+	var Immediate = document.getElementById("Immediate");
+	var PetsInHouse = document.getElementById("PetsInHouse");
+	var kashrut = document.getElementById("kashrut");
+	
+	if (t == 1)
+	{
+		Elevator.disabled = true;
+		Meshupatz.disabled = true;
+		Smoking.disabled = true;
+		Grating.disabled = true;
+		patio.disabled = true;
+		storeroom.disabled = true;
+		handicapped.disabled = true;
+		Immediate.disabled = true;
+		PetsInHouse.disabled = true;
+		kashrut.disabled = true;
+                //sunpatio.disabled = true;
+				Meshupatz.disabled = true;
+	}
+	else
+	{
+		Elevator.disabled = false;
+		Meshupatz.disabled = false;
+		Smoking.disabled = false;
+		Grating.disabled = false;
+		patio.disabled = false;
+		storeroom.disabled = false;
+		handicapped.disabled = false;
+		Immediate.disabled = false;
+		PetsInHouse.disabled = false;
+		kashrut.disabled = false;
+                //sunpatio.disabled = false;
+				Meshupatz.disabled = false;
+	}
+}
+
+function disable_advance_business(SubCatID, t)
+{
+	var Parking = document.getElementById("Parking");
+	var Elevator = document.getElementById("Elevator");
+	var AirConditioner = document.getElementById("AirConditioner");
+	var Furniture = document.getElementById("Furniture");
+	var storeroom = document.getElementById("storeroom");
+	var handicapped = document.getElementById("handicapped");
+	var Immediate = document.getElementById("Immediate");
+	//var Flexible = document.getElementById("Flexible");
+        //var sunpatio = document.getElementById("sunpatio");
+        var sunpatio = document.getElementById("Meshupatz");
+		
+        var patio = document.getElementById("patio");
+	
+	if (t == 1)
+	{
+		Parking.disabled = true;
+		Elevator.disabled = true;
+		AirConditioner.disabled = true;
+		Furniture.disabled = true;
+		storeroom.disabled = true;
+		handicapped.disabled = true;
+		Immediate.disabled = true;
+		//Flexible.disabled = true;
+                //sunpatio.disabled = true;
+				Meshupatz.disabled = true;
+                patio.disabled = true;
+	}
+	else
+	{
+		Parking.disabled = false;
+		Elevator.disabled = false;
+		AirConditioner.disabled = false;
+		Furniture.disabled = false;
+		storeroom.disabled = false;
+		handicapped.disabled = false;
+		Immediate.disabled = false;
+		//Flexible.disabled = false;
+                //sunpatio.disabled = false;
+				Meshupatz.disabled = true;
+                patio.disabled = false;
+	}
+}
+
+function Hide_show_EnterDate(){
+	if(document.getElementById('Immediate').checked){
+		//document.getElementById('td_EnterDate').style.display='none';
+		document.form1.EnterDate.disabled=true;
+		document.form1.EnterDate.value="";
+	}else{
+		document.form1.EnterDate.disabled=false;
+		//document.getElementById('td_EnterDate').style.display='';
+	}
+}
+
+function set_area( city, focus ){
+	//alert("set_area");
+	if( document.getElementById('City_autocomplete').style.display=='none' ){
+		if(city=="" || city==null){
+			document.form1.AreaID.options[0].selected=false;
+			document.form1.AreaID.disabled=false;
+			//document.getElementById('td_area').style.display='';
+			//if (document.getElementById('td_hood')) document.getElementById('td_hood').style.display='none';
+			if (document.getElementById('td_hood')) document.getElementById('Neighborhood').disabled=true;
+			document.getElementById("AreaID").disalbed = false;
+		}else{
+			if (document.getElementById('td_hood')) document.getElementById('Neighborhood').disabled=false;
+			if( document.form1.City.value!="תל אביב יפו" ){
+				document.form1.AreaID.options[0].selected=true;
+				document.form1.AreaID.disabled=true;
+				//document.getElementById('td_area').style.display='none';	
+				//if (document.getElementById('td_hood')) document.getElementById('td_hood').style.display='';	
+				if (document.getElementById('td_hood')) document.getElementById('Neighborhood').disabled=false;
+				document.getElementById("AreaID").disalbed = true;
+			}
+			/*if( document.form1.Neighborhood && focus )
+				if(document.form1.Neighborhood)
+					document.form1.Neighborhood.focus();*/
+		}
+	}
+}
+function set_city( area ){
+		document.form1.City.value="";
+		document.getElementById('td_city').style.display='';	
+		if (document.getElementById('td_hood')) document.getElementById('Neighborhood').disabled=true;
+		document.getElementById("AreaID").disalbed = false;
+}
+
+function CheckHomeTypeBusiness(theID) {
+	if ((theID==47) || (theID==21)) {
+		if (document.getElementById('Sale').value==1)
+			location.href='rent.php?HomeTypeID=32';
+		else
+			location.href='sales.php?HomeTypeID=32';
+	}
+	if (theID==34) {
+		if (document.getElementById('Sale').value==1)
+			location.href='rent.php?HomeTypeID=44';
+		else
+			location.href='sales.php?HomeTypeID=44';
+	}
+}
+function CheckHomeTypetivBusiness(theID) {
+	if ((theID==47) || (theID==21)) {
+		if (document.getElementById('Sale').value==1)
+			location.href='tivrent.php?HomeTypeID=32';
+		else
+			location.href='tivsales.php?HomeTypeID=32';
+	}
+	if (theID==34) {
+		if (document.getElementById('Sale').value==1)
+			location.href='tivrent.php?HomeTypeID=44';
+		else
+			location.href='tivsales.php?HomeTypeID=44';
+	}
+}

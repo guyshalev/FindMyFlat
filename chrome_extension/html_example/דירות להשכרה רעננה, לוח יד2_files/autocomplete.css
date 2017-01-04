@@ -1,0 +1,20 @@
+div.autocomplete {
+	width: 150px; 
+	color: black;
+	border: solid 1px #8986B5;
+	heigth: 16px; 
+	font-size: 12px; 
+	font-family: Arial;}
+div.autocomplete, div.autocomplete {margin:0px;padding:0px;text-align:left;}
+div.autocomplete{width:150px;background-color:white;border:1px solid #888;}
+
+.cword{
+	cursor:pointer; 
+	padding-right:10px;
+	padding-top:2px;
+	padding-bottom:2px;
+	font-family:Arial, Helvetica, sans-serif;
+	font-weight:bold;
+	font-size:11px;
+	color: black;
+}

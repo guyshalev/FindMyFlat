@@ -1,0 +1,133 @@
+function CheckForm(f){
+	var bool=false;
+
+	if( f.Username.value.length==0 || f.Username.value=="אימייל"){
+		alert("הזן שם משתמש בבקשה");
+		f.Username.focus();
+		bool=false;	
+	}else if( f.Password.value.length==0){
+		alert("הזן סיסמה בבקשה");
+		f.txtPassword.focus();
+		bool=false;	
+	}else{
+		bool=true;
+	}
+
+	return bool;
+			
+}
+
+function CheckEmail(src) {
+	if( src.length>0 ){
+		var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+		var regex = new RegExp(emailReg);
+		return regex.test(src.trim());
+	}else{
+		return false;
+	}
+}
+
+function Send_Mail(){
+	f=document.LoginForm;
+	if( f.SendMail.value.length=0){
+		alert('הזן דוא"ל בבקשה.')
+		f.SendMail.focus();
+	}else if(!CheckEmail(f.SendMail.value)){
+		alert('הזן דוא"ל חוקי בבקשה.')
+		f.SendMail.focus();
+	}else{
+		//f.action="<?=$_SERVER["PHP_SELF"]?>"
+		f.submit();
+	}
+}
+
+function dispaysendmail(){
+
+	if (document.getElementById("regular").style.display=="none") {  
+        document.getElementById("sendpass").style.display = "none";
+		document.getElementById("regular").style.display = "";
+	}else{            
+		document.getElementById("regular").style.display = "none";
+        document.getElementById("sendpass").style.display = "";
+		document.getElementById("SendMail").value=document.getElementById("Username").value;
+	}
+}	 
+
+function getCookie(c_name){
+	//alert("document.cookie="+document.cookie+"\ndocument.cookie.length="+document.cookie.length);
+if (document.cookie.length>0)
+  {
+  c_start=document.cookie.indexOf(c_name + "=")
+  if (c_start!=-1)
+    { 
+    c_start=c_start + c_name.length+1 
+    c_end=document.cookie.indexOf(";",c_start)
+    if (c_end==-1) c_end=document.cookie.length
+		//alert(unescape(document.cookie.substring(c_start,c_end)));
+    return unescape(document.cookie.substring(c_start,c_end))
+    } 
+  }
+return null
+}
+
+function checkCookie(){
+
+	var cookies_support=getCookie('COOKIES_SUPPORT');
+	if( cookies_support!=1 && cookies_support!="1" ){
+				
+		str="<TABLE bgcolor='#ff0000' style='border: solid 0px black'>";
+		str=str+"<TR><TD style='font-size: 13px; color: white; font-weight: bold; padding-right: 10px; padding-left: 10px; padding-top: 7px; padding-bottom: 7px;'>אפשרות הדפדפן שלך עבור 'Cookies' לא מופעלת.<BR>אנא הפעל אותה על מנת שתוכל להנות משרותי האזור האישי.</TD></TR>";
+		str=str+"</TABLE><BR>&nbsp;";
+		document.getElementById("java_support").innerHTML=str;
+		document.getElementById('java_support').style.visibility = 'visible';
+		document.getElementById('java_support').style.display='block';
+
+	}
+}
+
+var checked=1;
+function check_kones_restore(mail, pass_e){
+	if (mail != 'כתובת דוא"ל / שם משתמש' && mail.length>0) {
+		if (checked==1 && !CheckEmail(mail) ) {
+			document.getElementById('nomatch').style.visibility = 'visible';
+			document.getElementById('nomatch').style.display = 'block';
+			checked=2;
+// console.log('here11');
+			return false;
+		} else if (!CheckEmail(mail)) {
+			alert('שם המשתמש או הסיסמה שהזנת שגויים.');
+// console.log('here21');
+			return false;
+		}/*  else {
+console.log('here31');
+		} */
+	} else {
+		alert('הזן דוא"ל בבקשה.');
+		return false;
+	}
+	
+	var pe = document.getElementById(pass_e);
+	if (pe) {
+// console.log('2-->'+pass_e.value);
+		if (pe.value == '' || pe.value == 'סיסמא') {
+			alert('הזן סיסמא בבקשה.');
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+function fix_spaces(field_login, field_pass) {
+	if (document.getElementById(field_login).value != 'כתובת דוא"ל / שם משתמש') {
+		document.getElementById(field_login).value = document.getElementById(field_login).value.replace(/ /, '');
+	}
+	if (field_pass && document.getElementById(field_pass).value != 'סיסמא') {
+		document.getElementById(field_pass).value = document.getElementById(field_pass).value.replace(/ /, '');
+	} else if (field_pass && (document.getElementById(field_pass).value == 'סיסמא' || document.getElementById(field_pass).value == '')) {
+		alert('הזן סיסמא בבקשה.')
+		return false;
+	}
+	return true;
+}
+

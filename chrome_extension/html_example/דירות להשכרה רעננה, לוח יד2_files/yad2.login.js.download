@@ -1,0 +1,257 @@
+/**
+ * Created by user on 31/03/14.
+ */
+
+var yad2Login;
+yad2Login = function(submitButton,forgetPassword,showForgetPassword){
+    var tpl = {
+        'doUWantToDisconnect':"\u05d4\u05d0\u05dd \u05d0\u05ea\u05d4 \u05d1\u05d8\u05d5\u05d7 \u05e9\u05d0\u05ea\u05d4 \u05e8\u05d5\u05e6\u05d4 \u05dc\u05d4\u05ea\u05e0\u05ea\u05e7?",
+        'invalidEmailAddress':"\u05db\u05ea\u05d5\u05d1\u05ea \u05d4\u05d3\u05d5\u05d0\"\u05dc \u05dc\u05d0 \u05ea\u05e7\u05e0\u05d9\u05ea",
+        'unexpectedErrorTryAgain':"\u05d4\u05ea\u05e8\u05d7\u05e9\u05d4 \u05e9\u05d2\u05d9\u05d0\u05d4 \u05d1\u05dc\u05ea\u05d9 \u05e6\u05e4\u05d5\u05d9\u05d4 \n \u05d0\u05e0\u05d0 \u05e0\u05e1\u05d5 \u05e9\u05e0\u05d9\u05ea",
+        'enterUserName':"\u05d0\u05e0\u05d0 \u05d4\u05d6\u05df \u05e9\u05dd \u05de\u05e9\u05ea\u05de\u05e9",
+        'enterPassword':"\u05d0\u05e0\u05d0 \u05d4\u05d6\u05df \u05e1\u05d9\u05e1\u05de\u05d0",
+        'enterSecurityCode':"\u05d0\u05e0\u05d0 \u05d4\u05d6\u05df \u05e7\u05d5\u05d3 \u05d0\u05d1\u05d8\u05d7\u05d4"
+    };
+    var self = this;
+    this.submitButton = submitButton || "#submit";
+    this.forgetPasswordButton = forgetPassword || "#forgetPasswordSubmit";
+    this.showForgetPassword = showForgetPassword || ".forgetPassword";
+    this.forgetPassAjaxSent = false;
+    this.path = "//"+window.location.hostname+"/newOrder/index.php?action=forgetPassword";
+    this.forgetPassAjaxSentCount = 0;
+    this.logoutInit = function(){
+        "use strict";
+        var $logout = $(".logout");
+            if ($logout.length){
+                $logout.on("click",function(){
+                if (confirm(tpl.doUWantToDisconnect)){
+                    var sep = (window.location.href.indexOf("?") == -1) ? "?" : "&";
+                    var href = window.location.href;
+                    var length = href.indexOf("#") == -1 ? href.length : href.indexOf("#");
+                    if (typeof pJS !== "undefined"){
+                        pJS.warnUp = false;
+                    }
+                    window.location.href =  href.substring(0,length)+sep+"logout=1";
+                }
+            });
+        }
+    };
+    this.openForgetPassword = function(){
+                $.sLightbox({content: "forgetPasswordCnt",
+                             type: "element",
+                             overlayClose:true,
+                             overlayOpacity: 0.5,
+                            complete:function(){
+                                        var loginFormCntOffset = $("#userName").offset();
+                                        var $userName = $("[name='UserName']");
+                                            if ($userName.length && Y2JS.forms.checkEmail($userName.val())){
+                                                $("#forgetEmail").val($userName.val());
+                                            }
+                                        if (loginFormCntOffset != null)
+                                            $("#sLightbox_container").css({'top':loginFormCntOffset.top,'left':loginFormCntOffset.left});
+                                        $(self.forgetPasswordButton).on("click",function(){
+                                            var callback = function() {
+                                                $t.removeProp("disabled").removeClass("disabled");
+                                            };
+                                            var $t = $(this);
+                                            if ($t.hasClass("disabled")){
+                                                return;
+                                            }
+                                            $t.prop("disabled",true).addClass("disabled");
+                                            if (!self.forgetPassword(true,null,true,callback)){
+                                                callback(true);
+                                            }
+                                        });
+                    }
+                });
+    };
+    this.forgetPassword = function(asyncParam, actionPath, hasLightBox, callback){
+        var $email = $("#forgetEmail"),
+            $remindPasswordForm = $('#remindPasswordForm'),
+            email = $email.val();
+        if (!window.Y2JS.forms.checkEmail(email)){
+            alert(tpl.invalidEmailAddress);
+            $email.focus();
+            return false;
+        }
+        if (!self.forgetPassAjaxSent){
+            if(typeof asyncParam === "undefined"){
+                asyncParam = true;
+            }
+
+            var postData = {'email':email};
+            var $captchaInp = $('#pw_inputCaptcha');
+            if (($captchaInp.length)&&($captchaInp.is(":visible") == true)){
+                postData['securemail'] = $captchaInp.val();
+            }else{
+                postData['hisHiddenCaptcha'] = 1;
+            }
+
+            $.ajax({
+                type:"POST",
+                async: asyncParam,
+                data:postData,
+                dataType:"json",
+                url: (typeof actionPath === "string" ? actionPath : self.path),
+                beforeSend:function(){
+                    self.forgetPassAjaxSent = true
+                },
+                error : function(){
+                    "use strict";
+                    self.forgetPassAjaxSent = false;
+                    alert(tpl.unexpectedErrorTryAgain);
+                },
+                success:function(response){
+                    try{
+                        self.forgetPassAjaxSent = false;
+                        if (response.captcha==false&&response.error==true)
+                            alert(response.msg);
+                        if (response.captcha==false&&response.error==false){
+                            jQuery(".hideOnMailSuccess").hide();
+                            jQuery("#mailResponse").html(response.msg).css("display","block");
+                            alert(response.msg);
+                        }
+                        if (response.captcha){
+                            var $captchaWrap = $(".captchaWrap");
+                            var $insertCaptchaForgotPWRow = $(".insertCaptchaForgotPWRow");
+                            if($captchaWrap.length){
+                                $captchaWrap.removeClass("display-none");
+                                $("#forgetPasswordCnt").addClass("captcha");
+                                alert(response.msg);
+                            }else if($insertCaptchaForgotPWRow.length){
+                                $insertCaptchaForgotPWRow.show();
+                                jQuery(".trMailResponse").find(".hideOnMailSuccess").show();
+                                jQuery("tr.mailResponse").hide();
+                                var $mailResponse  = jQuery("#mailResponse");
+                                $mailResponse.hide();
+                              if (response.error==false && response.captcha){
+                                  jQuery(".insertCaptchaForgotPWRow").hide();
+                                  jQuery(".hideOnMailSuccess").hide();
+                                  $mailResponse.html(response.msg).css("display","block");
+                                  alert(response.msg);
+                              }else {
+                                  alert(response.msg);
+                              }
+                            }
+
+                        }
+                        if (response.error){
+                            var $captchaImg = $("#ForgotPWcaptcha");
+                            if ($captchaImg.length){
+                                if (typeof $captchaImg.data("src") === "string"){
+                                    var src = $captchaImg.data("src");
+                                    $captchaImg.removeData("src");
+
+                                }else{
+                                    var src = $captchaImg.attr("src");
+                                }
+                                if (src)
+                                    $captchaImg.attr("src",src.replace(/t=(\d+)/,"t="+new Date().getTime()));
+                            }
+
+                            $email.focus();
+                            if(callback && typeof callback === "function"){
+                                callback();
+                            }
+                            return false;
+                        }
+                        else{
+                            if(callback && typeof callback === "function"){
+                                callback();
+                            }
+                            if(!hasLightBox && $("#sLightbox_container").length){
+                                $.sLightbox.close();
+                            }
+                            else if ($remindPasswordForm.length){
+                                $remindPasswordForm.fadeToggle('slow');
+                            }
+                            self.forgetPassAjaxSentCount++;
+                            return true;
+                        }
+                    }
+                    catch (e){
+                        alert(tpl.unexpectedErrorTryAgain);
+                        $email.focus();
+                        if(callback && typeof callback === "function"){
+                            callback();
+                        }
+                        return false;
+                    }
+                }
+            });
+        }
+        return true;
+    };
+
+    this.login = function(){
+        var $form = $("#loginForm");
+
+        if(!$form.length){
+            return;
+        }
+
+        var $userName = $form.find("#userName"),
+            $password = $form.find("#password"),
+            $captcha = $form.find("#captcha");
+
+        if(!$userName.val().length){
+			self.setErrorMsg(tpl.enterUserName,$userName);
+            return false;
+        }
+        if(!$password.val().length){
+			self.setErrorMsg(tpl.enterPassword,$password);
+            return false;
+        }
+        if ($captcha.length && $captcha.is(":not(:disabled)") && !$captcha.val().length){
+			self.setErrorMsg(tpl.enterSecurityCode,$captcha);
+            return false;
+        }
+        $form.submit();
+        return true;
+    };
+	
+	this.setErrorMsg = function(errorMsg,$field){
+			  var $form = $("#loginForm");
+			  if ($form.find(".errors.row .error label").length){
+					$form.find(".errors .error label").attr("for",$field.attr("name")).html(errorMsg);
+					$field.focus();
+					return true;
+			  }
+			  var $errors = $form.find(".errors.row");
+			  if ($errors.length)
+				$errors.empty();
+			  else{
+					$errors = $("<div />",{'class' : 'errors row'});
+						$form.find(".row.buttonCnt").before($errors);
+					}
+					
+			$errors.append($("<div />",{'class':'error'}).append($("<label />",{'for':$field.attr("name")}).html(errorMsg)));
+			$field.focus();
+			return true;
+	};
+    this.actions = function(){
+        $(this.submitButton).on("click",function(){
+            self.login();
+        });
+		
+	$("#password,#userName").on("keydown",function(e){
+			var keyCode = (window.event) ? e.which : e.keyCode;
+			   if (keyCode == 13)
+				   self.login();
+	});
+        $(this.forgetPasswordButton).on("click",function(){
+                self.forgetPassword();
+         });
+
+        $(this.showForgetPassword).on("click",function(){
+                self.openForgetPassword();
+        });
+   }
+};
+
+var loginJS;
+$(document).ready(function(){
+    loginJS = new yad2Login();
+    loginJS.logoutInit();
+    loginJS.actions();
+});

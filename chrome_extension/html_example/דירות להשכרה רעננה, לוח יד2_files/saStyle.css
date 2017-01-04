@@ -1,0 +1,121 @@
+.sa_content {
+  direction: rtl;
+}
+.sa_content .content_step_1 .sa_title,
+.sa_content .content_step_2 .sa_title {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+.sa_content .content_step_1 .sa_errorMessage,
+.sa_content .content_step_2 .sa_errorMessage {
+  font-size: 14px;
+  color: #DC442E;
+  width: 100%;
+}
+.sa_content .content_step_1 .sa_input_content,
+.sa_content .content_step_2 .sa_input_content {
+  margin: 5px auto;
+}
+.sa_content .content_step_1 .sa_input_content div,
+.sa_content .content_step_2 .sa_input_content div {
+  display: inline-block;
+  vertical-align: middle;
+}
+.sa_content .content_step_1 .sa_input_content div .sa_phone,
+.sa_content .content_step_2 .sa_input_content div .sa_phone {
+  width: 120px;
+  height: 22px;
+  border: 1px solid #a9a9a9;
+  direction: ltr;
+  padding-left: 5px;
+  font-size: 12px;
+  margin-left: 10px;
+  box-sizing: border-box;
+}
+.sa_content .content_step_1 .sa_input_content div select[name="sa_prePhone"],
+.sa_content .content_step_2 .sa_input_content div select[name="sa_prePhone"] {
+  width: 55px !important;
+  height: 22px !important;
+  border: 1px solid #a9a9a9 !important;
+}
+.sa_content .content_step_1 .sa_input_content div span.TraderNewsletter,
+.sa_content .content_step_2 .sa_input_content div span.TraderNewsletter {
+  font-size: 13px;
+  font-weight: bold;
+  vertical-align: top;
+  margin-left: 10px;
+}
+.sa_content .content_step_1 .sa_input_content div .sa_submit_btn,
+.sa_content .content_step_2 .sa_input_content div .sa_submit_btn {
+  width: 61px;
+  height: 23px;
+  cursor: pointer;
+}
+.sa_content .content_step_1 {
+  /*display: none;*/
+
+}
+.sa_content .content_step_2 {
+  display: none;
+}
+.sa_content .content_step_2 .sa_subtext {
+  font-size: 15px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+.sa_content .content_step_3 {
+  display: none;
+}
+.sa_content .sa_final_message {
+  width: 492px;
+  height: 64px;
+  padding-top: 26px;
+  border: 1px solid #EDEDED;
+  text-align: center;
+  font-size: 25px;
+}
+.sa_content .agent_final_message {
+  font-weight: bold;
+  font-size: 24px;
+}
+.sa_content .agent_more_Agents {
+  width: 171px;
+  height: 27px;
+  background: #ca1f27;
+  text-align: center;
+  font-size: 15px;
+  color: #FFFFFF;
+  border-radius: 6px;
+  padding-top: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.sa_content .loader_muff {
+  display: none;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  opacity: 0.4;
+  filter: alpha(opacity=40);
+  background: #000;
+}
+.sa_content .loader_muff div.loader {
+  background: url('http://images.yad2.co.il/Pic/yad2new/smartAgent/ajax-loader.gif') no-repeat;
+  width: 100px;
+  height: 70px;
+  margin: 0 auto;
+  margin-top: 220px;
+  display: block;
+}
+.getByMail {
+  font-size: 12px;
+  margin-top: 10px;
+}
+.getByMail a {
+  text-decoration: underline;
+  color: #FF6600;
+  cursor: pointer;
+}

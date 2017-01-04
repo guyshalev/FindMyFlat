@@ -1,0 +1,1314 @@
+img { border: 0px; }
+
+div.innerDetails_wrap {
+/*	border-right: 1px solid #FFA97E;
+	border-left: 1px solid #FFA97E;
+	border-bottom: 1px solid #FFA97E;*/
+	/*width: 774px;*/
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+	margin-right: auto;
+	margin-left: auto;
+	font-size: 12px !important;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+	height: auto !important;
+	min-height: 300px;
+	z-index: 999;
+	background: #ffffff;
+	direction: rtl;
+}
+
+div.innerDetails_wrap table, div.innerDetails_wrap table td { background: none; }
+
+div.innerDetails_wrap table.innerDetails_table {
+	width: 100%;
+	margin-right: auto;
+	margin-left: auto;
+	border: 0px solid black;
+	border-collapse: collapse;
+	direction: rtl;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+}
+.ad_side_box_title {
+    font-size: 16px;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 13px;
+    margin-top: 17px;
+}
+div.ad_side_box {
+    width:180px;
+    margin-top:10px;
+}
+.ad_side_box .ad_side_button {
+    margin-bottom: 14px;
+}
+.ad_side_box .ad_side_button > a > img {
+    border-radius: 6px 6px 0 0;
+}
+
+/** inner Details details block 296 width **/
+div.details_block_296 {
+	margin-right: auto;
+	margin-left: auto;
+	width: 296px;
+	height: auto;
+	clear: both;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+}
+div.details_block_296 div.details_block_top {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 296px;
+	height: 4px;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_top_296.jpg) no-repeat;*/
+
+	border-radius: 6px 6px 0px 0px;
+	position: relative;
+	background: #ffffff;
+	/*behavior: url(../js/PIE.htc);*/
+}
+
+div.details_block_296 div.details_block_title {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 286px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_296_286x28.jpg) no-repeat;
+	font-size: 14px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+}
+div.details_block_296 div.details_block_title img { margin-right: 15px; margin-top: 5px; vertical-align: middle; }
+div.details_block_296 div.details_block_title span {
+	font-size: 16px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+	background: #FD7112;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 3px;
+	margin-top: 4px;
+}
+
+div.details_block_296 div.details_block_body {
+	width: 296px;
+	height: auto !important;
+	background: #ffffff;
+}
+
+div.details_block_296 div.details_block_info {
+	height: auto;
+	background: #ffffff;
+	width: 292px;
+}
+
+div.vertical-overflow {
+	overflow: auto;
+	overflow-x: hidden;
+	
+	height: 71px;
+	width: 252px;
+}
+div.details_block_296 div.details_block_bottom {
+	width: 296px;
+	height: 11px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_bottom_296.jpg) no-repeat;
+}
+/** inner Details details block **/
+
+
+
+/** inner Details details block 255 width **/
+div.details_block_255 {
+	margin-right: auto;
+	margin-left: auto;
+	width: 255px;
+	height: auto;
+	clear: both;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+}
+div.details_block_255 div.details_block_top {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 255px;
+	height: 4px;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_top_255.jpg) no-repeat;*/
+	
+	border-radius: 6px 6px 0px 0px;
+	position: relative;
+	background: #ffffff;
+/*	behavior: url(../js/PIE.htc);*/
+}
+
+div.details_block_255 div.details_block_title {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 246px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_255_246x28.jpg) no-repeat;
+	font-size: 14px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+}
+div.details_block_255 div.details_block_title img { margin-right: 15px; margin-top: 5px; vertical-align: middle; }
+div.details_block_255 div.details_block_title span {
+	font-size: 16px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+	background: #FD7112;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 3px;
+	margin-top: 4px;
+}
+
+div.details_block_255 div.details_block_title_80x25_gray {
+	width: 80px;
+	height: 25px;
+	background: none;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_80x25_gray.png) no-repeat;
+}
+div.details_block_255 div.details_block_title_80x25_orange {
+	width: 80px;
+	height: 25px;
+	background: none;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_80x25_orange.png) no-repeat;
+}
+
+div.details_block_255 div.details_block_title_122x28_orange {
+    width: 122px;
+    height: 28px;
+    background: none;
+    background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_122x28_orange.jpg) no-repeat;
+}
+
+div.details_block_255 div.details_block_title_80x25_gray img,
+div.details_block_255 div.details_block_title_80x25_orange img,
+div.details_block_255 div.details_block_title_122x28_orange img {
+	margin-right: 5px;
+}
+div.details_block_255 div.details_block_title_80x25_gray span,
+div.details_block_255 div.details_block_title_80x25_orange span,
+div.details_block_255 div.details_block_title_122x28_orange span {
+	background: none;
+	font-size: 12px;
+	text-align: center;
+}
+
+div.details_block_255 div.details_block_body {
+	width: 255px;
+	height: auto !important;
+	background: #ffffff;
+}
+
+div.details_block_255 div.details_block_bottom {
+	width: 255px;
+	height: 11px;
+	background: #ffffff url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_bottom_255.jpg) bottom no-repeat;
+}
+/** inner Details details block **/
+
+
+
+/** inner Details details block 781 width **/
+div.details_block_781 {
+	margin-right: auto;
+	margin-left: auto;
+	width: 781px;
+	height: auto;
+	clear: both;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+}
+div.details_block_781 div.details_block_top {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 781px;
+	height: 5px;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_top_781.jpg) no-repeat;*/
+	border-radius: 6px 6px 0px 0px;
+	position: relative;
+	background: #ffffff;
+/*	behavior: url(../js/PIE.htc);*/
+}
+
+div.details_block_781 div.details_block_title {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 771px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_781_771x28.jpg) no-repeat;
+	font-size: 14px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+}
+div.details_block_781 div.details_block_title img { margin-right: 15px; margin-top: 5px; vertical-align: middle; }
+div.details_block_781 div.details_block_title span {
+	font-size: 16px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+	background: #FD7112;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 3px;
+	margin-top: 4px;
+}
+
+div.details_block_781 div.details_block_body {
+	width: 781px;
+	height: auto !important;
+	background: #ffffff;
+}
+
+div.details_block_781 div.details_block_info {
+	height: auto;
+	background: #ffffff;
+	width: 781px;
+}
+
+div.details_block_781 div.details_block_bottom {
+	width: 781px;
+	height: 10px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_bottom_781.jpg) no-repeat;
+}
+/** inner Details details block **/
+
+
+
+/** inner Details details block 630 width **/
+div.details_block_630 {
+	margin-right: auto;
+	margin-left: auto;
+	width: 623px;
+	height: auto;
+	clear: both;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+}
+div.details_block_630 div.details_block_top {
+	margin-right: auto;
+	margin-left: auto;
+	width: 100%;
+	height: 5px;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_top_627.jpg) no-repeat;*/
+	border-radius: 6px 6px 0px 0px;
+	position: relative;
+	background: #ffffff;
+}
+
+div.details_block_630 div.details_block_title {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 617px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_627_617x28.jpg) no-repeat;
+	font-size: 14px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+}
+div.details_block_630 div.details_block_title img { margin-right: 15px; margin-top: 5px; vertical-align: middle; }
+div.details_block_630 div.details_block_title span {
+	font-size: 16px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+	background: #FD7112;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 3px;
+	margin-top: 4px;
+}
+
+div.details_block_630 div.details_block_body {
+	width: 100%;
+	height: auto !important;
+	background: #ffffff;
+}
+
+div.details_block_630 div.details_block_info {
+	height: auto;
+	background: #ffffff;
+	width: 100%;
+}
+
+div.details_block_630 div.details_block_bottom {
+	margin: 0 auto;
+	width: 100%;
+	height: 10px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_bottom_627.jpg) no-repeat;
+}
+/** inner Details details 627 block **/
+
+
+/** inner Details details block 211 width **/
+div.details_block_211 {
+	margin-right: auto;
+	margin-left: auto;
+	width: 211px;
+	height: auto;
+	clear: both;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+}
+div.details_block_211 div.details_block_top {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 211px;
+	height: 4px;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_top_211.jpg) no-repeat;*/
+	border-radius: 6px 6px 0px 0px;
+	position: relative;
+	background: #ffffff;
+}
+
+div.details_block_211 div.details_block_title {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 201px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_211_201x28.jpg) no-repeat;
+	font-size: 14px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+}
+div.details_block_211 div.details_block_title img { margin-right: 15px; margin-top: 5px; vertical-align: middle; }
+div.details_block_211 div.details_block_title span {
+	font-size: 16px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+	background: #FD7112;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 3px;
+	margin-top: 4px;
+}
+
+div.details_block_211 div.details_block_body {
+	width: 211px;
+	height: auto !important;
+	background: #ffffff;
+}
+
+div.details_block_211 div.details_block_info {
+	height: auto;
+	background: #ffffff;
+	width: 211px;
+}
+
+div.details_block_211 div.details_block_bottom {
+	width: 211px;
+	height: 9px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_bottom_211.jpg) no-repeat;
+}
+
+
+/** inner Details details block **/
+
+
+/** inner Details details block 186 width **/
+div.details_block_186 {
+	margin-right: auto;
+	margin-left: auto;
+	width: 186px;
+	height: auto;
+	clear: both;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+}
+div.details_block_186 div.details_block_top {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 186px;
+	height: 4px;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_top_186.jpg) no-repeat;*/
+	border-radius: 6px 6px 0px 0px;
+	position: relative;
+	background: #ffffff;
+/*	behavior: url(../js/PIE.htc);*/
+}
+
+div.details_block_186 div.details_block_title {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 176px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_picturesTitle_176.jpg) no-repeat;
+	font-size: 14px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+}
+div.details_block_186 div.details_block_title img { margin-right: 15px; margin-top: 5px; vertical-align: middle; }
+div.details_block_186 div.details_block_title span {
+	font-size: 16px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+	background: #FD7112;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 3px;
+	margin-top: 4px;
+}
+
+div.details_block_186 div.details_block_body {
+	width: 186px;
+	height: auto !important;
+	background: #ffffff;
+}
+
+div.details_block_186 div.details_block_info {
+	height: auto;
+	background: #ffffff;
+	width: 186px;
+}
+
+div.details_block_186 div.details_block_bottom {
+	width: 186px;
+	height: 10px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_bottom_186.jpg) no-repeat;
+}
+/** inner Details details 186 block **/
+
+
+div.details_block_bottom_rounded {
+	margin: 0 auto;
+	background: none;
+	width: 100%;
+	height: 5px !important;
+	border: 1px solid #999999;
+	border-top: 0px;
+	border-radius: 0px 0px 6px 6px;
+	position: relative;
+}
+
+div.details_block_top_border { 
+	margin: 0 auto;
+	border: 1px solid #999999;
+	border-bottom: 0px;
+	border-radius: 6px;
+	position: relative;
+	height: 5px;
+	width: 100%;
+	background: none;
+}
+div.details_block_body_border { 
+	margin: 0 auto;
+	border: 1px solid #999999;
+	border-bottom: 0px;
+	border-top: 0px;
+	border-radius: 0px;
+	position: relative;
+}
+
+
+a.picture_zoomIn {
+	color: #FF6501;
+	text-decoration: underline;
+	font-size: 12px;
+	font-weight: normal;
+	font-family: arial;
+	border: 0px;
+}
+
+
+/** inner Details options block **/
+div.ad_options_block {
+	width: auto;
+	height: auto !important;
+	margin-right: 1px;
+	margin-left: auto;
+}
+div.ad_options_block_top {
+	width: 769px;
+	height: 4px !important;
+	margin-right: auto;
+	margin-left: auto;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_options_block_top.jpg) no-repeat;
+}
+div.ad_options_block_right {
+	float: right;
+	width: 4px;
+	height: 60px !important;
+	margin-right: auto;
+	margin-left: auto;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_options_block_right.jpg) no-repeat;*/
+}
+div.ad_options_block_body {
+	width: 767px;
+	height: 58px !important;
+	margin-right: auto;
+	margin-left: auto;
+	/*border-top: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;*/
+	background: #ffffff;
+	float: right;
+	margin-top: 4px;
+}
+div.ad_options_block_left {
+	float: right;
+	width: 4px;
+	height: 60px !important;
+	margin-right: auto;
+	margin-left: auto;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_options_block_left.jpg) no-repeat;*/
+}
+div.ad_options_block_bottom {
+	width: 769px;
+	height: 4px !important;
+	margin-right: auto;
+	margin-left: auto;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_options_block_bottom.jpg) no-repeat;*/
+}
+
+div.ad_notes {
+	width: 259px;
+	height: 50px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/ad_notes.jpg) no-repeat;
+	border: 0px;
+	padding: 0px;
+	margin: 0px 0px 0px 0px;
+	overflow: hidden;
+	text-align: right;
+	font-weight: normal;
+	font-size: 12px;
+	font-family: arial;
+	color: #65666A;
+}
+div.ad_notes textarea {
+	border: 0px;
+	padding: 0px;
+	margin: 0px;
+	overflow: hidden;
+	resize: none;
+	text-align: right;
+	font-weight: normal;
+	font-size: 12px;
+	font-family: arial;
+	color: #65666A;
+	background: none;
+	width: 218px;
+	height: 50px;
+	padding: 5px 30px 0px 0px;
+	line-height: 150%;
+	outline: 0;
+}
+
+div.ad_ID_report {
+	width: 179px;
+	height: 52px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/ad_ID_report_bg.jpg) no-repeat;
+	text-align: right;
+	margin-right: auto;
+	margin-left: auto;
+	margin-left: 4px;
+	*margin-left: 0px;
+}
+
+div.ad_ID_report div.adNumber {
+	height: 18px;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: bold;
+	text-align: right;
+	padding-top: 7px;
+	padding-right: 40px;
+}
+
+div.ad_ID_report a.report {
+	text-decoration: none;
+	color: #4C4C4C;
+	font-weight: bold;
+	font-size: 12px;
+	font-family: arial;
+	padding-right: 17px;
+	display: block;
+	padding-top: 7px;
+}
+div.ad_ID_report a.report:hover {
+	text-decoration: underline;
+}
+/** inner Details options block **/
+.innerDetails_adsense_block {
+	clear: both;
+	margin-right: auto;
+	margin-left: auto;
+	padding-top: 10px;
+	width: 179px;
+}
+
+.innerDetails_adsense_block_top {
+	clear: both;
+	margin-right: auto;
+	margin-left: auto;
+	width: 179px;
+	height: 6px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_adsense_top.png) no-repeat;
+}
+.innerDetails_adsense_block_body {
+	clear: both;
+	margin-right: auto;
+	margin-left: auto;
+	width: 169px;
+	padding-top: 5px;
+	padding-right: 5px;
+	padding-left: 5px;
+	height: auto;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_adsense_bg.jpg) repeat-y;
+	text-align: right;
+	overflow: hidden;
+}
+.innerDetails_adsense_block_bottom {
+	clear: both;
+	margin-right: auto;
+	margin-left: auto;
+	width: 179px;
+	height: 5px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_adsense_bottom.jpg) no-repeat;
+}
+.innerDetails_adsense_block_shadow {
+	clear: both;
+	margin-right: auto;
+	margin-left: auto;
+	width: 179px;
+	height: 6px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_adsense_shadow.png) no-repeat;
+}
+
+.innerDetails_adv_link_block {
+	clear: both;
+	margin-top: 5px;
+	width: 179px;
+	height: auto;
+	/*height: 49px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_adv_link_bg.jpg) no-repeat;*/
+}
+
+table.innerDetailsDataGrid {
+	padding: 0px;
+	border-collapse: collapse;
+	margin: 0px 18px 0px 5px !important;
+	padding-top: 8px !important;
+	padding-bottom: 5px !important;
+	direction: rtl;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+    z-index: 3;
+    position: relative;
+}
+table.innerDetailsDataGrid td {
+	height: auto;
+	padding-top: 3px;
+	padding-bottom: 2px;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+}
+
+div.price_block {
+	width: 287px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/price_bg.jpg) no-repeat;
+	color: #434343 !important;
+	font-size: 16px !important;
+	font-weight: bold !important;
+	font-family: arial !important;
+	text-indent: 14px;
+	margin-top: 5px;
+	/*padding-bottom: 5px;*/
+	margin-right: auto;
+	margin-left: auto;
+}
+
+div.price_block_big {
+	width: 551px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/price_bg_big.jpg) no-repeat;
+	color: #434343 !important;
+	font-size: 16px !important;
+	font-weight: bold !important;
+	font-family: arial !important;
+	text-indent: 14px;
+	margin-top: 5px;
+	/*padding-bottom: 5px;*/
+	margin-right: auto;
+	margin-left: auto;
+}
+
+div.price_block table.price,
+div.price_block_big table.price {
+	padding-top: 3px;
+	height: 28px;
+}
+div.price_block table.price td,
+div.price_block_big table.price td {
+	color: #434343;
+	font-size: 16px;
+	font-weight: bold;
+	font-family: arial;
+	text-indent: 14px;
+}
+
+div.price_block .kama_line,
+div.price_block_big .kama_line {
+	font-size: 12px !important;
+}
+
+a.kama_link {
+	color: #000000;
+	text-decoration: none;
+	font-family: arial;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+/** HOT PIC **/
+.hotPic_block {
+	width: 591px;
+	height: auto;
+	margin-right: auto;
+	margin-left: auto;
+}
+.hotPic_block_top {
+	width: 591px;
+	height: 5px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/hotPic_block_top.jpg) no-repeat;
+}
+.hotPic_block_body {
+	width: 591px;
+	height: auto !important;
+	/*min-height: 560px;*/
+	padding-bottom: 5px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/hotPic_block_bg.jpg) repeat-y;
+}
+.hotPic_block_bottom {
+	width: 591px;
+	height: 5px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/hotPic_block_bottom.jpg) no-repeat;
+}
+
+/** View image **/
+.viewImage_wrap_block {
+	width: 653px;
+	height: auto;
+	margin-right: auto;
+	margin-left: auto;
+}
+.viewImage_wrap_block_top {
+	width: 653px;
+	height: 8px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/viewImage_wrap_block_top.jpg) no-repeat;
+}
+.viewImage_wrap_block_body {
+	width: 653px;
+	height: auto !important;
+	/*min-height: 548px;*/
+	padding-bottom: 5px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/viewImage_wrap_block_bg.jpg) repeat-y;
+}
+.viewImage_wrap_block_bottom {
+	width: 653px;
+	height: 7px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/viewImage_wrap_block_bottom.jpg) no-repeat;
+}
+
+.viewImage_block {
+	width: 623px;
+	height: auto;
+	margin-right: auto;
+	margin-left: auto;
+	padding-top: 8px;
+}
+.viewImage_block_top {
+	width: 623px;
+	height: 5px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/viewImage_top.jpg) no-repeat;
+}
+.viewImage_block_title {
+	width: 555px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/viewImage_title_bg.jpg) no-repeat;
+	margin-right: auto;
+	margin-left: auto;
+	font-size: 16px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+	line-height: 175%;
+	padding-right: 45px;
+}
+
+.viewImage_block_morepics_title {
+	width: 500px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/viewImage_title_morepics.jpg) no-repeat;
+	margin-right: auto;
+	margin-left: auto;
+	font-size: 16px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+	line-height: 175%;
+	padding-right: 45px;
+}
+
+.viewImage_block_body {
+	width: 623px;
+	height: auto !important;
+	background: #ffffff;
+	height: auto !important;
+	min-height: 486px;
+}
+.viewImage_block_bottom {
+	width: 623px;
+	height: 11px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/viewImage_bottom.jpg) no-repeat;
+}
+
+img.main_image { cursor: pointer; }
+
+/** VIEW IMAGE **/
+
+.hotpic_ad_block {
+	margin-right: auto;
+	margin-left: auto;
+	width: 190px;
+	height: 439px;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/hotpic_details_ad_bg.jpg) repeat-x;
+*/
+	background: #B4B9BF;
+	background: -webkit-gradient(linear, 0 0, 0 bottom, from(#B4B9BF), to(#E6E6E6));/*#FDFDFD*/
+	background: -webkit-linear-gradient(#B4B9BF, #E6E6E6);
+	background: -moz-linear-gradient(#B4B9BF, #E6E6E6);
+	background: -ms-linear-gradient(#B4B9BF, #E6E6E6);
+	background: -o-linear-gradient(#B4B9BF, #E6E6E6);
+	background: linear-gradient(#B4B9BF, #E6E6E6);
+	-pie-background: linear-gradient(#B4B9BF, #E6E6E6);
+	
+	position: relative;
+}
+
+/** HOT PIC **/
+
+a.ad_favorite_marked {
+	display: block;
+	width:	86px;
+	height: 23px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/mark_ad.jpg) no-repeat;
+}
+a.ad_favorite_unmarked {
+	display: block;
+	width:	86px;
+	height: 23px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/unmarked_ad.jpg) no-repeat;
+}
+
+a.ad_favorite_marked_small {
+	display: block;
+	width:	51px;
+	height: 23px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/mark_ad_small.jpg) no-repeat;
+}
+a.ad_favorite_unmarked_small {
+	display: block;
+	width:	51px;
+	height: 23px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/unmarked_ad_small.jpg) no-repeat;
+}
+
+div.innerDetails_wrap table td.inner_ad_advertise,
+div.innerDetails_wrap table td div.inner_ad_advertise
+div.innerDetails_wrap table td div.inner_declaration{
+	/*background: #B4B9BF url(http://images.yad2.co.il/Pic/yad2new/page/inside_ad_advertise_bg.jpg) bottom repeat-x;*/
+	position: relative;
+	zoom:1;
+	z-index:999;
+	position: relative;
+	background: #B4B9BF;
+	background: -webkit-gradient(linear, 0 0, 0 bottom, from(#B4B9BF), to(#E7E7E7));
+	background: -webkit-linear-gradient(#B4B9BF, #E7E7E7);
+	background: -moz-linear-gradient(#B4B9BF, #E7E7E7);
+	background: -ms-linear-gradient(#B4B9BF, #E7E7E7);
+	background: -o-linear-gradient(#B4B9BF, #E7E7E7);
+	background: linear-gradient(#B4B9BF, #E7E7E7);
+	-pie-background: linear-gradient(#B4B9BF, #E7E7E7);
+	
+	/*behavior: url(../js/PIE.php);*/
+}
+
+table.viewImage_left_banners { margin-top: 1px; }
+table.viewImage_left_banners td {
+	padding-bottom: 11px;
+}
+table.viewImage_left_banners td.last { padding-bottom: 0px; }
+
+ul.grey_inner_ad_line {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+	height: 20px;
+	margin-top: 5px;
+	margin-right: 5px;
+	margin-left: 5px;
+	background: #E3E3E3;
+	border-radius: 6px;
+}
+ul.yellow_inner_ad_line {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+	height: 20px;
+	margin-top: 5px;
+	margin-right: 5px;
+	margin-left: 5px;
+	background: #FBD705;
+	border-radius: 6px;
+}
+ul.grey_inner_ad_line li,
+ul.yellow_inner_ad_line li {
+	height: 20px;
+	line-height: 160%;
+}
+
+/** inner Details details block 561 width **/
+div.details_block_561 {
+	margin-right: auto;
+	margin-left: auto;
+	width: 561px;
+	height: auto;
+	clear: both;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+}
+div.details_block_561 div.details_block_top {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 561px;
+	height: 4px;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_top_296.jpg) no-repeat;*/
+
+	border-radius: 6px 6px 0px 0px;
+	position: relative;
+	background: #ffffff;
+	/*behavior: url(../js/PIE.htc);*/
+}
+
+div.details_block_561 div.details_block_title {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 551px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_561_551x28.jpg) no-repeat;
+	font-size: 14px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+}
+div.details_block_561 div.details_block_title img { margin-right: 15px; margin-top: 5px; vertical-align: middle; }
+div.details_block_561 div.details_block_title span {
+	font-size: 16px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+	background: #FD7112;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 3px;
+	margin-top: 4px;
+}
+
+div.details_block_561 div.details_block_body {
+	width: 561px;
+	height: auto !important;
+	background: #ffffff;
+}
+
+div.details_block_561 div.details_block_info {
+	height: auto;
+	background: #ffffff;
+	width: 561px;
+}
+
+
+div.details_block_561 div.details_block_bottom {
+	width: 561px;
+	height: 11px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_bottom_561.jpg) no-repeat;
+}
+/** inner Details details block **/
+
+
+/** inner Details details block 240 width **/
+div.details_block_240 {
+	margin-right: auto;
+	margin-left: auto;
+	width: 240px;
+	height: auto;
+	clear: both;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+}
+div.details_block_240 div.details_block_top {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 240px;
+	height: 4px;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_top_296.jpg) no-repeat;*/
+
+	border-radius: 6px 6px 0px 0px;
+	position: relative;
+	background: #ffffff;
+	/*behavior: url(../js/PIE.htc);*/
+}
+
+div.details_block_240 div.details_block_title {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 230px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_240_230x28.jpg) no-repeat;
+	font-size: 14px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+}
+div.details_block_240 div.details_block_title img { margin-right: 15px; margin-top: 5px; vertical-align: middle; }
+div.details_block_240 div.details_block_title span {
+	font-size: 16px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+	background: #FD7112;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 3px;
+	margin-top: 4px;
+}
+
+div.details_block_240 div.details_block_body {
+	width: 240px;
+	height: auto !important;
+	background: #ffffff;
+}
+
+div.details_block_240 div.details_block_info {
+	height: auto;
+	background: #ffffff;
+	width: 230px;
+	margin: 0 auto;
+}
+
+
+div.details_block_240 div.details_block_bottom {
+	width: 240px;
+	height: 11px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_bottom_240.jpg) no-repeat;
+}
+/** inner Details details block **/
+
+
+
+/** inner Details details block 180 width **/
+div.details_block_180 {
+	margin-right: auto;
+	margin-left: auto;
+	width: 180px;
+	height: auto;
+	clear: both;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-family: arial;
+	color: #000000;
+	font-weight: normal;
+}
+div.details_block_180 div.details_block_top {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 180px;
+	height: 4px;
+	/*background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_top_296.jpg) no-repeat;*/
+
+	border-radius: 6px 6px 0px 0px;
+	position: relative;
+	background: #ffffff;
+	/*behavior: url(../js/PIE.htc);*/
+}
+
+div.details_block_180 div.details_block_title {
+	margin-right: auto;
+	margin-left: auto;
+	clear: both;
+	width: 170px;
+	height: 28px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_180_170x28.jpg) no-repeat;
+	font-size: 14px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+}
+div.details_block_180 div.details_block_title img { margin-right: 15px; margin-top: 5px; vertical-align: middle; }
+div.details_block_180 div.details_block_title span {
+	font-size: 14px;
+	font-family: arial;
+	font-weight: bold;
+	color: #ffffff;
+	background: #FD7112;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 3px;
+	margin-top: 5px;
+}
+
+div.details_block_180 div.details_block_body {
+	width: 180px;
+	height: auto !important;
+	background: #ffffff;
+}
+
+div.details_block_180 div.details_block_info {
+	height: auto;
+	background: #ffffff;
+	width: 170px;
+	margin: 0 auto;
+}
+
+div.details_block_180 div.vertical-overflow {
+	overflow: hidden;
+}
+div.details_block_180 div.details_block_bottom {
+	width: 170px;
+	height: 21px;
+	border-radius: 0px 0px 6px 6px;
+	background: #ff6600;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	color: #ffffff;
+	background: url('http://images.yad2.co.il/Pic/yad2new/page/innerDetails_block_title_180b_170x28.jpg') no-repeat;
+	line-height: 170%;
+}
+div.details_block_180 div.details_block_bottom a {
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	color: #ffffff;
+	background: #ff6600;
+	text-decoration: none;
+}
+/** inner Details details block **/
+
+
+div.dealer_pictures_block {
+	width: 305px;
+	height: 280px;
+	background: #ffffff;
+	border: 1px solid #cfcfcf;
+	border-radius: 6px;
+}
+div.dealer_pictures_block_bottom {
+	width: 260px;/*305px;*/
+	height: 6px;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/dealer_pictures_block_bottom.jpg) no-repeat;
+}
+
+div.thumbs_pictures {
+	width: 100%;
+	height: auto !important;
+	min-height: 47px;
+	background: #ffffff url(http://images.yad2.co.il/Pic/yad2new/page/dealer_pictures_thumbs_bg.jpg) top repeat-x;
+}
+
+.v_checked {
+	width: 13px;
+	height: 13px;
+	vertical-align: middle;
+	display: inline-block;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/v_checked.jpg);
+	margin-left: 5px;
+}
+.v_unchecked {
+	width: 13px;
+	height: 13px;
+	vertical-align: middle;
+	display: inline-block;
+	background: url(http://images.yad2.co.il/Pic/yad2new/page/v_unchecked.jpg);
+	margin-left: 5px;
+}
+
+.fr { float: right !important; }
+.fl { float: left !important; }
+.clear { clear: both !important; }
+.clear-none { clear: none !important; }
+.display-block { display: block !important; }
+.sticker{
+    width: 106px;
+    height: 79px;
+    background-position: 0 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+}

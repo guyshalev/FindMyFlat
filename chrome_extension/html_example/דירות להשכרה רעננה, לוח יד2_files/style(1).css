@@ -1,0 +1,201 @@
+body{
+	font-family: 'Arial', 'David';
+	font-size:14px;
+	margin:0px;
+}
+td{
+	font-size:12px;
+}
+th{
+	font-size:14px;
+}
+hr{
+	width:96%;
+	height:1px;
+	color:#EAC8A6;
+}
+.dot{
+	border-right:1px #C52338 dashed;
+}
+.square { border: 1px #FFFFFF solid;}
+
+a{color:#0000FF ; text-decoration: none;}
+a:link{  color:#0000FF ; text-decoration: none;}
+a:visited{ color:#0000FF ; text-decoration: none;}
+a:hover{ color:#0000FF ; text-decoration: underline;}
+a:active{ color:#0000FF ; text-decoration: none;}
+
+a.bottom{color:#FFFFFF ; text-decoration: none;}
+a.bottom:link{  color:#FFFFFF ; text-decoration: none;}
+a.bottom:visited{ color:#FFFFFF ; text-decoration: none;}
+a.bottom:hover{ color:#FFFFFF ; text-decoration: underline;}
+a.bottom:active{ color:#FFFFFF ; text-decoration: none;}
+
+a.bottom_lang{color:#292929 ; text-decoration: none;}
+a.bottom_lang:link{  color:#292929 ; text-decoration: none;}
+a.bottom_lang:visited{ color:#292929 ; text-decoration: none;}
+a.bottom_lang:hover{ color:#292929 ; text-decoration: underline;}
+a.bottom_lang:active{ color:#292929 ; text-decoration: none;}
+
+a.News{font-size: 12px; color:#292929 ; text-decoration: none;}
+a.News:link{font-size: 12px; color:#292929 ; text-decoration: none;}
+a.News:visited{font-size: 12px; color:#292929 ; text-decoration: none;}
+a.News:hover{font-size: 12px; color:#292929 ; text-decoration: underline;}
+a.News:active{font-size: 12px; color:#292929 ; text-decoration: none;}
+
+.INPUT{
+	font: normal 12pt Arial, Helvetica, sans-serif;
+	height: 20px;
+	direction: rtl;
+}
+.SELECT{
+	font-family: Arial; 
+	font-size: 12px
+}
+
+#ActiveLink
+{
+    CURSOR: auto;
+    COLOR: #000000;
+    BACKGROUND-COLOR: #E2E3E8;		
+}
+#overActiveLink
+{
+    CURSOR: hand;  /*auto;  pointer;*/
+    COLOR: black;
+    BACKGROUND-COLOR: #FFA97D;	
+}
+
+.bg_dot_spacer{
+	height: 20px;
+	background-image: URL('images/ProjectPage/top2_bg_dot_spacer.gif');
+	background-position: center;
+	background-repeat: repeat-x;
+
+}
+
+a.menu{font-size: 12px; color:#0174B5; font-family: Arial; text-decoration: none;}
+a.menu:link{font-size: 12px; color:#0174B5; font-family: Arial; text-decoration: none;}
+a.menu:visited{font-size: 12px; color:#0174B5; font-family: Arial; text-decoration: none;}
+a.menu:hover{font-size: 12px; color:#0174B5; font-family: Arial; text-decoration: underline;}
+a.menu:active{font-size: 12px; color:#0174B5; font-family: Arial; text-decoration: none;}
+
+a.menuActive{font-size: 12px; color:#B50206; font-family: Arial; text-decoration: none;}
+a.menuActive:link{font-size: 12px; color:#B50206; font-family: Arial; text-decoration: none;}
+a.menuActive:visited{font-size: 12px; color:#B50206; font-family: Arial; text-decoration: none;}
+a.menuActive:hover{font-size: 12px; color:#B50206; font-family: Arial; text-decoration: underline;}
+a.menuActive:active{font-size: 12px; color:#B50206; font-family: Arial; text-decoration: none;}
+
+a.city{color: #085CA6; font-family: Arial; font-size: 14px; font-weight: bold; text-decoration: none;}
+a.city:link{color: #085CA6; font-family: Arial; font-size: 14px; font-weight: bold; text-decoration: none;}
+a.city:visited{color: #085CA6; font-family: Arial; font-size: 14px; font-weight: bold; text-decoration: none;}
+a.city:hover{color: #085CA6; font-family: Arial; font-size: 14px; font-weight: bold; text-decoration: underline;}
+a.city:active{color: #085CA6; font-family: Arial; font-size: 14px; font-weight: bold; text-decoration: none;}
+
+.menuActive{
+	font-size: 12px; 
+	color:#B50206; 
+	font-family: Arial; 
+	text-decoration: none;
+}
+
+.bgProjectImage{
+	background-image: URL('http://yad1.yad2.co.il/images/homepage/details_pic_bg.gif'); 
+	background-position: center; 
+	background-repeat: no-repeat; 
+	padding:5px;
+	font-family: Arial; 
+	text-decoration: none;
+}
+
+.sponsor{
+	padding-top:5px;
+	padding-bottom:5px;
+}
+
+/******* header-yad1 *******/
+/* main div for adver */
+#GamboBanner{
+	DISPLAY: none; 
+	Z-INDEX: -1; 
+	OVERFLOW: hidden; 
+	POSITION: absolute; 
+	TOP: 67px;
+}
+#main{
+	border: blue 0px solid; 
+	OVERFLOW-Y: scroll; 
+	OVERFLOW: auto;  
+	POSITION: absolute; 
+	HEIGHT: 100%;
+}
+/* main div for adver */
+
+.paddingleft10{
+	padding-left: 10px;
+}
+/******* header-yad1 *******/
+
+/******* index *******/
+.box_middle{
+	background:url('images/homepage/misgeret_title_middle.gif') center repeat-y;
+	width:610px;
+}
+.box_top{
+	background:url('images/homepage/misgeret_title_header.gif') center top no-repeat;
+}
+.box_bottom{
+	background:url('images/homepage/misgeret_title_footer.gif') center bottom no-repeat;
+}
+.box_text_padding{
+	padding-right: 12px; 
+	padding-left: 12px;
+	padding-top:7px; 
+	padding-bottom:7px;
+}
+.param_top_blue_line{
+	background-image: URL('images/homepage/emza.gif'); 
+	background-position: center right; 
+	background-repeat: no-repeat; 
+	color: #FFFF00; 
+	padding-right: 45px; 
+	padding-left:20px; 
+	font-family: Arial;
+}
+.param_bottom_blue_line{
+	background-image: URL('images/homepage/emza.gif'); 
+	background-position: center right; 
+	background-repeat: no-repeat; 
+	font-size: 14px; 
+	color: white; 
+	padding-right: 45px; 
+	padding-left:20px
+}
+.project_pic_bg{
+	background-image: URL('images/homepage/details_pic_bg.gif'); 
+	background-position: top; 
+	background-repeat: no-repeat; 
+	padding:5px;
+	cursor: pointer;
+}
+.project_pic_bg_new{
+	background-image: URL('images/homepage/details_pic_bg_new.jpg'); 
+	background-position: center; 
+	background-repeat: no-repeat; 
+	padding:5px;
+	cursor: pointer;
+}
+.more_info{
+	color: #FF6500; 
+	text-decoration: underline; 
+	cursor: pointer;
+}
+.text_video{
+	color: #8A000E; 
+	font-weight: bold; 
+	cursor: pointer;
+}
+
+
+
+/******* index *******/

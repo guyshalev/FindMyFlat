@@ -1,0 +1,332 @@
+var browserName=navigator.userAgent;
+var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+var defaultNewSettings = {
+    CatID : jQuery("#CatID").val(),
+    SubCatID : jQuery("#SubCatID").val(),
+    MadorHebName : "",
+    fromScrollPosition : null,
+    maxScrollPosition : null,
+    isPageInfo  : false
+};
+var newSettings = newSettings ? newSettings : defaultNewSettings;
+window.onscroll = function() {	
+	LeftBannerInside();	
+}
+
+function LeftBannerInside()
+{	
+	if (document.body.clientWidth)
+		var myClientWidth = document.body.clientWidth;
+	else
+		var myClientWidth = null;
+	
+	if (typeof newSettings === "undefined") // if not new version (with new settings)
+	{
+		if (browserName=="Microsoft Internet Explorer")
+			var fromScrollPosition = 1070;
+		else
+			var fromScrollPosition = 1154;
+	}
+	else
+	{
+		var fromScrollPosition = newSettings.fromScrollPosition;
+	}
+		
+	var scrollTop = (document.documentElement.scrollTop) ? document.documentElement.scrollTop : document.body.scrollTop;
+
+	var isIOS = false;
+	
+	if ((navigator.userAgent.indexOf('iPhone') != -1) || (navigator.userAgent.indexOf('iPod') != -1) || (navigator.userAgent.indexOf('iPad') != -1)) {
+		isIOS = true;
+	}
+	
+	if (typeof newSettings !==  "undefined" && newSettings.isPageInfo)
+		return false;
+	
+	if (scrollTop > fromScrollPosition && myClientWidth < 1230 && isIOS == false)
+	{
+		
+		if (document.getElementById("left_mega_banner_inside"))
+			document.getElementById("left_mega_banner_inside").style.position = "fixed";
+
+		if (browserName=="Microsoft Internet Explorer" && is_chrome)
+		{
+			if (document.getElementById("left_mega_banner_inside"))
+				document.getElementById("left_mega_banner_inside").style.top = "3px";
+		}
+		else
+		{	
+			if (document.getElementById("left_mega_banner_inside"))
+				document.getElementById("left_mega_banner_inside").style.top = "3px";
+		}
+		
+		if (document.getElementById("left_mega_banner_inside"))
+			document.getElementById("left_mega_banner_inside").style.paddingTop="0px";
+
+	}
+	else if (scrollTop <= fromScrollPosition)
+	{
+		if (document.getElementById("left_mega_banner_inside"))
+			document.getElementById("left_mega_banner_inside").style.position = "static";
+			
+		/*if (document.getElementById("left_mega_banner_inside"))
+			document.getElementById("left_mega_banner_inside").style.paddingTop="10px";
+		*/
+	}
+	if (newSettings.maxScrollPosition != undefined && scrollTop >= newSettings.maxScrollPosition)
+	{
+		if (document.getElementById("left_mega_banner_inside"))
+		{
+			document.getElementById("left_mega_banner_inside").style.position = "relative";
+			document.getElementById("left_mega_banner_inside").style.top = 388+"px";
+		}
+			
+		/*if (document.getElementById("left_mega_banner_inside"))
+			document.getElementById("left_mega_banner_inside").style.paddingTop="10px";*/
+	}
+}
+
+function LoadLeftBanner() {
+	
+	if (document.body.clientWidth)
+		var clientWidth = document.body.clientWidth;
+	else
+		var clientWidth = null;
+
+	if (clientWidth >= 1230) {
+		$("#insurad").show();
+		$("#dailysale").show();
+		$("#junkyard_motorscooter").show();
+		$("#junkyard_motorcycle").show();
+		
+		if (typeof newSettings !== "undefined" && newSettings.isPageInfo!=undefined && newSettings.isPageInfo)
+			$("#facebookBox").hide();
+		else
+			$("#facebookBox").show();
+			
+		$("#clicky_left_column").show();
+		$("#clicky_text_link_2").show();
+		$("#walla_pets").show();
+		$("#TrempimBox").show();
+		
+		$("#GamboBanner").show();
+		$("#rtower").show();
+
+		$("#left_sekindo").show();
+		
+		$("#left_mega_banner_inside").hide();
+		
+		$("#dynamicBox").show();
+		
+		$("#pricelistCarBox").show();
+		$("#dynamicLeftBanner").show();
+	}
+	else {
+		
+		$("#insurad").hide();
+		$("#dailysale").hide();
+		$("#junkyard_motorscooter").hide();
+		$("#junkyard_motorcycle").hide();
+			
+		if (document.getElementById("walla_pets") && newSettings != undefined && newSettings.isPageInfo!=undefined && !newSettings.isPageInfo)
+			$("#walla_pets").hide();
+			
+		$("#facebookBox").hide();
+		$("#Merlin_left_column").hide();
+		$("#clicky_text_link_2").hide();
+		$("#TrempimBox").hide();
+		
+		$("#GamboBanner").hide();
+		$("#rtower").hide();
+		
+		$("#clicky_left_column").hide();
+		$("#clicky_text_link_2").hide();
+
+		$("#left_sekindo").hide();
+		
+		$("#dynamicBox").hide();
+		
+		$("#pricelistCarBox").hide();
+		$("#dynamicLeftBanner").hide();
+        
+        try {
+             if (typeof Fusion_inner_mega_t!=="undefined" || typeof Fusion_inner_mega!== "undefined")
+	        	adt_inner_mega();
+	       	else
+	       		$("#left_mega_banner_inside").hide();
+       	}catch(e) {}
+	}
+	
+	setCookie();
+}
+
+/*
+function LoadLeftBanner()
+{
+	if (document.body.clientWidth)
+		var clientWidth = document.body.clientWidth;
+	else
+		var clientWidth = null;
+
+	if (clientWidth >= 1230)
+	{			
+		if (document.getElementById('insurad'))
+			document.getElementById('insurad').style.display = '';
+
+		if (document.getElementById('dailysale'))
+			document.getElementById('dailysale').style.display = '';
+			
+		if (document.getElementById("facebookBox"))
+		{			
+			if (newSettings != undefined && newSettings.isPageInfo!=undefined && newSettings.isPageInfo)
+				document.getElementById("facebookBox").style.display = "none";
+			else
+				document.getElementById("facebookBox").style.display = "";
+		}
+		
+		if (document.getElementById("clicky_left_column"))
+			document.getElementById("clicky_left_column").style.display = '';
+
+		if (document.getElementById("clicky_text_link_2"))
+			document.getElementById("clicky_text_link_2").style.display = "";
+
+		if (document.getElementById("walla_pets"))
+			document.getElementById("walla_pets").style.display = '';
+			
+		if (document.getElementById("TrempimBox"))
+			document.getElementById("TrempimBox").style.display = "";
+		
+		if (document.getElementById("GamboBanner"))
+		{ 
+			document.getElementById("GamboBanner").style.display = "inline";
+		}
+		
+		if (document.getElementById("rtower"))
+		{
+			document.getElementById("rtower").style.display = "inline";
+		}
+		
+		if (document.getElementById("Merlin_left_column"))
+			document.getElementById("Merlin_left_column").style.display = "";
+
+		if (document.getElementById("clicky_text_link_2"))
+			document.getElementById("clicky_text_link_2").style.display = "";
+
+		if (document.getElementById("ads.ResultsTower.1"))
+			document.getElementById("ads.ResultsTower.1").style.display = "none";
+			
+		if(window.Fusion.adComponents["inner_mega_t"][0])
+        {
+            if(window.Fusion.adComponents["inner_mega_t"][0].attributes["Payload"]!=undefined)
+            {
+                adt_inner_mega();
+            }
+        }
+	}
+	else
+	{   
+		if (document.getElementById('insurad')) {
+			document.getElementById('insurad').style.display = 'none';
+		}
+		
+		if (document.getElementById('dailysale'))
+			document.getElementById('dailysale').style.display = 'none';
+			
+		if (document.getElementById("walla_pets") && newSettings != undefined && newSettings.isPageInfo!=undefined && !newSettings.isPageInfo)
+			document.getElementById("walla_pets").style.display = 'none';
+		
+		if (document.getElementById("facebookBox"))
+			document.getElementById("facebookBox").style.display = "none";
+
+		if (document.getElementById("Merlin_left_column"))
+			document.getElementById("Merlin_left_column").style.display = "none";
+
+		if (document.getElementById("clicky_text_link_2"))
+			document.getElementById("clicky_text_link_2").style.display = "none";
+			
+		if (document.getElementById("TrempimBox"))
+			document.getElementById("TrempimBox").style.display = "none";
+
+		if (document.getElementById("GamboBanner"))
+			document.getElementById("GamboBanner").style.display = "none";
+		
+		if (document.getElementById("clicky_left_column"))
+			document.getElementById("clicky_left_column").style.display = 'none';
+	
+		if (document.getElementById("clicky_text_link_2"))
+			document.getElementById("clicky_text_link_2").style.display = "none";
+
+		if (document.getElementById("rtower"))
+			document.getElementById("rtower").style.display = "none";
+			
+		if (document.getElementById("left_mega_banner_inside"))
+		{
+			if (document.getElementById("ads.ResultsTower.1"))
+				document.getElementById("ads.ResultsTower.1").style.display = "inline";
+			//document.getElementById("left_mega_banner_inside").innerHTML = document.getElementById("GamboBanner_content").innerHTML;
+		//	document.getElementById("left_mega_banner_inside").style.display = "inline-block";
+		//	document.getElementById("left_mega_banner_inside").style.position = "relative";
+		}
+	}
+	
+	setCookie();
+}
+*/
+
+
+
+$(document).ready(function() {
+	var elementChange = document.getElementById('facebookBox');
+	if(elementChange != null) {
+		elementChange.innerHTML = "<div style=\"background-color:#e1e1e1; width:181px; height:100%; margin-right:0px;\"><div style=\"background: url('http://images.yad2.co.il/Pic/yad2new/page/facebook-top-new.jpg'); width:181px; height:47px;\"></div><div style=\"width:175px; padding-right:2px;\"><iframe src=\"http://www.facebook.com/plugins/likebox.php?href=http%3A%2F%2Fwww.facebook.com%2Fyad2page&amp;width=174&amp;colorscheme=light&amp;connections=4&amp;stream=false&amp;header=false&amp;height=284\" scrolling=\"no\" frameborder=\"0\" style=\"border:none; overflow:hidden; width:174px; height:284px; background-color:white;\" allowTransparency=\"true\"></iframe></div><div style=\"background: url('http://images.yad2.co.il/Pic/yad2new/page/facebook-bottom.jpg'); width:181px; height:7px;\"></div></div>";
+	}
+	
+	var Sharing = document.getElementById('SharingBox');
+	if(Sharing != null)	
+		Sharing.style.display='';
+
+	LoadLeftBanner();
+    jQuery("#fromPrice,#untilPrice,#Age").on("keypress",function(e){
+        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+            return false;
+        }
+        return true;
+    });
+
+    if(typeof $.fn.selectbox == "function"){
+        $('select').selectbox({});
+    }
+});
+
+window.onresize = function() {
+	LoadLeftBanner();
+}
+
+function setCookie()
+{
+
+	var the_cookie1 = "CLIENT_WIDTH_DIR=" + escape(document.body.clientWidth);
+	var the_cookie2 = "MAIN_WIDTH_DIR=" + escape(document.body.clientWidth);
+	var d = new Date();
+	var the_date = new Date(getMonthStr(d.getUTCMonth())+", 2099");
+	var Expiration_Date = "expires=" + the_date.toGMTString();
+	var the_path="../../";
+	var the_domain = ".yad2.co.il";
+
+	document.cookie = the_cookie1 + ";" + the_path + ";" + the_domain + ";" + the_path + ";" + Expiration_Date;
+	document.cookie = the_cookie2 + ";" + the_path + ";" + the_domain + ";" + the_path + ";" + Expiration_Date;
+}
+//Sveta: check for number fields
+function checkIsNumber(e)
+{
+  return;
+    var key = window.event ? e.keyCode : e.which;
+    var keychar = String.fromCharCode(key);
+
+    if (key == 8) return true;
+    if ((key > 0 && key < 13)  || (key > 13 && key < 48)  || (key > 57)){
+        alert("!"+"אנא הזן ספרות בלבד");
+        return false;
+    }
+    return !isNaN(keychar);
+}

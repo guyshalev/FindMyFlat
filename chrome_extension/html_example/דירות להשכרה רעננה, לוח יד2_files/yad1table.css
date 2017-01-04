@@ -1,0 +1,209 @@
+/* Help Classes */
+.default-color {
+  color: blue !important;
+}
+
+.inline-block {
+  display: inline-block;
+  *display: inline;
+  zoom: 1;
+}
+
+.relative {
+  position: relative;
+  height: 1px;
+  width: 148px;
+  margin: 0 auto;
+}
+
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+
+.clearfix {
+  clear: both;
+}
+.clearfix:before {
+  content: '';
+  display: table;
+}
+.clearfix:after {
+  content: '';
+  display: table;
+}
+
+.td-separator {
+  width: 2px;
+  height: 40px;
+  display: block;
+  background: url("http://images.yad2.co.il/Pic/yad2new/page/main_table_th_sep.jpg") center center repeat-x;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.icon {
+  position: relative;
+  top: 3px;
+  right: 10px;
+  display: inline-block;
+  *display: inline;
+  zoom: 1;
+}
+
+.icon-title {
+  color: #ffffff;
+  font-weight: bold;
+  display: inline-block;
+  *display: inline;
+  zoom: 1;
+  margin: 5px 10px 0 0;
+}
+
+.submit-icon {
+  position: relative;
+  top: 4px;
+  right: 10px;
+  display: inline-block;
+  *display: inline;
+  zoom: 1;
+}
+
+.submit-title {
+  font-weight: bold;
+  color: #ffffff;
+  font-size: 20px;
+  height: 34px;
+  line-height: 34px;
+}
+
+div.right-inner-title {
+  margin: 0 auto;
+  position: relative;
+  top: 5px;
+}
+
+div.left-inner-title {
+  margin: 0 auto;
+  position: relative;
+  top: 5px;
+}
+
+.change-block-height {
+  height: 552px !important;
+}
+
+.change-inner-block-height {
+  height: 480px !important;
+}
+
+div.specifications {
+  width: 70px;
+  height: auto;
+  margin: 5px auto;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.beta-icon {
+  height: 41px;
+  background: url("http://images.yad2.co.il/Pic/yad2new/page/beta.png") left center no-repeat;
+}
+
+.first-child {
+  width: 15px;
+  height: 15px;
+  display: block;
+  margin: 4px auto;
+  background: url("http://images.yad2.co.il/Pic/yad2new/page/star_icon.png") center center no-repeat;
+}
+
+.ad-favorite {
+  background: url("http://images.yad2.co.il/Pic/yad2new/sprites/sprite_maintable.png") no-repeat;
+  background-position: -10px -418px;
+  width: 21px;
+  height: 19px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.img-thumb-block {
+  width: 40px;
+  height: 30px;
+  border: 1px solid #ACABAA;
+  margin: 0 auto;
+}
+
+div.main-wrap-yad1-table {
+  font-family: Arial;
+  width: 776px;
+  /*height: 640px;*/
+  height: auto;
+  margin: 0 auto 0;
+
+}
+div.main-wrap-yad1-table > table.yad1MainTable {
+  
+}
+div.main-wrap-yad1-table > table.yad1MainTable tr.table-yad1-titles {
+  background: #69727b;
+  background: gradient(linear, 0%, 0%, 0%, 100%, from(#69727b), to(#4c5c6c));
+  background: -webkit-linear-gradient(top, #69727b, #4c5c6c);
+  background: linear-gradient(top, #69727b, #4c5c6c);
+  background: -webkit-linear-gradient(top, #69727b 0%, #69727b 0%, #4c5c6c 100%, #4c5c6c 100%);
+  background: linear-gradient(to bottom, #69727b 0%, #69727b 0%, #4c5c6c 100%, #4c5c6c 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#69727b', endColorstr='#4c5c6c',GradientType=0 );
+}
+div.main-wrap-yad1-table > table.yad1MainTable tr.table-yad1-titles > th {
+  text-align: center;
+  color: #ffffff;
+  height: 40px !important;
+  font-size: 14px;
+}
+div.main-wrap-yad1-table > table.yad1MainTable tr.table-yad1-titles > th:last-child {
+  width: 56px;
+}
+div.main-wrap-yad1-table > table.yad1MainTable tr.piroject-info-strip {
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #DBEFF8;
+}
+div.main-wrap-yad1-table > table.yad1MainTable tr.piroject-info-strip > td {
+   text-align: center;
+  cursor: pointer;
+  height: 40px;
+  background-color: transparent;
+  border-bottom: 1px solid #91929e;
+}
+div.main-wrap-yad1-table > table.yad1MainTable tr.piroject-info-strip > td img {
+  border: none;
+}
+div.main-wrap-yad1-table > table.yad1MainTable tr.piroject-info-strip > td:hover {
+  background: transparent;
+}
+div.main-wrap-yad1-table > table.yad1MainTable tr.piroject-info-strip:hover {
+  background: #ABDCF4;
+}
+
+.show-results-yad1 {
+    height: 40px;
+    background: #EEEFF3;
+    line-height: 40px;
+}
+
+.show-results-yad1 h2 {
+  line-height: 40px;
+  padding-right: 10px;
+  color: #ff6600;
+  font-size: 16px;
+  display: inline;
+}

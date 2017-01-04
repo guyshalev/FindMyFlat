@@ -1,0 +1,208 @@
+var View = {
+    mediaManager: null,
+    kingKongExists: false,
+    managers: [],
+    initViewSlots: function(){
+        window.googletag.pubads().addEventListener('slotRenderEnded', function(event) {
+            var slotID = event.slot.getSlotElementId();
+            var slotName = event.slot.getName();
+            if (slotName != null && typeof slotName === "string"){
+
+             /*   jQuery("iframe[id*='"+slotName+"']").each(function(){
+                    var id = jQuery(this).attr("id");
+                    jQuery(this).attr("id",id.replace("ads",""))
+                });*/
+
+                var slotParts = slotName.split("/");
+
+
+
+                var $iframe = jQuery("iframe[id*='"+slotName+"']");
+
+
+                if (event.size != null && jQuery.inArray(event.size.join("x"),["1x1","2x2"])!=-1) {
+                    $iframe.parents("."+slotParts[slotParts.length - 1]).addClass("forceHidden").addClass("force1x1");
+                }
+
+                else {
+                    if ( $iframe.parents("."+slotParts[slotParts.length - 1]).hasClass( "force1x1" )) {
+                        $iframe.parents("." + slotParts[slotParts.length - 1]).removeClass("forceHidden").removeClass("force1x1");
+                    }
+
+
+                    jQuery.ajax({
+                        url: "//www.yad2.co.il/dfpV2/stat.php?action=saveImpressions",
+                        dataType: 'jsonp',
+                        type: 'post',
+                        data: {
+                            'zone': DesktopMediaManager.zone,
+                            'slotId': slotParts[slotParts.length - 1],
+                            //'size' : event.size != null ? event.size.join("x") : "",
+                            'campaignId': event.campaignId,
+                            'advertiserId': event.advertiserId,
+                            'creativeId': event.creativeId,
+                            'lineItemId': event.lineItemId
+                        }
+                    });
+                }
+
+            }
+
+            if (~slotID.indexOf("top_banner") || ~slotID.indexOf("small_top")) {
+                if(!event.isEmpty){
+                    jQuery("#top_banners").removeClass("plasma");
+                }
+            }
+
+            if(~slotID.indexOf("ad_cube")){
+                if(!event.isEmpty){
+                    var $desktop_Ad_Cube = jQuery(".Desktop_Ad_Cube");
+                    $desktop_Ad_Cube.find("iframe").each(function () {
+                        var w = $desktop_Ad_Cube.width();
+                        jQuery(this).width(w);
+                        var $mc = jQuery(jQuery(this).contents()).find("#media_container");
+                        $mc.width(w - 3);
+                        $mc.find("img#image").width(w);
+                    });
+                }
+            }
+            else if(~slotID.indexOf("interstitial")){
+                if(!event.isEmpty){
+                    jQuery("."+slotID).show();
+                }
+            }
+            else if(~slotID.indexOf("inner_rich")){
+                if(!event.isEmpty){
+                    var $Desktop_Inner_Rich = jQuery(".Desktop_Inner_Rich");            
+                    $Desktop_Inner_Rich.show();
+                }
+            }
+
+            else if(~slotID.indexOf("top_logo")){
+                if(!event.isEmpty){
+                    jQuery("#top_logo_sponsor").show();
+                }
+            }
+            else if(~slotID.indexOf("pic_cube_small_2")){
+                if(!event.isEmpty){
+                    var $adPicContainer = jQuery("#ad_pic_cube_small_2");
+                    var $adPics = $adPicContainer.siblings().find("img");
+                    var $adPicsContainers = $adPicContainer.siblings();
+                    var counter = -1;
+
+                    $adPics.each(function(){
+                        counter++;
+                        var $this = jQuery(this);
+
+                        if(~$this.attr("src").indexOf("viewImage_yad2logo_empty")){
+                            jQuery($adPicsContainers[counter]).hide();
+
+                            return false;
+                        }
+                    });
+
+                    $adPicContainer.show();
+                }
+            }
+            else if(~slotID.indexOf("sponsorship_search")){
+                if(!event.isEmpty){
+                    var $sst = jQuery("#sponsorship_search_title");
+                    if ($sst.length){
+                        $sst.show();
+                    }
+                    else{
+                        $("h2.searchTitle,h1.searchTitle").after( '<span id="sponsorship_search_title"  style="margin-right: 5px">\u05d1\u05d7\u05e1\u05d5\u05ea:</span>' );
+                    }
+                }
+            }
+            else if(~slotID.indexOf("strip_top")){
+                if(!event.isEmpty){
+                    jQuery("#strip_top").show();
+                }
+            }
+            else if(~slotID.indexOf("strip_2")){
+                if(!event.isEmpty){
+                    jQuery("#strip_2").show();
+                }
+            }
+
+            else if(~slotID.indexOf("strip_bottom")){
+                if(!event.isEmpty){
+                    jQuery("#strip_bottom").show();
+                }
+            }
+
+            if(~slotID.indexOf("prestitial")){
+                if(!event.isEmpty){
+                    SpecialSlotsManager.show_prestitial();
+                }
+            }
+
+            if(~slotID.indexOf("content_marketing")){
+                if(!event.isEmpty){
+                    jQuery("#content_marketing").show();
+                }
+            }
+
+            if(~slotID.indexOf("full_screen")/* || ~slotID.indexOf("sponsorship")*/){
+                if(!event.isEmpty){
+                    KMMediaManager.instant.showFullScreeMedia(slotID);
+                } else {
+                    var $mainPage = jQuery("#right");
+                    if ($mainPage.length){
+                        $mainPage.show();
+                    }else{
+                        var cl = setInterval(function () {
+                            var $mainPage = jQuery("#right");
+                            if ($mainPage.length){
+                                $mainPage.show();
+                                clearInterval(cl);
+                            }
+                        },1);
+                    }
+                }
+            }
+
+
+
+        });
+    },
+    init: function(mediaObj){
+        if (typeof mediaObj === "string"){
+            try{
+                mediaObj = JSON.parse(mediaObj);
+            }catch(e){
+                mediaObj = {};
+            }
+        }
+
+        if(SpecialSlotsManager){
+            SpecialSlotsManager.init();
+        }
+        else{
+            this.initViewSlots();
+        }
+
+        DesktopMediaManager.setMediaProperties(mediaObj);
+        DesktopMediaManager.init();
+    }
+};
+
+var KMMediaManager = {
+    loadURL: function(url,newWindow){
+        if (url != null && url.length){
+            window.open(url,newWindow ? "_blank" : "_top");
+        }
+    },
+    instant : {
+        dismissFullScreenMedia : function () {
+            jQuery("#right").show();
+            jQuery(".Mobile_Full_Screen,.Mobile_Sponsorship_Full_Screen").hide();
+        },
+        showFullScreeMedia : function (slotID) {
+            jQuery("#right,#menu").hide();
+            jQuery("#"+slotID).css({"display" :'block', "position" : 'absolute', "top": 0, "left": 0, "zIndex": 5000}).find("iframe").height(DesktopMediaManager.parameters.browserHeight * 0.97).width(DesktopMediaManager.parameters.browserWidth);
+
+        }
+    }
+};

@@ -1,0 +1,1110 @@
+/**
+ * * @Author Sagi Ohayon
+ *   last-modified: 29/07/2014
+ * dependencies :
+ *  jQuery 1.4.2
+ *  CanvasLoader.js,(canvasloader-min.js)
+ *
+ * selector : jquery selector or string of selector with the prefix of the selector for instnace : #loader,.loader
+ *            if the selector not defined created new div will be used as the selector
+ *            if the selector has no ID, we create
+ *
+ * options :
+ *      size - integer default 40.
+ *      color - color hex - default #ff6600
+ *      center - boolean -  center of the screen
+ *      overlayOpt -
+ *          active : true
+ *          bg: default to black (#000000)
+ *          op: opacity default to black (#000000)
+ *          zIn : z-index  default 100000000
+ *
+ *
+ *
+ *  If you got any problem call me: Sagi Ohayon 052-6031055
+ */
+var loader;
+Loader = function(){
+    var self = this;
+    "use strict";
+    this.cls = [];
+    this.overlayDefaults = {
+        bg  : "#000000",
+        op  : "0.6",
+        zIn : 100000000
+    };
+var guid = function() {
+    // http://www.ietf.org/rfc/rfc4122.txt
+    var s = [];
+    var hexDigits = "0123456789abcdef";
+    for (var i = 0; i < 36; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+    }
+    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+    s[8] = s[13] = s[18] = s[23] = "-";
+
+    return s.join("");
+};
+    this.showLoader = function($selector,opt){
+        $selector = $($selector);
+        var options = opt || {};
+        options.size = options.size || 40;
+            options.center = options.center || false;
+            options.color = options.color || '#ff6600';
+            options.overlayOpt =  options.overlayOpt || {};
+        if (!$selector.length){
+            $selector = $("<div />",{'id':guid(),'height':options.size,'width':options.size}).prependTo("body");
+        }
+        if ($selector.attr("id") == null){
+            $selector.attr("id",guid());
+        }
+
+        var sID = $selector.attr("id");
+        if (options.center) {
+            this.centerPoint($selector, options.overlayOpt);
+        }
+        if (typeof self.cls[sID] !== "undefined"){
+            $selector.fadeIn(1);
+            self.cls[sID].canvasLoader.show();
+            return sID;
+        }
+        var cl = new CanvasLoader(sID);
+        self.cls[sID] = {'canvasLoader': cl,'opt':options};
+
+        cl.setColor(options.color);
+        cl.setShape('spiral');
+        if (options.size > 100){
+            cl.setDensity(options.size-(options.size*0.2));
+            cl.setRange(1);
+            cl.setSpeed(5);
+            cl.setFPS(25);
+        }
+        cl.setDiameter(options.size);
+        cl.show();
+        return sID;
+    };
+    this.hideLoader = function($selector){
+        if (typeof self.cls[$selector.attr("id")] !== "undefined"){
+            var isCenter = self.cls[$selector.attr("id")].opt.center || false;
+            var $wrap = null;
+            if (isCenter){
+                if (typeof self.cls[$selector.attr("id")].opt.overlayOpt !== "undefined" && typeof self.cls[$selector.attr("id")].opt.overlayOpt.$selector !== "undefined"
+                    && self.cls[$selector.attr("id")].opt.overlayOpt.$selector.length){
+                    $wrap = $(self.cls[$selector.attr("id")].opt.overlayOpt.$selector);
+                }
+                else if  ($("#"+$selector.attr("id")+"_wrap").length ){
+                    $wrap = $("#"+$selector.attr("id")+"_wrap");
+                }
+                $selector.fadeOut(600);
+                if ($wrap != null)
+                    $wrap.fadeOut(600);
+            }
+
+            setTimeout(function(){
+                self.cls[$selector.attr("id")].canvasLoader.hide();
+            },600);
+
+
+        }
+
+    };
+
+    this.centerPoint = function($selector, overlayOpt) {
+        $selector = $($selector);
+        var $documentW    = $(document).outerWidth(true);
+        var $documentH     = $(document).outerHeight(true);
+
+        var $windowWidth  = $(window).width() / 2;
+        var $windowHeight = $(window).height() / 2;
+
+        var selectorW    = $selector.outerWidth(true) / 2;
+        var selectorH    = $selector.outerHeight(true) / 2;
+        var centerX      = $windowWidth -  selectorW;
+        var centerY      = $windowHeight - selectorH;
+
+        if (typeof overlayOpt === "object") {
+
+            overlayOpt.background = (overlayOpt.background) ? overlayOpt.background : this.overlayDefaults.bg;
+            overlayOpt.opacity    = (overlayOpt.opacity)    ?  overlayOpt.opacity   : this.overlayDefaults.op;
+            overlayOpt.zIn        = (overlayOpt.zIn)        ? overlayOpt.zIn        : this.overlayDefaults.zIn;
+            overlayOpt.$selector   = $(overlayOpt.$selector).length ? $(overlayOpt.$selector) : null;
+            if (overlayOpt.$selector == null){
+                overlayOpt.$selector = $("#"+$selector.attr("id")+"_wrap");
+                if (!overlayOpt.$selector.length){
+                    overlayOpt.$selector = $("<div />",{"id" : $selector.attr("id")+"_wrap"}).prependTo("body");
+                }
+            }
+            overlayOpt.$selector.css({
+                "position": "absolute",
+                top: 0,
+                left: 0,
+                "width": $documentW,
+                "height": $documentH,
+                "z-index": overlayOpt.zIn,
+                "background":  overlayOpt.background,
+                "opacity":overlayOpt.opacity
+            }).fadeIn(1);
+        }
+        $selector.css({
+            "position": "fixed",
+            top: centerY,
+            left: centerX,
+            "z-index": 100000001
+        });//.fadeIn(1);
+    };
+
+
+};
+
+
+
+/**
+ * @Author Matan Hafuta | Sagi Ohayon | Eli Meiler
+ * last-modified: 29/07/2014
+ */
+(function($) {
+
+    function y2url() {
+        this.getRunningScript = function(){
+            var url = decodeURI(window.location.href).split('/').pop();
+            return (url.length>0 ? url.split('?')[0] : null);
+        };
+
+        this.params = new y2params();
+    }
+
+    function y2geolocation() {
+        this.hasSupport = function() {
+            /**
+             * Using Modernizr to check support for geolocation
+             */
+            if ( Modernizr.geolocation ) {
+                //Support
+                return true;
+            }
+
+            return false;
+        };
+
+        this.getLocation = function(successCallBack, errorCallBack) {
+            /**
+             * getLocation recieves two callbacks, one for success and one for error
+             * the success callback receives the position object
+             * (containing coords object inside with latitude and longitude)
+             * the error callback recieves a function to handle errors (with error object as param)
+             *
+             * params:
+             * successCallBack  - function to handle successful request
+             * errorCallBack    - function to handle error during position request
+             */
+
+            if ( typeof successCallBack !== "function" || typeof errorCallBack !== "function" ) {
+                throw new TypeError("Invalid callbacks provided for Y2JS.geolocation.getLocation()");
+            }
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+                    if ( position.coords.latitude == 0 || position.coords.longitude == 0 ) {
+                        errorCallBack();
+                    } else {
+                        successCallBack(position.coords);
+                    }
+                },
+                function(error){
+                    errorCallBack(error);
+                },
+                {
+                    //enableHighAccuracy  : true,
+                    timeout             : 5000
+                });
+        };
+
+        this.watch = function(callback) {
+            /**
+             * The watch function is wrapping the geolocation watchPositio method
+             *
+             * params:
+             * callback - function to handle position change, receives position object
+             * as parameter
+             */
+            if ( typeof callback !== "function" ) {
+                throw new TypeError("Invalid callback function provided for Y2JS.geolocation.watch()");
+            }
+
+            navigator.geolocation.watchPosition(function(position){
+                callback(position);
+            });
+        };
+    }
+
+    function y2params(){
+        var _self = this;
+
+        this.values = {};
+        this.keys   = [];
+
+        this.isset = function(key){
+            return ( _self.values[key] !== undefined ? true : false );
+        };
+
+        this.empty = function(key){
+            return ( (_self.isset(key) == false || _self.values[key].length <= 0) ? true : false );
+        };
+
+        this.get = function(key){
+            if ( _self.isset(key) ) {
+                return _self.values[key].replace(/^\s+|\s+$/g, "");
+            }
+        };
+
+        this.getList = function() {
+            return _self.values;
+        };
+
+        this.getKeys = function() {
+            return _self.keys;
+        };
+
+        this.set = function(key, value) {
+            if(value == undefined){
+                return false;
+            }
+            _self.values[key] = value.toString();
+            _self.keys.push(key);
+        };
+
+        this.unset = function(key){
+            if(key == undefined){
+                return false;
+            }
+            delete(_self.values[key]);
+            if (_self.keys.indexOf(key) !== -1) {
+                _self.keys.splice(_self.keys.indexOf(key),1)
+            }
+        };
+
+        this.buildParamsString = function(){
+            var paramsString = "";
+            for ( var key in this.values){
+                paramsString += "&" + key + "=" + _self.get(key);
+            }
+            if (paramsString != ""){
+                paramsString = paramsString.substr(1);
+                paramsString = "?"+paramsString
+            }
+            return paramsString;
+        };
+
+        var paramsString = window.location.search.substr(1);
+        if ( typeof paramsString !== "string" || !paramsString.length ){ return false; }
+        try{
+            var splitValues = paramsString.split("&");
+
+            for ( var key1 in splitValues) {
+                if (typeof splitValues[key1] !== "string"){
+                    continue;
+                }
+                var value = splitValues[key1].split("=");
+
+            if ( value.length > 0 ) {
+                _self.values[ value[0] ] = value[1];
+                _self.keys.push(value[0]);
+            }
+        }
+        }catch (e){if (typeof console !== "undefined"){
+            console.log(e);
+        }}
+    }
+    function Y2Cookies(){
+        this.setCookie = function( name, value, expires, path, domain, secure ){
+            var today = new Date();
+            today.setTime( today.getTime() );
+
+            /*
+             if the expires variable is set, make the correct
+             expires time, the current script below will set
+             it for x number of days, to make it for hours,
+             delete * 24, for minutes, delete * 60 * 24
+             */
+            if ( expires )
+            {
+                expires = expires * 1000 * 60 * 60 * 24;
+            }
+            var expires_date = new Date( today.getTime() + (expires) );
+
+            document.cookie = name + "=" +escape( value ) +
+                ( ( expires ) ? ";expires=" + expires_date.toGMTString() : "" ) +
+                ( ( path ) ? ";path=" + path : "" ) +
+                ( ( domain ) ? ";domain=" + domain : "" ) +
+                ( ( secure ) ? ";secure" : "" );
+        };
+        this.getCookie = function( name ){
+            var start = document.cookie.indexOf( name + "=" );
+            var len = start + name.length + 1;
+            if ( ( !start ) &&( name != document.cookie.substring( 0, name.length ) ) ){
+                return null;
+            }
+
+            if ( start == -1 ) return null;
+            var end = document.cookie.indexOf( ";", len );
+            if ( end == -1 )
+                end = document.cookie.length;
+            return unescape( document.cookie.substring( len, end ) );
+        };
+        this.deleteCookie = function ( name, path, domain ){
+
+            if ( this.getCookie( name ) ) document.cookie = name + "=" +
+                ( ( path ) ? ";path=" + path : "") +
+                ( ( domain ) ? ";domain=" + domain : "" ) +
+                ";expires=Thu, 01-Jan-1970 00:00:01 GMT";
+        }
+
+    }
+
+	function Y2CommonJS() {
+
+        var self = this;
+
+        this.objects = {
+            getSize : function (object) {
+
+                if ( object === undefined ) {
+                    return false;
+                }
+
+                var size = 0;
+
+                for (var key in object) {
+                    if (object.hasOwnProperty(key)) {
+                        size += 1;
+                    }
+                }
+                return size;
+            },
+            deepExtend : function(destination, source) {
+                for (var property in source) {
+                    if (source[property] && source[property].constructor &&
+                        source[property].constructor === Object) {
+                        destination[property] = destination[property] || {};
+                        arguments.callee(destination[property], source[property]);
+                    } else {
+                        destination[property] = source[property];
+                    }
+                }
+                return destination;
+            },
+            arrayUnique : function(arr){
+                    var a = arr.concat();
+                    for (var i = 0; i < a.length; ++i) {
+                        for (var j = i + 1; j < a.length; ++j) {
+                            if (a[i] === a[j])
+                                a.splice(j--, 1);
+                        }
+                    }
+
+                    return a;
+
+            }
+
+        };
+
+        this.forms = {
+
+            /**
+             * @method: checkPhone
+             * validate Israeli phone numbers
+             *
+             * Can check all type of phone numbers
+             * If you want to check for specified type pass the
+             * requested type in the phoneType param
+             */
+            hasSequence : function(number,limit){
+                number = number.toString();
+                limit = limit > 0 ? limit : number.length - 1 ;
+                number = number.replace(/[^0-9]/g, '');
+
+                if (number.length < 2){
+                    return false;
+                }
+
+                var delta = parseInt(number.charAt(0)) - parseInt(number.charAt(1));
+                if (Math.abs(delta) != 1)
+                    return false;
+
+                var counter = 1;
+                for (var i = 0; i < number.length - 1; i++){
+                    if (parseInt(number.charAt(i)) - parseInt(number.charAt(i+1)) != delta && counter < limit)
+                        return false;
+
+                    counter++;
+                }
+
+                return limit && counter >= limit;
+            },
+            checkPhone : function(phone, phoneType) {
+                var whiteList = ["0527000000"];
+                if ( phone.length === 0 ) {
+                    return false;
+                }
+                phone = phone.replace("-","").trim();
+
+                if (whiteList.indexOf(phone) != -1){
+                    return true;
+                }
+                
+                var prefix;
+                if (phone.length == 10){
+                    //prefix = (phone.indexOf("1") == 0) ? phone.substring(0,4) :  phone.substring(0,3);
+                    prefix = (phone.toString().charAt(0) == 1) ? phone.substring(0,4) :  phone.substring(0,3);
+                }
+                else{
+                    prefix = (phone.toString().charAt(0) == "*") ? phone.substring(0,1) : phone.substring(0,2);
+                }
+
+                var withoutPrefix = phone.replace(prefix,"");
+                //according illegal numbers 2014-09-09
+                var repeatDigits = /([0-9])\1{5}/;
+                if (repeatDigits.test(withoutPrefix)){
+                    return false;
+                }
+
+
+                if (prefix != "*" && this.hasSequence(withoutPrefix)){
+                    return false;
+                }
+
+
+                var phoneRegex = {
+                    'asteriskKey': /^\*{1}[2-9]{1}[0-9]{1,4}$/,
+
+                    /**
+                     * Prefixes: 02, 03, 04, 08, 09
+                     * Optional dash after the prefix
+                     * Digit in the range of 1-9 and 6 more digits in the range of 0-9
+                     */
+                    'bezeq'     : /^[0]{1}((?![5,6,7])[2-9]){1}(-)*[2-9]{1}[\d]{6}$/,
+
+                    /**
+                     * Prefixes: 1599, 1700, 1800, 1801
+                     * Optional dash after the prefix's first digit
+                     * Optional dash after the prefix (4 digits)
+                     * Digit between 1-9, two more digits between 0-9, optinal dash, 3 digits
+                     */
+                    'special'   : /^((1)[-]*((599)|(700)|(800)|(801))[-]*([0-9]{1}[0-9]{2}[-]*[0-9]{3}))$/,
+
+                    /**
+                     * Prefixes: 050, 052, 053, 054, 055, 057, 058
+                     * Optional dash after prefix
+                     *
+                     */
+                    'cellular'  : /^(05){1}[\d]{1}(-)*[2-9]{1}[\d]{6}$/,
+
+                    /**
+                     * Prefixes: 072, 073, 074, 076, 077, 078
+                     * Optional dash after prefix
+                     * Digit in the range of 2-9 and 6 more digits in the range of 0-9
+                     */
+                    'home_new'  : /^(07){1}((?!5)[2-8])(-)*[1-9]{1}[\d]{6}$/
+
+                };
+                if ( typeof phoneType == "string" && phoneType.length > 0 ) {
+                    if ( phoneRegex[ phoneType ] !== undefined ) {
+                        return phoneRegex[ phoneType ].test(phone);
+                    }
+                } else {
+                    for(var regex in phoneRegex) {
+                        if ( phoneRegex[regex].test(phone) ) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            },
+
+            /**
+             * @method checkEmail
+             * Validates email address
+             *
+             * performs case insenstive comparison
+             */
+            checkEmail : function(email,ajaxUrl) {
+                var emailRegex = /^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i;
+                if (!emailRegex.test(email)){
+                    return false
+                }
+                var valid = null;
+                var ajaxUrl = (typeof ajaxUrl === "string") ?  ajaxUrl : "//"+window.location.hostname+"/ajax/check_email.php";
+                $.ajax({
+                   datatype:'html',
+                   type:"GET",
+                   url: ajaxUrl,
+                   data:{Email:email},
+                   async:false,
+                   success:function(response){
+                       "use strict";
+                        valid = (response == "true");
+                   }
+                });
+
+                return valid;
+            },
+            checkDate  : function(dateValue,minDate,maxDate){
+                "use strict";
+                //var dateRegex = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/;
+                if (typeof dateValue !== "undefined" && dateValue != null && dateValue.length) {
+                  //  if (!dateRegex.test(dateValue)) {
+                    //    return false;
+                    //}
+                    dateValue = dateValue.replace(/(\d{2})(\/|-|.)(\d{2})(\/|-|.)(\d{4})/, "$1-$3-$5").split("-");
+                    if (dateValue.length < 3){
+                        return false;
+                    }
+                    var day = dateValue[0],month = dateValue[1],year = dateValue[2];
+
+                    var isValidDate =  month > 0 && month < 13 && year > 999 && year < 32768 && day > 0 && day <= (new Date(year, month, 0)).getDate();
+                    if (!isValidDate){
+                        return false;
+                    }
+                    var date = new Date(year, month - 1, day);
+                    //date.setHours(0,0,0,0);
+                    //var userAgent = navigator.userAgent.toLowerCase();
+                    //var sep = userAgent.indexOf('safari') != -1 ? "/" : "-";
+                    //var dateFormat = (userAgent.indexOf('firefox') != -1 || userAgent.indexOf('safari') != -1) ? "$5"+sep+"$3"+sep+"$1" : "$3-$1-$5",
+                    //date = new Date( dateValue.replace(/(\d{2})(\/|-|.)(\d{2})(\/|-|.)(\d{4})/, dateFormat));
+                    // date.setHours(0,0,0,0);
+                    if (minDate instanceof Date && !isNaN(minDate.getTime())) {
+                        minDate.setHours(0,0,0,0);
+                        if (date.getTime() < minDate.getTime())
+                            return false;
+                    }
+                    if (maxDate instanceof Date && !isNaN(maxDate.getTime())) {
+                        maxDate.setHours(0,0,0,0);
+                        if (date.getTime() < maxDate.getTime())
+                            return false;
+                    }
+                        return true;
+                }
+                return false;
+            },
+            number_format:function(number, decimals, dec_point, thousands_sep) {
+                "use strict";
+                number = (number + '')
+                    .replace(/[^0-9+\-Ee.]/g, '');
+                var n = !isFinite(+number) ? 0 : +number,
+                    prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+                    sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+                    dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+                    s = '',
+                    toFixedFix = function(n, prec) {
+                        var k = Math.pow(10, prec);
+                        return '' + (Math.round(n * k) / k)
+                            .toFixed(prec);
+                    };
+                // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+                s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
+                    .split('.');
+                if (s[0].length > 3) {
+                    s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+                }
+                if ((s[1] || '')
+                    .length < prec) {
+                    s[1] = s[1] || '';
+                    s[1] += new Array(prec - s[1].length + 1)
+                        .join('0');
+                }
+                return s.join(dec);
+
+            },
+            checkPasswordStrength: function(password,userName){
+                "use strict";
+                var criteria = {
+                    minLength : {'regex':/.{8,20}/,'isRequired':true},
+                    numbers : {'regex':/[0-9]{1,}/,'isRequired':true},
+                    englishChars : {'regex':/[A-Za-z]{1,}/,'isRequired':true},
+                    special   : {'regex':/[#@\$!%\^\&*]/,'isRequired':false}
+                    },errors = [],ratingClasses={0:'veryWeak',25:'weak',50:'fair',75:'good',100:'strong'};
+                if (!/^[^\u05d0-\u05ea]+$/.test(password)){
+                    errors.push('hebChars');
+                    return {'strength':5,'errors':errors,'ratingClass':''};
+                }
+                if (/(.)\1{2}/.test(password)){
+                    errors.push('repeatedChars');
+                    return {'strength':10,'errors':errors,'ratingClass':''};
+                }
+
+                if (password.length < 8){
+                    errors.push('minLength');
+                    return {'strength':10,'errors':errors,'ratingClass':ratingClasses[0]};
+                }
+
+                if (password.indexOf(" ") != -1){
+                    errors.push('illegalChars');
+                    return {'strength':0,'errors':errors,'ratingClass':''};
+                }
+                if(this.hasSequence(password,3)){
+                    errors.push('hasSequence');
+                    return {'strength':10,'errors':errors,'ratingClass':''};
+                }
+
+                if (typeof userName === "string" && userName.length){
+                    if (userName.indexOf("@") != -1){
+                        userName = userName.substring(0,userName.indexOf("@"));
+
+                    }
+                    if (password.indexOf(userName) != -1){
+                        errors.push('containsUserName');
+                        return {'strength':0,'errors':errors,'ratingClass':''};
+                    }
+
+                }
+
+                for (var c in criteria){
+                    var criteriaData = criteria[c];
+                    if (!criteriaData.regex.test(password)){
+                        errors.push(c);
+                        if (criteriaData.isRequired){
+                            return {'strength':0,'errors':errors,'ratingClass':''};
+                        }
+
+                    }
+                }
+                var totalCriteria = self.objects.getSize(criteria),
+                    strength = (((totalCriteria-errors.length)/totalCriteria)*100);
+               return {'strength':strength,'errors':errors,'ratingClass':ratingClasses[strength]};
+            },
+            strippedString : function(string){
+                return string.replace(/(<([^>]+)>)/ig,"");
+            },
+            hasStripTags : function(string){
+                "use strict";
+                return (string != this.strippedString(string));
+            },
+            createErrorResponseView : function(response){
+                var $iframeWrap = $("#errorResponseWrap");
+                if (!$iframeWrap.length){
+                    $iframeWrap = $("<div/>",{'id':'errorResponseWrap'}).css({'display':'none','position':'relative'});
+                    var $closeBtn = $("<div />",{'class':'close'})
+                        .css({'position': 'absolute',
+                            'left': "-10px",
+                            'top': "-10px",
+                            'background': "url('//my.yad2.co.il/newOrder/images/publish/closeBt29x30.png') no-repeat ",
+                            'width': "30px",
+                            'height': "29px",
+                            'cursor': "pointer"});
+                    $iframeWrap.append($closeBtn);
+                    $iframeWrap.appendTo("body");
+                }
+
+                $.sLightbox({
+                    type: 'element',
+                    complete: function(){
+                        var $errorResponseWrap = $("#errorResponseWrap");
+                        var $iframe = $errorResponseWrap.find("iframe");
+                        var initIframe = function(){
+                            var $iframeBody = $iframe.contents().find("body");
+                            $iframeBody.html(response);
+                            $iframeBody.css("background","#ffffff");
+                            var $body = $("body");
+                            var minWidth = window.screen.width * 0.5;
+                            var width = $iframeBody.width() > minWidth ? $iframeBody.width() : $body.width() * 0.8;
+                            var height = $iframeBody.height();
+                            if ($iframeBody.find(".WrongCode")){
+                                height = 800;
+                                $iframeBody.find(".containerLink").remove();
+
+                            }
+                            $iframe.width(width);
+                            $iframe.height(height);
+                            $(window).trigger("resize");
+                        };
+
+                        if (!$iframe.length){
+                            $iframe = $("<iframe />",{'src':'about:blank','scrolling':'no','frameborder':'0'});
+                            $iframe.on("load",initIframe);
+                            $errorResponseWrap.append($iframe);
+                        }else{
+                            initIframe();
+                        }
+                        $errorResponseWrap.find(".close").on("click tap",$.sLightbox.close);
+
+                    },
+                    overlayClose:false,
+                    content: 'errorResponseWrap'
+                });
+            }
+
+
+        };
+
+		this.url = new y2url();
+
+        this.files = {
+            getExtension : function(filename) {
+                if( !self.check.isString(filename) || filename.length == 0 ) { return ""; }
+
+                var dot = filename.lastIndexOf(".");
+                if( dot == -1 ) { return ""; }
+
+                var extension = filename.substr(dot+1, filename.length);
+
+                return extension
+            },
+            isVideo : function(file){
+                "use strict";
+                //getting from http://en.wikipedia.org/wiki/List_of_file_formats#Video
+                var videoFileFormat = ['aaf','avi','flv','mpg','mpeg','3pg','3g2','wmv','swf','svu','mov'];
+                if (typeof file === undefined || file === null) {
+                    return false;
+                }
+                if (typeof file === "string" && $.inArray(this.getExtension(file).toLowerCase(),videoFileFormat) == -1){
+                        return false;
+                }
+                else if (typeof file.type === "undefined" || file.type.indexOf("video") == -1) {
+                    return false;
+                }
+
+                return true;
+            },
+            isImage : function(file){
+                var imageFileFormat = ['jpg','jpeg','gif','bmp','png','tiff'];
+                "use strict";
+                if (typeof file === undefined || file === null) {
+                    return false;
+                }
+                if (typeof file === "string"){
+                    if ( typeof file === "string" && $.inArray(this.getExtension(file).toLowerCase(),imageFileFormat)  == -1){
+                        return false;
+                    }
+                }
+                else if (typeof file.type === "undefined" || file.type.indexOf("image") == -1) {
+                    return false;
+                }
+                return true;
+            }
+
+        };
+
+        this.check = {
+
+            isString : function(str) {
+                if ( typeof str === "string" ) {
+                    return true;
+                }
+                return false;
+            },
+
+            isArray : function(obj) {
+                return (typeof obj === "object" && obj instanceof Array);
+            },
+
+            isFunction : function(func) {
+                return ( typeof func === "function" );
+            }
+
+        };
+
+        this.math = {
+
+            random : function(from, to) {
+                if ( isNaN(from) || isNaN(to) ) {
+                    return false;
+                }
+
+                return Math.floor(Math.random() * (to - from + 1) + from);
+            }
+
+        };
+        this.cookies = new Y2Cookies();;
+        this.geolocation = new y2geolocation();
+
+        this.supportOldBrowsers = function() {
+
+            if (!String.prototype.trim) {
+                String.prototype.trim = function () {
+                    return this.replace(/^\s+|\s+$/g, '');
+                };
+            }
+
+            if (!Array.prototype.forEach) {
+
+                Array.prototype.forEach = function forEach(callback, thisArg) {
+                    'use strict';
+                    var T, k;
+
+                    if (this == null) {
+                        throw new TypeError("this is null or not defined");
+                    }
+
+                    var kValue,
+                        O = Object(this),
+                        len = O.length >>> 0; // Hack to convert O.length to a UInt32
+
+                    if ({}.toString.call(callback) !== "[object Function]") {
+                        throw new TypeError(callback + " is not a function");
+                    }
+
+                    if (arguments.length >= 2) {
+                        T = thisArg;
+                    }
+
+                    k = 0;
+                    while (k < len) {
+                        if (k in O) {
+                            kValue = O[k];
+                            callback.call(T, kValue, k, O);
+                        }
+                        k++;
+                    }
+                };
+            }
+
+
+	    
+	    if (!Object.create){
+                Object.create = function(proto){
+                    var F = function(){};
+                    F.prototype = proto;
+                    return new F();
+                };
+            }
+	    
+            if (!Array.prototype.indexOf)
+            {
+                Array.prototype.indexOf = function(elt /*, from*/)
+                {
+                    var len = this.length >>> 0;
+
+                    var from = Number(arguments[1]) || 0;
+                    from = (from < 0)
+                        ? Math.ceil(from)
+                        : Math.floor(from);
+                    if (from < 0)
+                        from += len;
+
+                    for (; from < len; from++)
+                    {
+                        if (from in this &&
+                            this[from] === elt)
+                            return from;
+                    }
+                    return -1;
+                };
+            }
+
+        };
+
+        this.Paging = function (page,pageRange,maxPages,TotalRecord,ad_per_page){
+            /**
+             * requered
+             * page current page if not set default 1,
+             * pageRange- range of pages that can be selected
+             * other parameters:
+             * maxPages - maximum pages
+             * OR
+             * TotalRecord  and ad_per_page
+             *
+             * USING
+             * after load this object => run CalculateRange(isArrayWanted) with true or nothing
+             * and return:
+             * if  isArrayWanted array where the first param is a start page and a second it a last page
+             * else object with 2 prop., first page and end page
+             *
+             * enjoy :)
+             *
+             */
+                //first check
+            self =this;
+            self.page = (typeof page !="undefined" && parseInt(page)==page && page>0)?page:1;
+            self.pageRange = (typeof pageRange !="undefined" && parseInt(pageRange)==pageRange && pageRange>0)?pageRange:null;
+            //optional
+            self.maxPages = (typeof maxPages !="undefined" && parseInt(maxPages)==maxPages && maxPages>0)?maxPages:null;
+            //OR
+            self.TotalRecord = (typeof TotalRecord !="undefined" && parseInt(TotalRecord)==TotalRecord && TotalRecord>0)?TotalRecord:null;
+            self.ad_per_page = (typeof ad_per_page !="undefined" && parseInt(ad_per_page)==ad_per_page && ad_per_page>0)?ad_per_page:null;
+            //result params
+            self.StartPage = null;
+            self.EndPage = null;
+            self.CalculateMaxPages = function(){
+                //calculate maxPages if needed and continue if maxPages is int that big then 0
+                var maxPages = self.maxPages;
+                if( self.isInteger(self.TotalRecord) && self.isInteger(self.ad_per_page)){
+                    maxPages = (self.TotalRecord-(self.TotalRecord%self.ad_per_page))/self.ad_per_page;
+                    if(self.TotalRecord%self.ad_per_page>0){
+                        maxPages++;
+                    }
+                }
+                //if(typeof number == "undefined" || parseInt(number)!=number || !(parseInt(number)>0)){
+                if(!self.isInteger(maxPages)){
+                    return false;
+                }
+                self.maxPages = parseInt(maxPages);
+                return true;
+            }
+            self.isInteger = function(number){
+                if(typeof number == "undefined" || parseInt(number)!=number || !(parseInt(number)>0)){
+                    return false;
+                }
+                return true;
+            }
+            self.checkLoadedParams = function(){
+                if( self.isInteger(self.page)){
+                    self.page = parseInt(self.page);
+                }else{
+                    return false;
+                }
+                if( self.isInteger(self.pageRange)){
+                    self.pageRange = parseInt(self.pageRange);
+                }else{
+                    return false;
+                }
+                //check optional
+                if(self.isInteger(self.maxPages)){
+                    self.maxPages = parseInt(self.maxPages);
+                }else if(self.isInteger(self.TotalRecord) && self.isInteger(self.ad_per_page)){
+                    self.TotalRecord = parseInt(self.TotalRecord);
+                    self.ad_per_page = parseInt(self.ad_per_page);
+                }else{
+                    return false;
+                }
+                return true;
+            }
+            self.CalculateRange = function(isArrayWanted) {
+                if (!self.checkLoadedParams()) {
+                    return false;
+                }
+                //check maxPages existance
+                if (!self.isInteger(self.maxPages)) {
+                    if (!self.CalculateMaxPages()) {
+                        var error = {};
+                        error.status = "Error";
+                        error.message = "cant calculate max pages";
+                        return error;
+                    }
+                }
+                //find range for current page
+                var StartPage = self.page - self.page % self.pageRange + 1;
+                if (self.page % self.pageRange == 0) {
+                    StartPage -= Math.ceil(self.pageRange / 2);
+                }
+                var EndPage = ((StartPage + self.pageRange - 1) < self.maxPages) ? StartPage + self.pageRange - 1 : self.maxPages;
+                var middle = Math.ceil(StartPage + (self.pageRange - 1) / 2);
+
+                
+
+                if (middle > EndPage) {
+                    if (self.page > 1) {
+                        var dec = self.pageRange-1;
+                        while (dec--) {
+                            if (StartPage - 1 > 0) {
+                                StartPage--;
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }else{
+                    if (self.page < middle) {
+                        if (self.page > 1) {
+                            var dec = middle - self.page;
+                            while (dec--) {
+                                if (StartPage - 1 > 0) {
+                                    StartPage--;
+                                    EndPage--;
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+                        //else stay like it
+                    } else if (self.page > middle) {
+                        var inc = EndPage - middle;
+                        if (self.page % self.pageRange != 0) {
+                            inc--;
+                        }
+                        while (inc--) {
+                            if (EndPage + 1 <= self.maxPages) {
+                                StartPage++;
+                                EndPage++;
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+            }
+                self.StartPage= StartPage;
+                self.EndPage= EndPage;
+                if(typeof isArrayWanted == "boolean" && isArrayWanted){
+                    return [self.StartPage,self.EndPage];
+                }else{
+                    return {
+                        'StartPage':self.StartPage,
+                        'EndPage':self.EndPage
+                    }
+                }
+            }
+            return self;
+        }
+        this.loader = new Loader();
+
+	}
+
+
+	if (typeof window.Y2JS === "undefined" ) {
+		window.Y2JS = new Y2CommonJS();
+        Y2JS.supportOldBrowsers();
+
+
+	}
+
+})(jQuery);
+
+if (typeof openWindow === "undefined") {
+    function openWindow(URL, winName, width, height, scrollbar, resizable) {
+        scrollbar = typeof scrollbar === "undefined" ? "yes" : scrollbar;
+
+        if (typeof resizable === "undefined")
+            resizable = 'no';
+
+        if (height == '' || !height)
+            height = screen.height / 2;
+
+        var height_factor = ((screen.height / 100) * 85);
+
+        if (height >= height_factor)
+            height = height_factor;
+
+        if (width == '' || !width)
+            width = screen.width / 2;
+
+        var width_factor = ((screen.width / 100) * 95);
+
+        if (width >= width_factor)
+            width = width_factor;
+
+        var top = ((screen.height - height) / 2) - (screen.height / 20);
+        var left = (screen.width - width) / 2;
+        var win = window.open(URL, winName, 'toolbar=no,location=no,directories=no,status=0,menubar=no,scrollbars=' + scrollbar + ',resizable=' + resizable + ',copyhistory=no,width=' + width + ',height=' + height + ',top=' + top + ',left=' + left + '');
+        if (typeof win !== "undefined"){
+            win.focus();
+        }
+        return win;
+    }
+}
+
+if(typeof stat === "undefined"){
+    function stat(path,bid,url,redir,callback){
+        if(parseInt(bid) > 0){
+            jQuery.ajax({
+                async:false,
+                url:path+"ajax/click_stat.php?BannerID="+bid+"&URL="+url+"&redir="+redir,
+                success:function(data){
+                    "use strict";
+                    if (typeof callback === "function"){
+                        callback(data);
+                    }
+                }
+            });
+        }
+    }
+}

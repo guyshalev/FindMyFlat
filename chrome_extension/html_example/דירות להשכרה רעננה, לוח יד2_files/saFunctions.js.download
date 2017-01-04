@@ -1,0 +1,238 @@
+function sa_nextStep(step){
+    switch (step){
+    case 1:
+    jQuery('.content_step_2').hide();
+    jQuery('.content_step_3').hide();
+    jQuery('.content_step_1').fadeIn();
+    break;
+    case 2:
+    jQuery('.content_step_1').hide();
+    jQuery('.content_step_3').hide();
+    jQuery('.content_step_2').fadeIn();
+    break;
+    case 3:
+    jQuery('.content_step_1').hide();
+    jQuery('.content_step_2').hide();
+    jQuery('.content_step_3').fadeIn();
+    break;
+    }
+
+}
+function show_mail_div_and_scroll(){
+    show_mail_div();
+
+}
+function scrollAlertsContext($up){
+    if($up !== undefined && $up==true ){
+        $(".context_wrap").animate({ scrollTop:0 }, 500);
+    }else{
+        $(".context_wrap").animate({ scrollTop: $('.context_wrap').height() }, 500);
+    }
+
+}
+var path = "/";
+jQuery(function(){
+
+    jQuery(document).on('click','.sa_submit_step_1',function(){
+        //get data
+        var prePhone            =jQuery('select[name=sa_prePhone]');
+        var phone               =jQuery('input[name=sa_phone]');
+        var traderNewsletter    = jQuery('#TraderNewsletter');
+        var erorMessage         = jQuery('#sa_errorMessage_step1');
+        var loader_wrap         = jQuery('.loader_muff');
+
+        erorMessage.html('');
+
+           if(prePhone.length==1 && phone.length==1){
+                //sevice type
+               var service_name = phone.attr('data-service');
+               var Agent        = phone.attr('data-agent');
+               var search        = phone.attr('data-search');
+               var user        = phone.attr('data-user');
+               var cat        = phone.attr('data-cat');
+
+               if(parseInt(service_name)==service_name && service_name>0){
+                    if(parseInt(prePhone.val())!=prePhone.val()){
+                        erorMessage.html('אנא בחר קידומת');
+                        prePhone.focus();
+                        return;
+                    }
+
+                    if(parseInt(phone.val())!=phone.val()){
+                        alert('אנא מלא מספר פלאפון חוקי');
+                        phone.focus();
+                        return;
+                    }else if(phone.val().length!=7){
+                        alert('אנא מלא מספר פלאפון מלא');
+                        phone.focus();
+                        return;
+                    }
+
+                    var InputAjaxData = new Object();
+                    InputAjaxData.prephone = prePhone.val();
+                    InputAjaxData.phone = phone.val();
+                    InputAjaxData.service = service_name;
+
+                    if(parseInt(Agent)==Agent && Agent>0){
+                        InputAjaxData.Agent = Agent;
+                    }
+                   if(parseInt(search)==search && search>0){
+                       InputAjaxData.search = search;
+                   }
+                   if(user!== undefined && user!=''){
+                       InputAjaxData.user = user;
+                   }
+                   if(parseInt(cat)==cat && cat>0){
+                       InputAjaxData.cat = cat;
+                   }
+
+
+                    if(traderNewsletter.length==1){
+                        //popup
+                        InputAjaxData.TraderNewsletter = traderNewsletter.prop('checked');
+                    }
+
+
+
+
+                    jQuery.ajax({
+                        url:"/smartAgent/ajax/getAlertsCode.php",
+                        type:"post",
+
+                        data:InputAjaxData,
+                        beforeSend : function (){
+
+                            if(loader_wrap.length==1){
+                                loader_wrap.fadeIn();
+                            }
+                        },
+                        dataType:"json",
+                        success: function(answer) {
+                           // console.log(answer);
+                            if(answer.resultCode !== undefined){
+
+                                if(answer.resultCode==1){
+                                    sa_nextStep(2);
+                                }else if( answer.resultCode==3 && service_name=='713'){
+                                    sa_nextStep(2);
+                                }else if( answer.resultCode==2 && service_name=='711'){
+                                        sa_nextStep(3);
+
+                                }else if(answer.resultTitle!==undefined){
+                                    erorMessage.html(answer.resultTitle);
+                                }
+
+                            }
+                            if(loader_wrap.length==1 && loader_wrap.is(':visible')){
+                                loader_wrap.fadeOut();
+                            }
+
+                        }
+
+                    });
+
+
+               } else{
+                   console.error('data service not real-'+service_name);
+               }
+
+
+
+        }else{
+            console.error('data-error');
+        }
+
+
+    });
+
+    jQuery(document).on('click','.sa_submit_step_2',function(){
+        //get data
+        var confirmCode			=jQuery('input[name=sa_confirmCode]');
+        var prePhone			=jQuery('select[name=sa_prePhone]');
+        var phone				=jQuery('input[name=sa_phone]');
+        var erorMessage         =jQuery('#sa_errorMessage_step2');
+        var loader_wrap         = jQuery('.loader_muff');
+
+        erorMessage.html('');
+        if(prePhone.length==1 && phone.length==1 ){
+            //check data
+            var service_name    = phone.attr('data-service');
+            var Agent           = phone.attr('data-agent');
+
+            if(parseInt(service_name)==service_name && service_name>0){
+
+                if(confirmCode.val().length== 0 ){
+                    erorMessage.html('אנא מלא את הקוד שקיבלת לצורך הפעלת שירות');
+                    confirmCode.focus();
+                    return;
+                }
+
+                AjaxSendData = new Object();
+                AjaxSendData.prephone = prePhone.val();
+                AjaxSendData.phone = phone.val();
+                if(parseInt(Agent)==Agent && Agent>0){
+                    AjaxSendData.Agent = Agent;
+                }
+
+                AjaxSendData.service = service_name;
+                AjaxSendData.confirmCode = confirmCode.val();
+
+                jQuery.ajax({
+                    url:"/smartAgent/ajax/confirmAlertsCode.php",
+                    type:"post",
+                    data:AjaxSendData,
+                    beforeSend : function (){
+
+                        if(loader_wrap.length==1){
+                            loader_wrap.fadeIn();
+                        }
+                    },
+                    dataType:"json",
+                    success: function(answer) {
+                       // console.log(answer);
+
+                        if(answer.resultCode !== undefined){
+
+                            if(answer.resultCode==1){
+
+                                if(service_name=='713'){
+                                    jQuery('.sa_content').html('').append(jQuery('<div/>',{'class':'sa_final_message'}).html(""+answer.resultTitle));
+                                    sa_nextStep(3);
+                                }else{
+
+                                    jQuery('.sa_content').html('').append(jQuery('<div/>',{'class':'agent_final_message'}).html(""+answer.resultTitle))
+                                                                  .append(jQuery('<div/>',{'class':'agent_more_Agents','onclick':'self.location=self.location.origin+"/MyYad2/Agent/index.php"'}).html("לצפייה בסוכנים החכמים &#187;"));
+                                    sa_nextStep(3);
+                                }
+
+
+                            }else if(answer.resultCode=='-3' || answer.resultCode=='-4'){
+                                sa_nextStep(1);
+                            }else if(service_name=='711' && answer.resultCode=='2'){
+                                jQuery('.sa_content').html('').append(jQuery('<div/>',{'class':'agent_final_message'}).html(""+answer.resultTitle))
+                                    .append(jQuery('<div/>',{'class':'agent_more_Agents','onclick':'self.location=self.location.origin+"/MyYad2/Agent/index.php"'}).html("לצפייה בסוכנים החכמים &#187;"));
+                                sa_nextStep(3);
+                            }else if(answer.resultTitle!==undefined){
+                                erorMessage.html(answer.resultTitle);
+                            }
+
+                        }
+                        if(loader_wrap.length==1 && loader_wrap.is(':visible')){
+                            loader_wrap.fadeOut();
+                        }
+                    }
+
+                });
+
+            }else{
+                console.error('data service not real-'+service_name+' OR agent not found-'.Agent);
+            }
+        }else{
+            console.error('data-error');
+        }
+});
+
+});
+
+
+

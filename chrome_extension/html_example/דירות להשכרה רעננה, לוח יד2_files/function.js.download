@@ -1,0 +1,150 @@
+function openWindow(URL, winName, width, height){
+
+
+	if(height=='' || !height)
+	height=screen.height/2
+	height_factor = ((screen.height/100)*85)
+	if(height>=height_factor)
+		height=height_factor;
+
+
+	if(width=='' || !width)
+		width=screen.width/2
+	width_factor = ((screen.width/100)*95)
+	if(width>=width_factor)
+		width=width_factor;
+
+	var top=((screen.height-height)/2)-(screen.height/20)
+	var left=(screen.width - width) / 2 ;
+
+		win=window.open(URL, winName, 'toolbar=no,location=no,directories=no,status=1,menubar=no,scrollbars=yes,resizable=1,copyhistory=no,width='+width+',height='+height+',top='+top+',left='+left+'');
+		win.focus();
+}
+
+function SubmitTopicForm(){
+	var bool=false;
+	if(document.form1.Topic.value.length<3){
+		document.form1.Topic.focus()
+		alert("נא הזן נושא");
+	}else if(document.form1.Vote_1.value.length<1){
+		document.form1.Vote_1.focus();
+		alert("נא הזן אפשרות 1");
+	}else if(document.form1.Vote_2.value.length<1){
+		document.form1.Vote_2.focus();
+		alert("נא הזן אפשרות 2");
+	}else{
+		bool=true;
+	}
+	return bool;
+}
+
+function Calendar(){
+	var height=240;
+	var width=300;
+	var top=(screen.height - height) / 3 ;
+	var left=(screen.width - width) / 2 ;
+		win=window.open('../admin/Calender.php', 'Calendar','toolbar=no,location=0,directories=no,status=0,menubar=no,scrollbars=no,resizable=0,copyhistory=no,width='+width+',height='+height+',top='+top+',left='+left+'');
+		win.focus();
+}
+
+
+function ConfirmDelete(str){
+	var bool=true;
+	if(!confirm("??? האם את/ה בטוח/ה שברצונך למחוק "+str))
+		bool=false;
+
+	return bool;
+}
+
+function CheckSubmit(f){
+	var counter=0;
+	var counter1=0;
+	if(f.Active){
+		if(f.Active.length>=2)	{
+			for(i=0;i<=f.Active.length-1;i++){
+				if(f.Active[i].checked==true){
+					counter++;
+					if(f.ActiveChain.value.length>0){
+						f.ActiveChain.value +="," 
+					}
+					f.ActiveChain.value += f.Active[i].value;
+				}else{
+					counter1++;
+					if(f.UnActiveChain.value.length>0){
+						f.UnActiveChain.value +="," 
+					}
+					f.UnActiveChain.value += f.Active[i].value;
+				}
+			}
+		}else if(f.Active.checked==true){
+			counter++;
+			f.ActiveChain.value = f.Active.value;
+		}else{
+			counter1++;
+			f.UnActiveChain.value += f.Active.value;
+		}
+	}
+	if(counter==0)
+		f.ActiveChain.disabled=true
+	if(counter==0)
+		f.ActiveChain.disabled=true
+}
+
+function SelectActive(f, v, a)
+{
+	if(f.Active)
+	{
+		if(f.Active.length>=2)
+		{
+			for(i=0;i<=f.Active.length-1;i++)
+			{
+				if(f.Active[i].value==v)
+				{
+					if(a==1)
+					{
+						f.Active[i].checked=false;
+						f.Main[i].checked=false;
+					}
+					else
+					{
+						f.Active[i].checked=true;
+					}
+				}
+			}
+		}
+		else if(f.Active.value==v)
+		{
+			f.Active.checked=false;
+		}
+	}
+}
+
+
+function CheckEmail(src) {
+     var emailReg = "^[\\w-_\.]*[\\w-_\.]\@[\\w]\.+[\\w]+[\\w]$";
+     var regex = new RegExp(emailReg);
+     return regex.test(src);
+}
+
+function Calendar1(vInput, hInput, d){
+
+	var height=280;
+	var width=300;
+	var top=(screen.height - height) / 3 ;
+	var left=(screen.width - width) / 2 ;
+		win=window.open('Calender.php?vInput='+vInput+'&hInput='+hInput+'&d='+d, 'Calendar','toolbar=no,location=0,directories=no,status=1,menubar=no,scrollbars=no,resizable=0,copyhistory=no,width='+width+',height='+height+',top='+top+',left='+left+'');
+		win.focus();
+
+}
+
+function yad1Promo(promoTitle) {
+
+	if ((typeof window.dataLayer != 'undefined') && window.dataLayer.length) {
+	
+		window.dataLayer.push({
+		'GA_internal_promotion': promoTitle,
+		'event': 'yad1 internal promotion'
+		});
+	} 
+	
+}
