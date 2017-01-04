@@ -1,0 +1,504 @@
+
+<div style="margin-right: auto; margin-left: auto; padding-right: 5px; padding-left: 5px; padding-top: 10px; padding-bottom: 0px;">
+    <table border="0" cellspacing="0" cellpadding="0" style="margin-right: auto; margin-left: auto; border-collapse: collapse; border: 0px; direction: rtl;">
+        <tbody><tr>
+            <td valign="top">
+                 <div class="details_block_296">
+                    <div class="details_block_top pie"></div>
+                    <div class="details_block_body">
+                        <div class="details_block_title">
+                            <img src="http://images.yad2.co.il/Pic/yad2new/page/innerDetails_icon_details.png" alt="פרטים">
+                            <span>פרטים</span>
+                        </div>
+
+                        <div style="height: 124px !important;width:291px; overflow: auto;">
+                            <table class="innerDetailsDataGrid" cellspacing="0" cellpadding="0" style="padding: 0px; border-collapse: collapse;">
+
+                                <tbody><tr>
+                                    <td width="75">סוג הנכס:</td>
+                                    <td>
+                                        <b>
+                                            פרטי/קוטג' למכירה
+                                        </b>
+                                    </td>
+                                </tr>
+
+                                                                <tr>
+                                    <td>ישוב:</td>
+                                    <td><b>תקוע</b></td>
+                                </tr>
+
+
+
+
+                                                                    <tr>
+                                        <td>עדכון חודשי:</td>
+                                        <td>
+                                            <b>
+                                                למעקב על כתובת זו <a href="http://www.yad2.co.il/Nadlan/Neighbors/DivurNadlan/signIn.php?City=%FA%F7%E5%F2&amp;CityID=1481&amp;Address=&amp;AddressID=&amp;num=&amp;source=tivsales_tabDetails" style="text-decoration: underline" onmousedown="stat( '/',3319, '', '' ); topAdDetailsClickEvent();" target="_blank">לחץ</a>
+                                            </b>
+                                        </td>
+                                    </tr>
+
+
+                                                                        <tr>
+                                        <td>חדרים:</td>
+                                        <td><b>7</b></td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td>קומה:</td>
+                                        <td><b>
+                                            קרקע                                             מתוך 3
+                                                                                    </b></td>
+                                    </tr>
+
+                                <tr>
+                                    <td>גודל במ"ר:</td>
+                                    <td><b>
+                                        240                                    </b></td>
+                                </tr>
+                            </tbody></table>
+                        </div>
+
+                        <div class="price_block">
+                            <table class="price" width="100%" cellspacing="0" cellpadding="0">
+                                <tbody><tr>
+                                    <td width="52">מחיר:</td>
+                                    <td align="right">
+                                        <table cellspacing="0" cellpadding="0" border="0" width="100%" style="resize: both ! important;">
+                                        <tbody><tr>
+                                            <td>
+                                                                                                2,700,000 ₪
+<script type="text/javascript">
+    function topAdDetailsClickEvent(){
+        dataLayer.push({
+            'GA_EventCategory': 'Ad page',
+            'GA_EventAction': 'Quick links in top Ad details',
+            'GA_EventLabel': 'Madad - Newsletter',
+            'event': 'GTM event To GA'
+        });
+    }
+</script>
+
+<div style="float: left;margin-left:10px;">
+    <a onclick="stat( '../', 973, '', '' ); topAdDetailsClickEvent();" href="http://homeprices.yad2.co.il/city/תקוע" target="_blank" style="color: black; font-size: 12px; font-weight: bold; text-decoration: none;">למדד הנדל"ן</a>
+    <a onclick="stat( '../', 973, '', '' ); topAdDetailsClickEvent();" href="http://homeprices.yad2.co.il/city/תקוע" target="_blank" rel="nofollow" style="color: #330099; font-size: 12px; font-weight: bold; text-decoration: underline;">לחץ</a>
+</div>                                            </td>
+                                        </tr></tbody>
+                                    </table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </div>
+                        <table>
+                            <tbody><tr>
+                                <td>
+                                    <div id="mashkanta" style="cursor:pointer; width:287px; height:18px;font-weight: bold; border: 1px solid #FE6E0D;border-radius:6px;line-height:15px;text-align: center; text- font-weight: bold;">
+                                       <span style="display: inline-block;">לחסכון במשכנתא על דירה זו</span><span style="display: inline-block;font-size: 15px;margin-right: 5px;">»</span>
+                                    </div>
+                                    <script type="text/javascript">
+
+                                    $('#mashkanta').on('click', function() {
+                                        try {
+                                            stat( '../', 6262, '', '' );
+                                        } catch (e) {}
+                                        window.parent.$.sLightbox({content: 'mashkantaPopup', type: "element",overlayClose:true});
+                                         sendreport(2, 1);
+                                    });
+
+                                      function sendreport(catid, subcatid) {
+
+                                            window.parent.dataLayer.push({
+                                                'GA_EventCategory': 'MortgageCalculator',
+                                                'GA_EventAction': 'MortgageCalculator Cliked',
+                                                'GA_EventLabel': 'MC-CatID=' + catid + '_SubCatID=' + subcatid,
+                                                'event': 'GTM event To GA'
+                                            });
+                                        }
+                                    </script>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    </div> <!-- /details_block_body -->
+                    <div class="details_block_bottom"></div>
+                 </div>
+
+                 <!-- more details block -->
+                 <div class="details_block_296">
+                    <div class="details_block_top pie"></div>
+                    <div class="details_block_body">
+                        <div class="details_block_title">
+                            <img src="http://images.yad2.co.il/Pic/yad2new/page/innerDetails_icon_details.png" alt="פרטים נוספים">
+                            <span>פרטים נוספים</span>
+                        </div>
+                                                <div class="details_block_info vertical-overflow" style="height: 218px;">
+                            <table class="innerDetailsDataGrid" style="width: 260px; " cellspacing="0" cellpadding="0">
+                                <tbody><tr>
+                                    <th width="75"></th>
+                                    <th width="185"></th>
+                                </tr>
+
+
+
+                                                                <tr>
+                                    <td>מ"ר גינה:</td>
+                                    <td><b>350</b></td>
+                                </tr>
+
+                                                                    <tr>
+                                        <td colspan="2">
+                                            <table width="100%" cellspacing="0" cellpadding="0">
+                                                <tbody><tr>
+                                                    <td><div class="v_checked"></div>מיזוג</td>
+                                                    <td><div class="v_unchecked"></div>סורגים</td>
+                                                    <td><div class="v_checked"></div>חניה</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><div class="v_unchecked"></div>מעלית</td>
+                                                    <td><div class="v_unchecked"></div>גישה לנכים</td>
+                                                    <td><div class="v_checked"></div>ממ"ד</td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td><div class="v_checked"></div>מרפסת</td>
+                                                    <td><div class="v_unchecked"></div>מרפסת שמש</td>
+                                                    <td><div class="v_checked"></div>מחסן</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><div class="v_checked"></div>משופצת</td>
+                                                    <td><div class="v_unchecked"></div>דלתות פנדור</td>
+                                                    <td><div class="v_checked"></div>יחידת דיור</td>
+                                                </tr>
+                                            </tbody></table>
+                                        </td>
+                                    </tr>
+
+
+                             </tbody></table>
+
+                            <div style="margin: 5px auto; margin-right: 5px; padding: 5px; width: 100%; background: #ececec;">
+                                <div style="width: 96%;">
+                                <b>ריהוט:</b>
+                                לא                              </div>
+                                                                <div style="padding-top: 5px; padding-bottom: 5px; background: #f5f5f5; color: #fd6905; font-weight: bold; width: 96%;">
+                                תאריך כניסה:
+                                01/07/2017                              </div>
+
+                                <div style="width: 96%;">
+                                    <b>תוספות:</b> בית מהמם. יחסית חדש. 4 חדרים כולל יחידת הורים עם חדר ארונות + מקלחת.יחידה נוספת של 3 חדרים גדולים. אפשר לחבר את שתי היחידות בקלות. גינה מושקעת.מיקום מצוין, קרוב למרכז.כניסה בקיץ הבא.                                    <br>
+                                    נכס בבלעדיות משרד התיווך                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="details_block_bottom"></div>
+                 </div> <!-- /more details block -->
+
+                <div style="padding-bottom: 0px;">
+                    <script type="text/javascript"> window.Fusion.space("ad_strip"); </script><div id="ad_strip___ID___1" class="Desktop_Ad_Strip"></div>
+                </div>
+
+            </td>
+
+            <td valign="top" style="padding-right: 10px;">
+
+                <!-- contact block -->
+                <div class="details_block_255">
+                    <div class="details_block_top pie"></div>
+                    <div class="details_block_body">
+                        <div class="details_block_title">
+                            <img src="http://images.yad2.co.il/Pic/yad2new/page/innerDetails_icon_contact.png" alt="צור קשר">
+                            <span>צור קשר</span>
+                        </div>
+
+                        <div style="height: 155px;position:relative;">
+                                                                                        <table class="innerDetailsDataGrid" cellspacing="0" cellpadding="0" style="padding: 0px; border-collapse: collapse;">
+                                    <tbody><tr>
+                                        <td width="60">שם משרד:</td>
+                                        <td><b>תקוע תיווך</b></td>
+                                    </tr>
+                                </tbody></table>
+
+                            <table class="innerDetailsDataGrid" cellspacing="0" cellpadding="0" style="padding: 0px; border-collapse: collapse;">
+                                <tbody><tr>
+                                    <td width="60">איש קשר:</td>
+                                    <td><b>תמר קסטלנואובו</b></td>
+                                </tr>
+                            </tbody></table>
+
+                            <table class="innerDetailsDataGrid" cellspacing="0" cellpadding="0" style="padding: 0px; border-collapse: collapse;">
+                                <tbody><tr>
+                                    <td id="p_img_30406437"><link rel="stylesheet" href="http://www.yad2.co.il/js-new/sLightbox/sLightbox.css" type="text/css">
+<script type="text/javascript">
+<!--
+    function getFrameResult(data, oid) {
+        if (!data || data == '0;0') {
+            $.sLightbox({
+                type: 'html',
+                                fromIFrame: true,
+                content: '<iframe id="captch_frame" src="http://www.yad2.co.il/class/captcha/captcha.php?element=%23p_img'+($("#p_img_"+oid) && $("#p_img_"+oid).length > 0 ? '_'+oid : '')+'&OrderID='+oid+'&t='+Math.random()+'" style="width: 300px; height: 340px; border: 0px;" scrolling="no" frameborder="0" allowTransparency="true"></iframe>'
+            });
+        } else {
+            $.sLightbox.close();
+            if ($("#p_img_"+oid) && $("#p_img_"+oid).length > 0) {
+                $("#p_img_"+oid).html(data.replace(/1\;</, '<'));
+            } else {
+                $("#p_img").html(data.replace(/1\;</, '<'));
+            }
+        }
+
+
+                try {
+            var adIframeID = jQuery("iframe.ad_iframe").parents('div.ad_iframe').attr('id');
+        }
+        catch(e) {
+            var adIframeID = window.parent.jQuery("iframe.ad_iframe").parents('div.ad_iframe').attr('id');
+        }
+
+        if (adIframeID != undefined) {
+            closeProgressBar(adIframeID,true);
+        }
+        else if($("#tempLoader") !== undefined){
+            //$("#tempLoader").append('<iframe onload="jQuery(\'#tempLoader\').remove();" style="display: none;" class="phone_captcha_iframe" src="http://www.yad2.co.il/ajax/get_Phone_Img_Capture_frame.php?oid='+oid+'&id=&path=&AreaID=80&new"></iframe>');
+            $("#tempLoader").remove();
+
+        }
+
+
+
+    }
+
+
+            function showPhoneCaptcha(oid) {
+
+
+                /**
+                 * exposures
+                 */
+                try{
+                    calcMinisiteExposure('2','5','1604010','orderType1_phone');
+                }catch(e){}
+
+
+
+
+
+
+                                try {
+                    var adIframeID = jQuery("iframe.ad_iframe").parents('div.ad_iframe').attr('id');
+                }
+                catch(e) {
+                    var adIframeID = window.parent.jQuery("iframe.ad_iframe").parents('div.ad_iframe').attr('id');
+                }
+
+                if (adIframeID != undefined) {
+                    showProgressBar(adIframeID,null,true);
+                }
+                else {
+
+                    var loaderWrap = jQuery('<div id="tempLoader" style="width:100%;height:100%;"></div>');
+                    var overlay = jQuery('<div id="tempLoaderOverlay" style="width: 100%; height: 100%; background-color: #333333 !important; opacity: 0.6; position: fixed;top:0px;left:0px;z-index:9999"></div>');
+                    var loader = jQuery('<img style="position: absolute;" src="http://images.yad2.co.il/Pic/yad2new/ajax-line-loader.gif" alt="" />');
+
+                    loaderWrap.append(overlay);
+
+                    jQuery("body").append(loaderWrap);
+
+                    overlay = jQuery("#tempLoaderOverlay");
+
+                    var overlayWidth = overlay.width();
+                    var overlayHeight = overlay.height();
+
+                    var loaderTop = (overlayHeight/2) - (15/2);
+                    var loaderLeft = (overlayWidth/2) - (128/2);
+
+                    loader.css('top', loaderTop+'px').css('left', loaderLeft+'px');
+                    loaderWrap.append(loader);
+
+                }
+
+
+                if ($('iframe.phone_captcha_iframe').length > 0){
+                                        $('iframe.phone_captcha_iframe').attr('src', 'http://www.yad2.co.il/ajax/get_Phone_Img_Capture_frame.php?oid='+oid+'&id=p_img&path=../&AreaID=80&t='+Math.random());
+
+                }else {
+                                        $("#toShowPhone").append('<iframe style="display: none;" class="phone_captcha_iframe" src="http://www.yad2.co.il/ajax/get_Phone_Img_Capture_frame.php?oid='+oid+'&id=&path=&AreaID=80&new"></iframe>');
+                }
+
+                var CatID    = 2;
+                var SubCatID = 5;
+                if (typeof window.parent.dataLayer === 'undefined' || dataLayer === null) {
+
+                    window.parent.dataLayer = [];
+                }
+
+                try {
+                    window.parent.dataLayer.push({
+                        'GA_EventCategory': 'Show Phone Number on Ad page',
+                        'GA_EventAction': 'Show Phone Number',
+                        'GA_EventLabel': 'CatID=' + CatID + '_SubCatID=' + SubCatID + '',
+                        'event': 'GTM event To GA'
+                    });
+                } catch(e){}
+
+            }
+
+
+//-->
+</script>
+<table cellspacing="0" cellpadding="0" style="padding: 0px; border-collapse: collapse;">
+    <tbody><tr>
+        <td width="60" valign="top" style="">טלפון:</td>
+        <td valign="top" id="toShowPhone">
+            להצגת המספר <a onclick="addToDataLayerShowPhone();showPhoneCaptcha(30406437);" style="cursor: pointer; font-weight: bold; color: #330099;text-decoration: underline;">לחץ כאן</a>
+        </td>
+    </tr>
+</tbody></table>
+<script type="text/javascript">
+
+
+function addToDataLayerShowPhone() {
+
+
+
+    }
+</script>
+</td>
+                                </tr>
+                            </tbody></table>
+                            <table class="innerDetailsDataGrid" cellspacing="0" cellpadding="0" style="padding: 0px; border-collapse: collapse;">
+
+                                <tbody><tr>
+                                    <td width="60">דוא"ל:</td>
+                                    <td>
+                                        <a onclick="toggleContactByMail('../','2','5','1604010');" style="color: red; text-decoration: underline; cursor: pointer;"><b>פנה למפרסם</b></a>                                    </td>
+                                </tr>
+                            </tbody></table>
+
+                            <table class="innerDetailsDataGrid" cellspacing="0" cellpadding="0" style="position: absolute; bottom: 0px; left: 4px; padding: 0px; border-collapse: collapse;">
+
+                    <tbody><tr>
+                        <td id="KAMA_YELLOW" colspan="2" align="center" valign="middle">
+                            <div style="color:#000;font-weight: bold; text-align:center;background: #fff url('/imageInsidePage/kama/reka.gif') no-repeat center;width:238px; height:16px;">
+                                <a target="_blank" href="http://www.pro.yad2.co.il/vucku," class="kama_link" onclick="stat( '../', 138, '', '' );">עוברים דירה? מחפשים חברת הובלה?</a>
+                            </div>
+                        </td>
+                    </tr>                            </tbody></table>
+                        </div>
+                    </div>
+                    <div class="details_block_bottom"></div>
+                 </div> <!-- /contact block -->
+
+
+                 <!-- images block -->
+                 <div class="details_block_255" style="position: relative; top: 1px;">
+                    <div class="details_block_top pie"></div>
+                    <div class="details_block_body" style="height: 212px !important;">
+
+                        <table cellspacing="0" cellpadding="0" align="center" style="border-collapse: collapse; border: 0px;">
+                            <tbody><tr>
+                                                                <td>
+                                    <div class="details_block_title">
+                                        <img src="http://images.yad2.co.il/Pic/yad2new/page/innerDetails_icon_camera.png" alt="תמונות">
+                                        <span>תמונות</span>
+                                    </div>
+                                </td>
+                                                            </tr>
+                        </tbody></table>
+
+                        <table cellspacing="0" cellpadding="0" align="center" style="border-collapse: collapse; border: 0px; margin-top: 10px;">
+                            <tbody><tr>
+                                <td align="center" valign="middle" height="130">
+                                    <a id="mainImage" href="javascript: void(0);" onclick="window.parent.openViewImage('',2,5,'1604010',false,null,null,765);" style="cursor: pointer; direction: ltr;"><img src="http://images.yad2.co.il/Pic/201608/30/2_5/o/o2_5_1_39016_20160830000857-m.jpg" border="0" style="border: solid 1px #5D6C71;" alt="לחץ להגדלה"></a>                                </td>
+                            </tr>
+                                                        <tr>
+                                <td align="center" style="padding-top: 10px;">
+                                    <img src="http://images.yad2.co.il/Pic/yad2new/page/picture_zoomIn.jpg" alt="הגדלה ותמונות נוספות">
+                                    <a class="picture_zoomIn" href="javascript:void(0);" onclick="window.parent.openViewImage('','2','5','1604010',false,null,null,765);">
+                                         לחץ להגדלה ולתמונות נוספות
+                                    </a>
+                                </td>
+                            </tr>
+                                                    </tbody></table>
+                    </div>
+                    <div class="details_block_bottom"></div>
+                 </div> <!-- /images block -->
+
+                 <!-- info block -->
+                 <div class="details_block_255">
+    <div class="details_block_top pie"></div>
+    <div class="details_block_body">
+        <table cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
+            <tbody><tr>
+                <td>
+                    <div class="details_block_title details_block_title_80x25_orange fr clear-none" style="margin-right: 2px; margin-left: 3px;">
+                        <span class="display-block">תצוגת רחוב</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="details_block_title details_block_title_80x25_orange fr clear-none" style="margin-right: 2px; margin-left: 2px;">
+                        <span class="display-block">מפת האזור</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="details_block_title details_block_title_80x25_orange fr clear-none" style="margin-right: 3px; margin-left: 2px;">
+                                                <a style="text-decoration: none;" target="_blank" href="http://www.yad2.co.il/Nadlan/Neighbors/DivurNadlan/signIn.php?City=%FA%F7%E5%F2&amp;CityID=1481&amp;Address=&amp;AddressID=&amp;num=&amp;source=tivsales_tabDetails" onclick="stat( '../',7406, '', '' );
+                        dataLayer.push({
+                            'GA_EventCategory': 'Ad page',
+                            'GA_EventAction': 'Small widgets clicks',
+                            'GA_EventLabel': 'Madad - Newsletter',
+                            'event': 'GTM event To GA'
+                        });">
+                            <span class="display-block">מעקב על הנכס</span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+
+            <script type="text/javascript">
+                $(document).ready(function() {
+
+
+
+                });
+
+            </script>
+
+
+            <tr>
+                <td style="text-align: center;padding-top: 8px;">
+                    <img src="http://images.yad2.co.il/Pic/yad2new/page/streetview_image1.jpg" alt="מבט לרחוב" id="ad_streetview" style="opacity:0.5;" width="76" height="56">
+                </td>
+                <td style="text-align: center;padding-top: 8px;">
+                                        <a href="javascript:void(0);" onclick="window.parent.openViewImage('',2,5,'1604010',false,'&amp;map=1',null,765)">
+                                                <img src="http://images.yad2.co.il/Pic/site_images/yad2/imageInsidePage/details_image/innerdetails_2403_img4.jpg" alt="מפת תקוע" width="76" height="56">
+                    </a>
+                </td>
+                <td style="text-align: center;padding-top: 8px;">
+                    <a target="_blank" href="http://www.yad2.co.il/Nadlan/Neighbors/DivurNadlan/signIn.php?City=%FA%F7%E5%F2&amp;CityID=1481&amp;Address=&amp;AddressID=&amp;num=&amp;source=tivsales_tabDetails" onclick="stat( '../', 7406, '', '' );
+                    dataLayer.push({
+                            'GA_EventCategory': 'Ad page',
+                            'GA_EventAction': 'Small widgets clicks',
+                            'GA_EventLabel': 'Madad - Newsletter',
+                            'event': 'GTM event To GA'
+                    });
+                    ">
+                        <img src="http://images.yad2.co.il/Pic/site_images/yad2/imageInsidePage/details_image/innerdetails_2403_img111.jpg" border="0" width="76" height="56">
+                    </a>
+                </td>
+            </tr>
+
+        </tbody></table>
+
+        <div class="clear"></div>
+    </div>
+    <div class="details_block_bottom"></div>
+ </div>                 <!-- /info block -->
+
+                              </td>
+        </tr>
+    </tbody></table>
+</div>            </td>
