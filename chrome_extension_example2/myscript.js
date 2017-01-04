@@ -10,32 +10,45 @@ add_column_to_table()
 
 function add_column_to_table()
 {
-    var ad_node_list = document.getElementsByClassName("showPopupUnder")
+    var ad_node_list = document.getElementsByClassName("showPopupUnder");
 
-    console.log("number of ads found:" + ad_node_list.length)
+    console.log("number of ads found:" + ad_node_list.length);
 
     var ad_node;
     for(var i = 0; i < ad_node_list.length; i++)
-    {
-        ad_node = ad_node_list[i];
-        if (ad_node.hasAttribute("id") && ad_node.id.startsWith("tr"))
         {
-            //console.log(get_ad_hash(node));
-            add_info_icon_to_node(ad_node);
-            ad_node.addEventListener("click", debug_printer);
+            ad_node = ad_node_list[i];
+            //console.log("#1 " + i);
+            if (ad_node.hasAttribute("id") && ad_node.id.startsWith("tr"))
+            {
+                //console.log("#2 " + i);
+                //console.log(get_ad_hash(node));
+                add_info_icon_to_node(ad_node);
+                ad_node.addEventListener("click", debug_printer2);
 
-            ad_node.addEventListener("click", create_and_fill_our_node(ad_node)); //TODO FIX!!!
+                //ad_node.addEventListener("click", debug_printer3("foo"));
 
-            /**ad_node.addEventListener("click", function(){
-                create_and_fill_our_node(ad_node);
-                debug_printer();
-            });*/
+                ad_node.addEventListener("click", create_and_fill_our_node(ad_node)); //TODO FIX!!!
+
+                /**ad_node.addEventListener("click", function(){
+                    create_and_fill_our_node(ad_node);
+                    debug_printer();
+                }, false); */
+            }
         }
     }
-}
 
-function debug_printer(){
-    console.log("debug print!");
+    function debug_printer(){
+        console.log("debug print!");
+    }
+
+    function debug_printer2(){
+        console.log("debug print2222!");
+    }
+
+    function debug_printer3(num){
+    console.log(num);
+    console.log("debug print3333!");
 }
 
 function parse_info_node(info_node){
@@ -44,7 +57,12 @@ function parse_info_node(info_node){
     //onclick="addToDataLayerShowPhone();showPhoneCaptcha(58503166);"
     //where 58503166 is the id of the add, which we can get here:
     //the node within this node, with class="adNumber"
+
     console.log("parsing info node!");
+    var hash = get_ad_hash(info_node);
+    var ad_number = document.getElementsByClassName("adNumber");
+    console.log("debug132 " + ad_number.length)
+    //showPhoneCaptcha(ad_number);
 }
 
 
@@ -85,17 +103,25 @@ function create_and_fill_our_node(ad_node)
     for(var i = 0; i < yad_info_nodes.length; i++)
     {
         info_node = yad_info_nodes[i];
-        if (info_node.hasAttribute("id") && info_node.id.endsWith(hash))
+        info_node_data = parse_info_node(info_node);
+
+        if (info_node.hasAttribute("id") && info_node.id.endsWith(hash[2]))
         {
             var details_block_body = create_our_window(info_node);
             info_status = has_info(ad_node);
             if (info_status == 0){
                 console.log("no info available");
-                details_block_body.innerHTML = "no info available!";
+                details_block_body.innerHTML = "<br/>אין מידע לגבי נגישות הדירה.<br/>לחץ כאן כדי לשלוח שאלון לבעל הדירה<br/>";
+                var send_form_button = document.createElement("button");
+                details_block_body.appendChild(send_form_button);
+                send_form_button.innerHTML = "לחץ כאן";
+                send_form_button.addEventListener("click", debug_printer);
             } else if (info_status == 1)
             {
                 console.log("info request was sent");
-                details_block_body.innerHTML = "info request was sent";
+                //details_block_body.innerHTML = "info request was sent";
+                var info_request_sent_str = "<br/>נשלחה בקשה למילוי שאלון בנושא נגישות הדירה בתאריך ***<br/>אנא המתן לתשובת מעלה המודעה";
+                details_block_body.innerHTML = info_request_sent_str;
             }
             else{
                 console.log("we have all the info");
@@ -110,10 +136,12 @@ function create_our_window(info_node){
     info_node.appendChild(our_info_cell);
     our_info_cell.style.verticalAlign="top";
     info_node.style.zIndex = "1000";
+    info_node.style.position = "relative";
+
 
     var inner_div1 = document.createElement("div");
     our_info_cell.appendChild(inner_div1);
-    inner_div1.className = "ad_iframe";
+    inner_div1.className = "ad_iframe overlay";
     inner_div1.style.width = "auto"; //TODO
     inner_div1.style.position = "static";
     inner_div1.valign="top"
@@ -174,19 +202,19 @@ function create_our_window(info_node){
 
 
 
-
-
-
-function get_ad_hash(ad_node)
+function get_ad_hash(any_node)
 {
     //input is a node with id of the form "tr_Ad_2_1_364d8fd57a29633f22028858002782736ba"
-    var str = ad_node.id;
-    //console.log(str);
+    // can also be info node!
+    var str = any_node.id;
+    console.log(str);
     if (str.split("_").length >= 5)
     {
-        return str.split("_")[4]; // only hash, 364d8fd57a29633f22028858002782736ba
+        var arr = str.split("_")
+        console.log([arr[2],arr[3],arr[4]]);
+        return [arr[2],arr[3],arr[4]]; // only hash, 2_1_364d8fd57a29633f22028858002782736ba
     }
-    return null;
+    return [];
 }
 
 
