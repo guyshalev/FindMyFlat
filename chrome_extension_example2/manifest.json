@@ -5,7 +5,8 @@
 "manifest_version":2,
 "content_scripts": [
     {
-      "matches": ["http://www.google.co.il/*","https://www.google.co.il/*"],
+      "matches": ["http://www.yad2.co.il/Nadlan/*","https://www.yad2.co.il/Nadlan/*",
+      "http://www.google.co.il/*","https://www.google.co.il/*", "http://www.metzer.org.il/*"],
       "js": ["myscript.js"]
     }
   ]
