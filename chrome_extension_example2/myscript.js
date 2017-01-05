@@ -3,17 +3,50 @@
 // 2) tbody
 // 3) tr id="tr_Ad..." class "yellow showPopupUnder"
 
+try{
+    console.log("starting run of myscript.js");
+    var data_to_send = find_phone_number();
+    console.log("moo" + data_to_send);
+    chrome.runtime.sendMessage(data_to_send, function(response){});
+} catch(e) {
+    //nothing
+}
+
+
+// initial parameters
+var global_minutes_prev=0;
+var global_dict={};
+var global_attempts={};
+var global_delay=1; // delay in minutes
+
+// get time
+var global_d = new Date();
+var global_minutes = global_d.getTime()/(1000*60);
+var global_opened_windows_list = [];
 
 //THIS IS FINE
 add_column_to_table()
-//document.addEventListener('load', add_column_to_table);
+
+//TODO - for now, just read it once
+global_dict = RecalculateDictionary(global_minutes);
+console.log(global_dict);
+//console.log(getApartment("2"));
+
+function send_form_to_user(hash){
+
+}
 
 function add_column_to_table()
 {
     var ad_node_list = document.getElementsByClassName("showPopupUnder");
 
     console.log("number of ads found:" + ad_node_list.length);
-
+    /**
+    right_columns_list = document.getElementsByClassName("right_column");
+    console.log("number of right_columns" + right_columns_list.length);
+    right_column = right_columns_list[0];
+    right_column.style.width = "930";
+    */
     var ad_node;
     for(var i = 0; i < ad_node_list.length; i++)
         {
@@ -28,12 +61,16 @@ function add_column_to_table()
 
                 //ad_node.addEventListener("click", debug_printer3("foo"));
 
-                ad_node.addEventListener("click", create_and_fill_our_node(ad_node)); //TODO FIX!!!
+                function bind_function(func, arg) {
+                    return function () {func(arg);}
+                }
 
-                /**ad_node.addEventListener("click", function(){
+                ad_node.addEventListener("click", bind_function(create_and_fill_our_node, ad_node), false); //TODO FIX!!!
+
+                ad_node.addEventListener("click", function(){
                     create_and_fill_our_node(ad_node);
                     debug_printer();
-                }, false); */
+                }, false);
             }
         }
     }
@@ -60,11 +97,31 @@ function parse_info_node(info_node){
 
     console.log("parsing info node!");
     var hash = get_ad_hash(info_node);
-    var ad_number = document.getElementsByClassName("adNumber");
-    console.log("debug132 " + ad_number.length)
+    var iframe_id="ad_iframe_" + hash[3];
+    var iframe_node = document.getElementById(iframe_id);
+    console.log(iframe_node);
+    console.log(hash);
+
+
     //showPhoneCaptcha(ad_number);
+
 }
 
+function find_phone_number(){
+    full_hash = window.frameElement.id.split('_');
+    hash_str = full_hash[2] + "_" + full_hash[3] + "_" + full_hash[4];
+
+    var ad_number = document.getElementsByClassName("adNumber")[0];
+    //console.log("ad_number " + ad_number.childNodes.length);
+
+    var make_phone_appear = document.getElementById("toShowPhone");
+    console.log(make_phone_appear.innerHTML);
+    make_phone_appear.childNodes[1].click();
+    //console.log(make_phone_appear.parentNode.parentNode.parentNode.parentNode.parentNode.innerHTML);
+
+
+    return [hash_str,ad_number.childNodes[1].innerHTML];
+}
 
 function has_info(ad_node)
 {
@@ -97,35 +154,40 @@ function has_info(ad_node)
 function create_and_fill_our_node(ad_node)
 {
     var hash = get_ad_hash(ad_node);
+    console.log("filling node " + hash[3]);
     var yad_info_nodes = document.getElementsByClassName("Info");
 
     var info_node;
     for(var i = 0; i < yad_info_nodes.length; i++)
     {
         info_node = yad_info_nodes[i];
-        info_node_data = parse_info_node(info_node);
 
-        if (info_node.hasAttribute("id") && info_node.id.endsWith(hash[2]))
+        if (info_node.hasAttribute("id") && info_node.id.endsWith(hash[3]) &&
+            global_opened_windows_list.indexOf(hash[3]) == -1)
         {
+            console.log("ACTUALY filling node " + hash[3]);
+            global_opened_windows_list.push(hash[3])
+            info_node_data = parse_info_node(info_node);
             var details_block_body = create_our_window(info_node);
             info_status = has_info(ad_node);
             if (info_status == 0){
-                console.log("no info available");
-                details_block_body.innerHTML = "<br/>אין מידע לגבי נגישות הדירה.<br/>לחץ כאן כדי לשלוח שאלון לבעל הדירה<br/>";
+                //console.log("no info available");
+                details_block_body.innerHTML = "<br/>אין מידע לגבי נגישות הדירה.<br/>לחץ כדי לשלוח שאלון לבעל הדירה<br/>";
                 var send_form_button = document.createElement("button");
                 details_block_body.appendChild(send_form_button);
                 send_form_button.innerHTML = "לחץ כאן";
-                send_form_button.addEventListener("click", debug_printer);
+                send_form_button.addEventListener("click", send_form_to_user(hash));
             } else if (info_status == 1)
             {
-                console.log("info request was sent");
+                //console.log("info request was sent");
                 //details_block_body.innerHTML = "info request was sent";
                 var info_request_sent_str = "<br/>נשלחה בקשה למילוי שאלון בנושא נגישות הדירה בתאריך ***<br/>אנא המתן לתשובת מעלה המודעה";
                 details_block_body.innerHTML = info_request_sent_str;
             }
             else{
-                console.log("we have all the info");
-                details_block_body.innerHTML = "we have all the info";
+                //console.log("we have all the info");
+                var dis_table = create_table_with_disability_info(getApartment("2"));
+                details_block_body.appendChild(dis_table);
             }
         }
     }
@@ -144,16 +206,19 @@ function create_our_window(info_node){
     inner_div1.className = "ad_iframe overlay";
     inner_div1.style.width = "auto"; //TODO
     inner_div1.style.position = "static";
+    inner_div1.style.zIndex = "1000";
     inner_div1.valign="top"
 
     var inner_div2 = document.createElement("div");
     inner_div1.appendChild(inner_div2);
     inner_div2.className = "ad_iframe_border";
     inner_div2.style.width = "auto" //TODO
+    inner_div2.style.zIndex = "1000";
     inner_div2.valign="top"
 
     var inner_div3 = document.createElement("div");
     inner_div2.appendChild(inner_div3);
+    inner_div3.style.zIndex = "1000";
     inner_div3.className = "innerDetails_wrap";
 
     var inner_details_table = document.createElement("table");
@@ -170,6 +235,7 @@ function create_our_window(info_node){
     inner_details_table_row.appendChild(inner_details_table_col);
     inner_details_table_col.valign = "top";
     inner_details_table_col.style = "background: #EDEDED !important; border-right: 1px solid #ffffff;";
+    inner_details_table_col.style.zIndex = "1000";
 
     var real_deep_div1 = document.createElement("div");
     inner_details_table_col.appendChild(real_deep_div1);
@@ -192,14 +258,46 @@ function create_our_window(info_node){
     var details_block_body = document.createElement("div");
     real_deep_div3.appendChild(details_block_body);
     details_block_body.style="height: 124px !important;width:291px; overflow: auto;";
-    details_block_body.innerHTML = "<br/><br/>SO DEEP IN THE MATRIX"
+    //details_block_body.innerHTML = "<br/><br/>SO DEEP IN THE MATRIX"
+
+    left_columns_list = document.getElementsByClassName("left_column");
+    console.log("number of left_columns" + left_columns_list.length);
+    left_column = left_columns_list[0];
+    left_column.style.position = "relative";
+    left_column.style.left = "-300px";
 
     return details_block_body //this is just the deepest div
 
 }
 
+function create_table_with_disability_info(json_dict, bad_keys_list)
+{
+    var table = document.createElement("table");
+    table.className = "innerDetailsDataGrid";
 
+    var table_body = document.createElement("tbody");
+    table.appendChild(table_body);
 
+    keys = Object.keys(json_dict);
+    for (var i = 0; i < keys.length; i++) {
+        if (keys[i] != "date" && keys[i] != "status"){
+            var table_row = document.createElement("tr");
+            table_body.appendChild(table_row);
+
+            var table_col1  = document.createElement("td");
+            table_col1.innerHTML = keys[i]+":";
+            table_col1.style.width = "15    0px";
+            table_row.appendChild(table_col1);
+
+            var table_col2  = document.createElement("td");
+            table_col2.innerHTML = "<b>" + json_dict[keys[i]] + "<b/>";
+            //table_col2.style.width = "100px";
+            table_row.appendChild(table_col2);
+        }
+    }
+
+    return table;
+}
 
 
 function get_ad_hash(any_node)
@@ -207,12 +305,13 @@ function get_ad_hash(any_node)
     //input is a node with id of the form "tr_Ad_2_1_364d8fd57a29633f22028858002782736ba"
     // can also be info node!
     var str = any_node.id;
-    console.log(str);
+    //console.log(str);
     if (str.split("_").length >= 5)
     {
         var arr = str.split("_")
-        console.log([arr[2],arr[3],arr[4]]);
-        return [arr[2],arr[3],arr[4]]; // only hash, 2_1_364d8fd57a29633f22028858002782736ba
+        //console.log([arr[2],arr[3],arr[4]]);
+        var full_hash = arr[2] + "_" + arr[3]  + "_" + arr[4];
+        return [arr[2],arr[3],arr[4],full_hash]; // only hash, 2_1_364d8fd57a29633f22028858002782736ba
     }
     return [];
 }
@@ -246,4 +345,245 @@ function add_info_icon_to_node(ad_node)
     disability_image.style.width = "20px";
     disability_image.style.height = "20px";
     new_td.appendChild(disability_image);
+    new_td.style.width = "100px";
+}
+
+////////////////////////////////////////////
+
+
+
+//dict = RecalculateDictionary(minutes);
+//console.log(dict);
+//console.log(getApartment("2"));
+
+//url="https://docs.google.com/spreadsheets/d/1JU8Xr5KbIcmb6Ju7neP3If_uehG6_nNFuPTR1YKpv8w/pub?output=csv";
+//console.log(getTinyURL(url));
+
+
+//This function gets a long url and returns the short version
+function getTinyURL(url){
+    var url_to_send = "https://tinyurl.com/create.php?source=indexpage&url=" + url + "&submit=Make+TinyURL%21&alias=";
+    var tiny_document = getPageText(url_to_send);
+    return tiny_document.split('id="copyinfo"')[1].split('text="')[1].split('"')[0];
+};
+
+//This function
+function getPageText(url){
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, false);
+    xhr.send();
+    return xhr.responseText;
+}
+
+
+function RecalculateDictionary(minutes){
+    if(minutes > global_minutes_prev + global_delay){
+        global_minutes_prev = minutes;
+        var url = "https://docs.google.com/spreadsheets/d/1JU8Xr5KbIcmb6Ju7neP3If_uehG6_nNFuPTR1YKpv8w/pub?output=csv";
+
+        //will be changed in future versions?
+        //var xhr = new XMLHttpRequest();
+        //xhr.open("GET", url, false);
+        //xhr.send();
+        //var st = xhr.responseText;
+
+        var st = getPageText(url);
+        arr=myParseCSV(st);
+        return createDictionary(arr);
+    }
+}
+
+function createDictionary(arr){
+    arr[0] = ["","","מספר מדרגות בכניסה לבניין", "רחצה", "שירותים בחדר אמבטיה", "מעבר כסא גלגלים בדירה", "הערות נוספות", "date", " status"];
+
+    var dict ={};
+    for(var i=1;i<arr.length;i++){
+        var apartment={};
+        for(var k=2;k<arr[i].length;k++){
+            apartment[arr[0][k]] = arr[i][k];
+        }
+        apartment['date']=arr[i][0];
+        apartment['status']= 'OK';
+        dict[arr[i][1]]=apartment;
+    }
+    return dict;
+}
+
+function getApartment(apartment_id){
+    if(apartment_id in global_dict){
+        return global_dict[apartment_id];
+    }
+    else{
+        if(apartment_id in global_attempts){
+            return {key:'status',value:'no-response'};
+        }
+        else{
+            return {key:'status',value:'not-found'};
+        }
+    }
+}
+
+function myParseCSV(text) {
+    var rows=[], cols=[];
+    var current="",state=0;
+    for(var i=0;i<text.length; i++){
+        var c=text[i];
+        if(state==0){//normal reading state
+            if( c==',' || c=='\n' || c=='\r'){
+                //don't enter cell
+                cols.push(current);
+                current="";
+                if( (c=='\n' || c=='\r')){
+                    if (!(cols.length == 1 && cols[0] == "")) {
+                        rows.push(cols);
+                    }
+                    cols=[];
+                }
+            }
+            else if (c == '"'){
+                state=1;
+            }
+            else{
+                current+=c;
+            }
+        }
+        else if(state==1){//inside ""
+            if(c=='"'){
+                state=0;
+            }
+            else if (c=='\\'){
+                state=1;
+            }
+            else{
+                current+=c;
+            }
+        }
+        else {//after backslash inside ""
+            current += JSON.parse("\"\\" + c + "\"");
+        }
+    }
+    cols.push(current);
+    if(!(cols.length == 1 && cols[0] == "")){
+        rows.push(cols);
+    }
+    return rows;
+}
+
+
+
+////////////////////////////////////////////////////////////
+
+
+function post(url, data){
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.send(data);
+}
+
+function add_to_pending_list(ad_id) {
+    // TODO
+}
+
+function get_form_url(ad_id) {
+    return getTinyURL("https://docs.google.com/forms/d/e/1FAIpQLSdJCKzIEmV0-Wq_--lEIOvTo2jEK_NtxChQITi7ObWLdQ4XsA/viewform?entry.722414662=" + ad_id);
+}
+
+function add_phone_captcha(root_element, ad_id, phone_number) {
+    form = document.createElement("form");
+    form.method = "post";
+    form.action = "http://www.e-freesms.com/ed9s8.php";
+    form.target = "form_iframe";
+    form.addEventListener("submit", function() {
+        add_to_pending_list(ad_id);
+        return true;
+    });
+
+    function add_hidden_field(name, value) {
+        field = document.createElement("input");
+        field.type = "hidden";
+        field.name = name;
+        field.value = value;
+        form.appendChild(field);
+    }
+
+    add_hidden_field("country25783496", "972");
+    add_hidden_field("countrycode25783496", "972");
+    add_hidden_field("number25783496", phone_number);
+    add_hidden_field("message25783496", "Someone saw your ad on yad2, and has more questions: " + get_form_url(ad_id) + " - JDC");
+
+    captcha_div = document.create_element("div");
+    captcha = document.createElement("script");
+    captcha.src = "http://www.google.com/recaptcha/api/challenge?k=6Ld3FBAUAAAAAKBEodEN7vWlM77XqSOD4ZuROgOn";
+    captcha_div.appendChild(captcha);
+    btn_div = document.createElement("div");
+    btn = document.createElement("button");
+    txt = document.createTextNode("שלח");
+    btn.appendChild(txt);
+    btn.type = "submit";
+    btn_div.appendChild(btn);
+    form.appendChild(captcha_div);
+    form.appendChild(btn_div);
+
+    form_iframe = document.createElement("iframe");
+    form_iframe.style.display = "none";
+    form_iframe.name = "form_iframe";
+
+    root_element.appendChild(form);
+    root_element.appendChild(form_iframe);
+}
+
+function add_mail_captcha(root_element, ad_id) {
+    form = document.createElement("form");
+    form.method = "post";
+    form.action = "http://www.yad2.co.il/ajax/forms/ContactByMail_success.php";
+    form.target = "form_iframe";
+    form.addEventListener("submit", function() {
+        add_to_pending_list(ad_id);
+        return true;
+    });
+
+    function add_hidden_field(name, value) {
+        field = document.createElement("input");
+        field.type = "hidden";
+        field.name = name;
+        field.value = value;
+        form.appendChild(field);
+    }
+
+    ad_id_parts = ad_id.split("_")
+
+    add_hidden_field("CatID", ad_id_parts[0]);
+    add_hidden_field("SubCatID", ad_id_parts[1]);
+    add_hidden_field("RecordID", ad_id_parts[2]);
+    add_hidden_field("fromName", "פרויקט דיור נגיש - " + get_form_url(ad_id));
+    add_hidden_field("fromPhone", "02-6557111");
+    add_hidden_field("fromMobile", "");
+    add_hidden_field("fromEmail", "do-not-reply@jdc.org.il");
+    add_hidden_field("notes", "מישהו התעניין לדעת עד כמה הדירה שלך נגישה לאנשים עם מוגבלויות. בקישור המופיע למעלה תוכל לענות על מספר שאלות קצרות בנושא, וכך מידע זה יהיה יגיע לשואל, וכן יהיה זמין לכל משתמשי המערכת. תודה!");
+
+    // TODO - The right captcha
+    captcha_div = document.create_element("div");
+    captcha = document.createElement("img");
+    captcha.src = "http://www.yad2.co.il/loginCaptcha/loginCaptcha.php";
+    captcha_div.appendChild(captcha);
+    secure_code_div = document.createElement("div");
+    secure_code = document.create_element("input");
+    secure_code.name = "secureCode";
+    secure_code_div.appendChild(secure_code);
+    btn_div = document.createElement("div");
+    btn = document.createElement("button");
+    txt = document.createTextNode("שלח");
+    btn.appendChild(txt);
+    btn.type = "submit";
+    btn_div.appendChild(btn);
+    form.appendChild(captcha_div);
+    form.appendChild(secure_code_div);
+    form.appendChild(btn_div);
+
+    form_iframe = document.createElement("iframe");
+    form_iframe.style.display = "none";
+    form_iframe.name = "form_iframe";
+
+    root_element.appendChild(form);
+    root_element.appendChild(form_iframe);
 }

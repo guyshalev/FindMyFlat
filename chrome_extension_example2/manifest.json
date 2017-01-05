@@ -7,8 +7,10 @@
     {
       "matches": ["http://www.yad2.co.il/Nadlan/*","https://www.yad2.co.il/Nadlan/*"],
       "js": ["myscript.js"],
-      "run_at": "document_end"
+      "run_at": "document_end",
+      "all_frames": true
     }
   ],
-"web_accessible_resources": ["images/*.png", "images/*.jpg"]
+"web_accessible_resources": ["images/*.png", "images/*.jpg"],
+"permissions": ["https://*/", "http://*/"]
 }
