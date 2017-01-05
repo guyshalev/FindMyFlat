@@ -4,9 +4,9 @@
 // 3) tr id="tr_Ad..." class "yellow showPopupUnder"
 
 try{
-    console.log("starting run of myscript.js");
+    //console.log("starting run of myscript.js");
     var data_to_send = find_phone_number();
-    console.log("moo" + data_to_send);
+    //console.log("moo" + data_to_send);
     chrome.runtime.sendMessage(data_to_send, function(response){});
 } catch(e) {
     //nothing
@@ -16,7 +16,7 @@ try{
 // initial parameters
 var global_minutes_prev=0;
 var global_dict={};
-var global_attempts=[];
+var global_attempts={};
 var global_delay=1; // delay in minutes
 
 // get time
@@ -26,11 +26,12 @@ var global_opened_windows_list = [];
 
 
 //TODO - for now, just read it once
+global_attempts = RecalculateAttempts();
 global_dict = RecalculateDictionary(global_minutes);
 console.log(global_dict);
 console.log("size of global_dict: " + Object.keys(global_dict).length);
 console.log(global_attempts);
-console.log("size of global_attempts: " + global_attempts.length);
+console.log("size of global_attempts: " + Object.keys(global_attempts).length);
 
 //THIS IS FINE
 add_column_to_table()
@@ -120,7 +121,7 @@ function find_phone_number(){
 
     var make_phone_appear = document.getElementById("toShowPhone");
     console.log(make_phone_appear.innerHTML);
-    make_phone_appear.childNodes[1].click();
+    //make_phone_appear.childNodes[1].click();
     //console.log(make_phone_appear.parentNode.parentNode.parentNode.parentNode.parentNode.innerHTML);
 
 
@@ -184,7 +185,7 @@ function create_and_fill_our_node(ad_node)
             {
                 //console.log("info request was sent");
                 //details_block_body.innerHTML = "info request was sent";
-                var info_request_sent_str = "<br/>נשלחה בקשה למילוי שאלון בנושא נגישות הדירה בתאריך ***<br/>אנא המתן לתשובת מעלה המודעה";
+                var info_request_sent_str = "<br/>נשלחה בקשה למילוי שאלון בנושא נגישות הדירה בתאריך " + global_attempts[hash[3]] +"<br/>אנא המתן לתשובת מעלה המודעה";
                 details_block_body.innerHTML = info_request_sent_str;
             }
             else{
@@ -264,7 +265,7 @@ function create_our_window(info_node){
     //details_block_body.innerHTML = "<br/><br/>SO DEEP IN THE MATRIX"
 
     left_columns_list = document.getElementsByClassName("left_column");
-    console.log("number of left_columns" + left_columns_list.length);
+    //console.log("number of left_columns" + left_columns_list.length);
     left_column = left_columns_list[0];
     left_column.style.position = "relative";
     left_column.style.left = "-300px";
@@ -323,7 +324,7 @@ function get_ad_hash(any_node)
 function add_info_icon_to_node(ad_node)
 {
     var node_has_info = has_info(ad_node);
-    console.log("node_has_info: " + node_has_info);
+   // console.log("node_has_info: " + node_has_info);
     var new_td = document.createElement("td");
     ad_node.appendChild(new_td);
     new_td.align = "center";
@@ -354,19 +355,19 @@ function add_info_icon_to_node(ad_node)
 
     var pratim_node = new_td.parentNode.childNodes;
     //pratim_node.style.display = "none";
-    console.log("pratim_node.innerHTML");
-    console.log(pratim_node.innerHTML);
-    console.log("pratim_node" + pratim_node.length);
+    //console.log("pratim_node.innerHTML");
+    //console.log(pratim_node.innerHTML);
+    //console.log("pratim_node" + pratim_node.length);
     var tmp_node;
     for(var i = 0; i < pratim_node.length; i++)
     {
         tmp_node = pratim_node[i];
-        console.log("pratim_node[i].innerHTML");
-        console.log(i + "  " + pratim_node[i].tagName + "  " + pratim_node[i].innerHTML);
+        //console.log("pratim_node[i].innerHTML");
+        //console.log(i + "  " + pratim_node[i].tagName + "  " + pratim_node[i].innerHTML);
     }
 
     var real_pratim_node = new_td.previousSibling.previousSibling;
-    console.log("aaaaaaa" + "  " + real_pratim_node.tagName + "  " + real_pratim_node.innerHTML);
+    //console.log("aaaaaaa" + "  " + real_pratim_node.tagName + "  " + real_pratim_node.innerHTML);
     real_pratim_node.remove();
 }
 
@@ -398,10 +399,18 @@ function getPageText(url){
 }
 
 
+function RecalculateAttempts(){
+    var url = "https://docs.google.com/spreadsheets/d/1TA5KHdLsOkt8KnaVQy9osJiCkM5UEhnOlGaq6kjbYHg/pub?output=csv";
+
+    var st = getPageText(url);
+    arr=myParseCSV(st);
+    return createAttemptsDictionary(arr);
+}
+
 function RecalculateDictionary(minutes){
     if(minutes > global_minutes_prev + global_delay){
         global_minutes_prev = minutes;
-        var url = "https://docs.google.com/spreadsheets/d/1JU8Xr5KbIcmb6Ju7neP3If_uehG6_nNFuPTR1YKpv8w/pub?output=csv&random=" + Math.random();
+        var url = "https://docs.google.com/spreadsheets/d/1JU8Xr5KbIcmb6Ju7neP3If_uehG6_nNFuPTR1YKpv8w/pub?output=csv";
 
         //will be changed in future versions?
         //var xhr = new XMLHttpRequest();
@@ -413,6 +422,32 @@ function RecalculateDictionary(minutes){
         arr=myParseCSV(st);
         return createDictionary(arr);
     }
+}
+
+function createAttemptsDictionary(arr){
+    //console.log("in createAttemptsDictionary");
+    //console.log("array:::" + arr);
+
+    var dict = {};
+    for(var i=1;i<arr.length;i++){
+        dict[arr[i][1]] = arr[i][0];
+    }
+    console.log("dict: " + dict);
+    return dict;
+    /**
+    var dict ={};
+    for(var i=1;i<arr.length;i++){
+        var apartment={};
+        for(var k=2;k<arr[i].length;k++){
+            apartment[arr[0][k]] = arr[i][k];
+        }
+        apartment['date']=arr[i][0];
+        apartment['status']= 'OK';
+        dict[arr[i][1]]=apartment;
+    }
+    return dict;
+    */
+
 }
 
 function createDictionary(arr){
@@ -437,7 +472,8 @@ function getApartment(apartment_id){
         return global_dict[apartment_id];
     }
     else{
-        if(global_attempts.indexOf(apartment_id) != -1){
+        keys = Object.keys(global_attempts);
+        if(keys.indexOf(apartment_id) != -1){
             return {'status' : 'no-response'};
         }
         else{
@@ -562,6 +598,8 @@ function add_phone_captcha(root_element, ad_id) {
 }
 
 function add_mail_captcha(root_element, ad_id) {
+    root_element.innerHTML = "";
+
     form = document.createElement("form");
     form.method = "post";
     form.action = "http://www.yad2.co.il/ajax/forms/ContactByMail_success.php";
@@ -570,8 +608,12 @@ function add_mail_captcha(root_element, ad_id) {
     form.addEventListener("submit", function() {
         add_to_pending_list(ad_id); //TODO note that this will add to pending list, even if captcha was wrong
         form.style.display = "none";
+        root_element.appendChild(document.createElement("br"));
         root_element.appendChild(document.createTextNode(
-            "<br/>נשלחה בקשה למילוי שאלון בנושא נגישות הדירה<br/>אנא המתן לתשובת מעלה המודעה"));
+            "נשלחה בקשה למילוי שאלון בנושא נגישות הדירה"));
+        root_element.appendChild(document.createElement("br"));
+        root_element.appendChild(document.createTextNode(
+            "אנא המתן לתשובת מעלה המודעה"));
         return true;
     });
 
@@ -633,7 +675,7 @@ function addToPending(ad_id){
     var form_text = getPageText(url_form+"viewform");
     var data = "";
     var fbzx_str=form_text.split('name="fbzx" value="')[1].split('"')[0];
-    console.log(fbzx_str);
+    //console.log(fbzx_str);
 
     function data_append(key, val) {
         if (data.length > 0) {
@@ -645,7 +687,7 @@ function addToPending(ad_id){
     data_append("entry.722414662",ad_id);
     data_append("fvv","1");
     data_append("draftResponse",'[,,"'+fbzx_str+'"]');
-    console.log('[,,"'+fbzx_str+'"]');
+    //console.log('[,,"'+fbzx_str+'"]');
     data_append("pageHistory","0");
     data_append("fbzx",fbzx_str);
     post2(url_form+"formResponse",data);

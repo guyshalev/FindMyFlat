@@ -1,6 +1,6 @@
 {
-"name":"Inject DOM",
-"description":"http://stackoverflow.com/questions/14068879",
+"name":"Yad2All",
+"description":"Helps finding accessible apartments on Yad2 for people with disabilities, using the power of community.",
 "version":"1",
 "manifest_version":2,
 "content_scripts": [
@@ -8,7 +8,7 @@
       "matches": ["http://www.yad2.co.il/Nadlan/*","https://www.yad2.co.il/Nadlan/*"],
       "js": ["myscript.js"],
       "run_at": "document_end",
-      "all_frames": true
+      "all_frames": false
     }
   ],
 "web_accessible_resources": ["images/*.png", "images/*.jpg"],
