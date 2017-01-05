@@ -401,7 +401,7 @@ function getPageText(url){
 function RecalculateDictionary(minutes){
     if(minutes > global_minutes_prev + global_delay){
         global_minutes_prev = minutes;
-        var url = "https://docs.google.com/spreadsheets/d/1JU8Xr5KbIcmb6Ju7neP3If_uehG6_nNFuPTR1YKpv8w/pub?output=csv";
+        var url = "https://docs.google.com/spreadsheets/d/1JU8Xr5KbIcmb6Ju7neP3If_uehG6_nNFuPTR1YKpv8w/pub?output=csv&random=" + Math.random();
 
         //will be changed in future versions?
         //var xhr = new XMLHttpRequest();
@@ -503,7 +503,7 @@ function post(url, data){
 }
 
 function add_to_pending_list(ad_id) {
-    // TODO
+    addToPending(ad_id);
 }
 
 function get_form_url(ad_id) {
@@ -517,6 +517,7 @@ function add_phone_captcha(root_element, ad_id) {
     form.target = "form_iframe";
     form.addEventListener("submit", function() {
         add_to_pending_list(ad_id);
+        //root_element.innerHTML = "<br/>נשלחה בקשה למילוי שאלון בנושא נגישות הדירה בתאריך ***<br/>אנא המתן לתשובת מעלה המודעה";
         return true;
     });
 
@@ -565,8 +566,12 @@ function add_mail_captcha(root_element, ad_id) {
     form.method = "post";
     form.action = "http://www.yad2.co.il/ajax/forms/ContactByMail_success.php";
     form.target = "form_iframe";
+    form.acceptCharset = "UTF-8";
     form.addEventListener("submit", function() {
-        add_to_pending_list(ad_id);
+        add_to_pending_list(ad_id); //TODO note that this will add to pending list, even if captcha was wrong
+        form.style.display = "none";
+        root_element.appendChild(document.createTextNode(
+            "<br/>נשלחה בקשה למילוי שאלון בנושא נגישות הדירה<br/>אנא המתן לתשובת מעלה המודעה"));
         return true;
     });
 
@@ -584,13 +589,15 @@ function add_mail_captcha(root_element, ad_id) {
     add_hidden_field("SubCatID", ad_id_parts[1]);
     add_hidden_field("RecordID", ad_id_parts[2]);
     //add_hidden_field("fromName", "\u05e4\u05e8\u05d5\u05d9\u05e7\u05d8 \u05d3\u05d9\u05d5\u05e8 \u05e0\u05d2\u05d9\u05e9 - " + get_form_url(ad_id));
-    add_hidden_field("fromName", "Available appartments project - " + get_form_url(ad_id));
+    //add_hidden_field("fromName", "Available appartments project - " + get_form_url(ad_id));
+    add_hidden_field("fromName", "פרוייקט דיור נגיש - " + get_form_url(ad_id));
     add_hidden_field("fromPhone", "02-6557111");
     add_hidden_field("fromMobile", "");
     add_hidden_field("fromEmail", "do-not-reply@jdc.org.il");
-    //add_hidden_field("notes", "מישהו התעניין לדעת עד כמה הדירה שלך נגישה לאנשים עם מוגבלויות. בקישור המופיע למעלה תוכל לענות על מספר שאלות קצרות בנושא, וכך מידע זה יהיה יגיע לשואל, וכן יהיה זמין לכל משתמשי המערכת. תודה!");
+    add_hidden_field("notes", "מישהו התעניין לדעת עד כמה הדירה שלך נגישה לאנשים עם מוגבלויות. בקישור המופיע למעלה תוכל לענות על מספר שאלות קצרות בנושא, וכך מידע זה יהיה יגיע לשואל, וכן יהיה זמין לכל משתמשי המערכת. תודה!");
+    //add_hidden_field("notes", "א");
     //add_hidden_field("notes", "\u05de\u05d9\u05e9\u05d4\u05d5 \u05d4\u05ea\u05e2\u05e0\u05d9\u05d9\u05df \u05dc\u05d3\u05e2\u05ea \u05e2\u05d3 \u05db\u05de\u05d4 \u05d4\u05d3\u05d9\u05e8\u05d4 \u05e9\u05dc\u05da \u05e0\u05d2\u05d9\u05e9\u05d4 \u05dc\u05d0\u05e0\u05e9\u05d9\u05dd \u05e2\u05dd \u05de\u05d5\u05d2\u05d1\u05dc\u05d5\u05d9\u05d5\u05ea. \u05d1\u05e7\u05d9\u05e9\u05d5\u05e8 \u05d4\u05de\u05d5\u05e4\u05d9\u05e2 \u05dc\u05de\u05e2\u05dc\u05d4 \u05ea\u05d5\u05db\u05dc \u05dc\u05e2\u05e0\u05d5\u05ea \u05e2\u05dc \u05de\u05e1\u05e4\u05e8 \u05e9\u05d0\u05dc\u05d5\u05ea \u05e7\u05e6\u05e8\u05d5\u05ea \u05d1\u05e0\u05d5\u05e9\u05d0, \u05d5\u05db\u05da \u05de\u05d9\u05d3\u05e2 \u05d6\u05d4 \u05d9\u05d4\u05d9\u05d4 \u05d9\u05d2\u05d9\u05e2 \u05dc\u05e9\u05d5\u05d0\u05dc, \u05d5\u05db\u05df \u05d9\u05d4\u05d9\u05d4 \u05d6\u05de\u05d9\u05df \u05dc\u05db\u05dc \u05de\u05e9\u05ea\u05de\u05e9\u05d9 \u05d4\u05de\u05e2\u05e8\u05db\u05ea. \u05ea\u05d5\u05d3\u05d4!");
-    add_hidden_field("notes", "Someone took interest in your apartment, and want to know if it is accessible for people with disabilities. Please answer a few questions, so the information will be available for the person who asked, and the entire community. Thank you!");
+    //add_hidden_field("notes", "Someone took interest in your apartment, and want to know if it is accessible for people with disabilities. Please answer a few questions, so the information will be available for the person who asked, and the entire community. Thank you!");
 
     // TODO - The right captcha
     captcha_div = document.createElement("div");
@@ -618,3 +625,37 @@ function add_mail_captcha(root_element, ad_id) {
     root_element.appendChild(form);
     root_element.appendChild(form_iframe);
 }
+
+///////////////////////////////
+
+function addToPending(ad_id){
+    var url_form = "https://docs.google.com/forms/d/e/1FAIpQLSdJCKzIEmV0-Wq_--lEIOvTo2jEK_NtxChQITi7ObWLdQ4XsA/";
+    var form_text = getPageText(url_form+"viewform");
+    var data = "";
+    var fbzx_str=form_text.split('name="fbzx" value="')[1].split('"')[0];
+    console.log(fbzx_str);
+
+    function data_append(key, val) {
+        if (data.length > 0) {
+            data += "&"
+        }
+        data += encodeURI(key) + "=" + encodeURI(val);
+    }
+
+    data_append("entry.722414662",ad_id);
+    data_append("fvv","1");
+    data_append("draftResponse",'[,,"'+fbzx_str+'"]');
+    console.log('[,,"'+fbzx_str+'"]');
+    data_append("pageHistory","0");
+    data_append("fbzx",fbzx_str);
+    post2(url_form+"formResponse",data);
+}
+
+
+//1)get form (it will have number???)
+function post2(url, data){
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+    xhr.send(data);
+}//data is formData. (recieves key and value pair)
