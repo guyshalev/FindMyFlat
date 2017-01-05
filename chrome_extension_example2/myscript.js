@@ -16,7 +16,7 @@ try{
 // initial parameters
 var global_minutes_prev=0;
 var global_dict={};
-var global_attempts={};
+var global_attempts=[];
 var global_delay=1; // delay in minutes
 
 // get time
@@ -24,16 +24,20 @@ var global_d = new Date();
 var global_minutes = global_d.getTime()/(1000*60);
 var global_opened_windows_list = [];
 
-//THIS IS FINE
-add_column_to_table()
 
 //TODO - for now, just read it once
 global_dict = RecalculateDictionary(global_minutes);
 console.log(global_dict);
-//console.log(getApartment("2"));
+console.log("size of global_dict: " + Object.keys(global_dict).length);
+console.log(global_attempts);
+console.log("size of global_attempts: " + global_attempts.length);
 
-function send_form_to_user(hash){
+//THIS IS FINE
+add_column_to_table()
 
+function send_form_to_user(root_element, ad_id){
+    console.log("starting send_form_to_user");
+    add_mail_captcha(root_element, ad_id);
 }
 
 function add_column_to_table()
@@ -131,24 +135,18 @@ function has_info(ad_node)
     //returns 1 if data request was sent
     //returns 2 if has data
     var hash = get_ad_hash(ad_node);
-    var rand_num = Math.random()
-    if (rand_num < 0.3)
-    {
-        //console.log("0");
+
+    apartment = getApartment(hash[3]);
+    if (apartment["status"] == "not-found"){
         return 0;
     }
-    else
-    {
-        if (rand_num < 0.6)
-        {
-            //console.log("1");
-            return 1;
-        } else
-        {
-            //console.log("2");
-            return 2;
-        }
+    if (apartment["status"] == "no-response"){
+        return 1;
     }
+    if (apartment["status"] == "OK"){
+        return 2;
+    }
+    console.log("FATAL ERROR");
 }
 
 function create_and_fill_our_node(ad_node)
@@ -172,11 +170,16 @@ function create_and_fill_our_node(ad_node)
             info_status = has_info(ad_node);
             if (info_status == 0){
                 //console.log("no info available");
+                function bind_function2(func, arg1, arg2) {
+                    return function () {func(arg1, arg2);}
+                }
+
                 details_block_body.innerHTML = "<br/>אין מידע לגבי נגישות הדירה.<br/>לחץ כדי לשלוח שאלון לבעל הדירה<br/>";
                 var send_form_button = document.createElement("button");
                 details_block_body.appendChild(send_form_button);
                 send_form_button.innerHTML = "לחץ כאן";
-                send_form_button.addEventListener("click", send_form_to_user(hash));
+                send_form_button.addEventListener("click",
+                    bind_function2(send_form_to_user, details_block_body, hash[3]));
             } else if (info_status == 1)
             {
                 //console.log("info request was sent");
@@ -186,7 +189,7 @@ function create_and_fill_our_node(ad_node)
             }
             else{
                 //console.log("we have all the info");
-                var dis_table = create_table_with_disability_info(getApartment("2"));
+                var dis_table = create_table_with_disability_info(getApartment(hash[3]));
                 details_block_body.appendChild(dis_table);
             }
         }
@@ -320,6 +323,7 @@ function get_ad_hash(any_node)
 function add_info_icon_to_node(ad_node)
 {
     var node_has_info = has_info(ad_node);
+    console.log("node_has_info: " + node_has_info);
     var new_td = document.createElement("td");
     ad_node.appendChild(new_td);
     new_td.align = "center";
@@ -346,6 +350,24 @@ function add_info_icon_to_node(ad_node)
     disability_image.style.height = "20px";
     new_td.appendChild(disability_image);
     new_td.style.width = "100px";
+
+
+    var pratim_node = new_td.parentNode.childNodes;
+    //pratim_node.style.display = "none";
+    console.log("pratim_node.innerHTML");
+    console.log(pratim_node.innerHTML);
+    console.log("pratim_node" + pratim_node.length);
+    var tmp_node;
+    for(var i = 0; i < pratim_node.length; i++)
+    {
+        tmp_node = pratim_node[i];
+        console.log("pratim_node[i].innerHTML");
+        console.log(i + "  " + pratim_node[i].tagName + "  " + pratim_node[i].innerHTML);
+    }
+
+    var real_pratim_node = new_td.previousSibling.previousSibling;
+    console.log("aaaaaaa" + "  " + real_pratim_node.tagName + "  " + real_pratim_node.innerHTML);
+    real_pratim_node.remove();
 }
 
 ////////////////////////////////////////////
@@ -410,15 +432,16 @@ function createDictionary(arr){
 }
 
 function getApartment(apartment_id){
-    if(apartment_id in global_dict){
+    keys = Object.keys(global_dict);
+    if(keys.indexOf(apartment_id) != -1){
         return global_dict[apartment_id];
     }
     else{
-        if(apartment_id in global_attempts){
-            return {key:'status',value:'no-response'};
+        if(global_attempts.indexOf(apartment_id) != -1){
+            return {'status' : 'no-response'};
         }
         else{
-            return {key:'status',value:'not-found'};
+            return {'status':'not-found'};
         }
     }
 }
@@ -470,7 +493,6 @@ function myParseCSV(text) {
 }
 
 
-
 ////////////////////////////////////////////////////////////
 
 
@@ -485,10 +507,10 @@ function add_to_pending_list(ad_id) {
 }
 
 function get_form_url(ad_id) {
-    return getTinyURL("https://docs.google.com/forms/d/e/1FAIpQLSdJCKzIEmV0-Wq_--lEIOvTo2jEK_NtxChQITi7ObWLdQ4XsA/viewform?entry.722414662=" + ad_id);
+    return getTinyURL("https://docs.google.com/forms/d/e/1FAIpQLScmf1jCbFoC8Gd5UsYr4LmPvKnTXp1w7dcj62cuNI_BuFIdaw/viewform?entry.417280214=" + ad_id);
 }
 
-function add_phone_captcha(root_element, ad_id, phone_number) {
+function add_phone_captcha(root_element, ad_id) {
     form = document.createElement("form");
     form.method = "post";
     form.action = "http://www.e-freesms.com/ed9s8.php";
@@ -508,13 +530,18 @@ function add_phone_captcha(root_element, ad_id, phone_number) {
 
     add_hidden_field("country25783496", "972");
     add_hidden_field("countrycode25783496", "972");
-    add_hidden_field("number25783496", phone_number);
+    //add_hidden_field("number25783496", phone_number);
     add_hidden_field("message25783496", "Someone saw your ad on yad2, and has more questions: " + get_form_url(ad_id) + " - JDC");
 
-    captcha_div = document.create_element("div");
+    captcha_div = document.createElement("div");
     captcha = document.createElement("script");
     captcha.src = "http://www.google.com/recaptcha/api/challenge?k=6Ld3FBAUAAAAAKBEodEN7vWlM77XqSOD4ZuROgOn";
     captcha_div.appendChild(captcha);
+    number_div = document.createElement("div");
+    number = document.createElement("input");
+    number.name = "number25783496";
+    number_div.appendChild(document.createTextNode("אנא העתק את מספר הטלפון של מפרסם המודעה:"));
+    number_div.appendChild(number);
     btn_div = document.createElement("div");
     btn = document.createElement("button");
     txt = document.createTextNode("שלח");
@@ -522,6 +549,7 @@ function add_phone_captcha(root_element, ad_id, phone_number) {
     btn.type = "submit";
     btn_div.appendChild(btn);
     form.appendChild(captcha_div);
+    form.appendChild(number_div);
     form.appendChild(btn_div);
 
     form_iframe = document.createElement("iframe");
@@ -555,19 +583,22 @@ function add_mail_captcha(root_element, ad_id) {
     add_hidden_field("CatID", ad_id_parts[0]);
     add_hidden_field("SubCatID", ad_id_parts[1]);
     add_hidden_field("RecordID", ad_id_parts[2]);
-    add_hidden_field("fromName", "פרויקט דיור נגיש - " + get_form_url(ad_id));
+    //add_hidden_field("fromName", "\u05e4\u05e8\u05d5\u05d9\u05e7\u05d8 \u05d3\u05d9\u05d5\u05e8 \u05e0\u05d2\u05d9\u05e9 - " + get_form_url(ad_id));
+    add_hidden_field("fromName", "Available appartments project - " + get_form_url(ad_id));
     add_hidden_field("fromPhone", "02-6557111");
     add_hidden_field("fromMobile", "");
     add_hidden_field("fromEmail", "do-not-reply@jdc.org.il");
-    add_hidden_field("notes", "מישהו התעניין לדעת עד כמה הדירה שלך נגישה לאנשים עם מוגבלויות. בקישור המופיע למעלה תוכל לענות על מספר שאלות קצרות בנושא, וכך מידע זה יהיה יגיע לשואל, וכן יהיה זמין לכל משתמשי המערכת. תודה!");
+    //add_hidden_field("notes", "מישהו התעניין לדעת עד כמה הדירה שלך נגישה לאנשים עם מוגבלויות. בקישור המופיע למעלה תוכל לענות על מספר שאלות קצרות בנושא, וכך מידע זה יהיה יגיע לשואל, וכן יהיה זמין לכל משתמשי המערכת. תודה!");
+    //add_hidden_field("notes", "\u05de\u05d9\u05e9\u05d4\u05d5 \u05d4\u05ea\u05e2\u05e0\u05d9\u05d9\u05df \u05dc\u05d3\u05e2\u05ea \u05e2\u05d3 \u05db\u05de\u05d4 \u05d4\u05d3\u05d9\u05e8\u05d4 \u05e9\u05dc\u05da \u05e0\u05d2\u05d9\u05e9\u05d4 \u05dc\u05d0\u05e0\u05e9\u05d9\u05dd \u05e2\u05dd \u05de\u05d5\u05d2\u05d1\u05dc\u05d5\u05d9\u05d5\u05ea. \u05d1\u05e7\u05d9\u05e9\u05d5\u05e8 \u05d4\u05de\u05d5\u05e4\u05d9\u05e2 \u05dc\u05de\u05e2\u05dc\u05d4 \u05ea\u05d5\u05db\u05dc \u05dc\u05e2\u05e0\u05d5\u05ea \u05e2\u05dc \u05de\u05e1\u05e4\u05e8 \u05e9\u05d0\u05dc\u05d5\u05ea \u05e7\u05e6\u05e8\u05d5\u05ea \u05d1\u05e0\u05d5\u05e9\u05d0, \u05d5\u05db\u05da \u05de\u05d9\u05d3\u05e2 \u05d6\u05d4 \u05d9\u05d4\u05d9\u05d4 \u05d9\u05d2\u05d9\u05e2 \u05dc\u05e9\u05d5\u05d0\u05dc, \u05d5\u05db\u05df \u05d9\u05d4\u05d9\u05d4 \u05d6\u05de\u05d9\u05df \u05dc\u05db\u05dc \u05de\u05e9\u05ea\u05de\u05e9\u05d9 \u05d4\u05de\u05e2\u05e8\u05db\u05ea. \u05ea\u05d5\u05d3\u05d4!");
+    add_hidden_field("notes", "Someone took interest in your apartment, and want to know if it is accessible for people with disabilities. Please answer a few questions, so the information will be available for the person who asked, and the entire community. Thank you!");
 
     // TODO - The right captcha
-    captcha_div = document.create_element("div");
+    captcha_div = document.createElement("div");
     captcha = document.createElement("img");
     captcha.src = "http://www.yad2.co.il/loginCaptcha/loginCaptcha.php";
     captcha_div.appendChild(captcha);
     secure_code_div = document.createElement("div");
-    secure_code = document.create_element("input");
+    secure_code = document.createElement("input");
     secure_code.name = "secureCode";
     secure_code_div.appendChild(secure_code);
     btn_div = document.createElement("div");
